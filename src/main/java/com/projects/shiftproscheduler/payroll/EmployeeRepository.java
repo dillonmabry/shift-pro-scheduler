@@ -1,4 +1,6 @@
 package com.projects.shiftproscheduler.payroll;
 
-public class EmployeeRepository {
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+public interface EmployeeRepository extends PagingAndSortingRepository<Employee, Long> {
 }
