@@ -18,6 +18,8 @@ HELP.md
 *.iml
 *.ipr
 /out/
+node/
+node_modules/
 
 ### NetBeans ###
 /nbproject/private/
