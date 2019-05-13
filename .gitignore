@@ -66,6 +66,7 @@ chrome-user-data
 .settings
 .springBeans
 bin
+build.sh
 integration-repo
 ivy-cache
 jxl.log
