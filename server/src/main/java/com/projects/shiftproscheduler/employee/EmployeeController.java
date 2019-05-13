@@ -13,8 +13,9 @@ class EmployeeController {
         this.employees = employeeService;
     }
 
-    @GetMapping({ "/employees" })
-    public @ResponseBody Employees getEmployees() {
+    @GetMapping({"/employees"})
+    public @ResponseBody
+    Employees getEmployees() {
         Employees employees = new Employees();
         employees.getEmployeeList().addAll(this.employees.findAll());
         return employees;
