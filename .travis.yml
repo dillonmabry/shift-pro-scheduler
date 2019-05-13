@@ -3,4 +3,4 @@ sudo: false
 jdk: oraclejdk8
 script: ./build.sh
 before_install:
-  - chmod +x ./server/mvnw
+  - chmod +x build.sh
