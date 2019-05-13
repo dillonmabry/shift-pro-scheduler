@@ -1,11 +1,11 @@
 package com.projects.shiftproscheduler.employee;
 
-import java.util.Collection;
-
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.repository.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
 
 public interface EmployeeRepository extends Repository<Employee, Integer> {
 
