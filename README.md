@@ -1,6 +1,6 @@
 # Shift Pro, Automated Employee Scheduler
-[![Build Status](https://travis-ci.org/dillonmabry/shift-pro-scheduler.svg?branch=feature/maven-build)](https://travis-ci.org/dillonmabry/shift-pro-scheduler)
-[![Coverage Status](https://coveralls.io/repos/github/dillonmabry/shift-pro-scheduler/badge.svg?branch=feature/maven-build)](https://coveralls.io/github/dillonmabry/shift-pro-scheduler?branch=feature/maven-build)
+[![Build Status](https://travis-ci.org/dillonmabry/shift-pro-scheduler.svg?branch=master)](https://travis-ci.org/dillonmabry/shift-pro-scheduler)
+[![Coverage Status](https://coveralls.io/repos/github/dillonmabry/shift-pro-scheduler/badge.svg?branch=master)](https://coveralls.io/github/dillonmabry/shift-pro-scheduler?branch=master)
 
 Shift Pro is an automated shift scheduling system which can assist your business with correctly assigning employees work shifts throughout the day.
 
