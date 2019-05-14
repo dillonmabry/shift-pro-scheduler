@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ShiftProSchedulerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ShiftProSchedulerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ShiftProSchedulerApplication.class, args);
+    }
 
 }
