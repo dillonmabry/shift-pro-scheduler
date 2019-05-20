@@ -11,9 +11,9 @@ USE shiftproscheduler;
 
 CREATE TABLE IF NOT EXISTS employees (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(30),
-  last_name VARCHAR(30),
-  email VARCHAR(40),
+  first_name VARCHAR(30) NOT NULL,
+  last_name VARCHAR(30) NOT NULL,
+  email VARCHAR(40) NOT NULL,
   phone VARCHAR(30),
   INDEX(last_name)
 ) engine=InnoDB;
