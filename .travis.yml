@@ -1,6 +1,6 @@
 language: java
 sudo: false
-jdk: oraclejdk8
+jdk: oraclejdk11
 script: ./build.sh
 before_install:
   - chmod +x build.sh
