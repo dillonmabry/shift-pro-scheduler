@@ -57,6 +57,7 @@ chrome-user-data
 .vscode
 *.swp
 *.swo
+.eslintcache
 
 ### Spring ###
 *.java.hsp
