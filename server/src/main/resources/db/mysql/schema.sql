@@ -9,13 +9,33 @@ GRANT ALL PRIVILEGES ON shiftproscheduler.* TO'admin'@'localhost';
 
 USE shiftproscheduler;
 
+CREATE TABLE IF NOT EXISTS departments (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  admin_id INT(4),
+  dept_name VARCHAR(40) NOT NULL
+) engine=InnoDB;
+
 CREATE TABLE IF NOT EXISTS employees (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(40) NOT NULL,
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   email VARCHAR(40) NOT NULL,
   phone VARCHAR(30),
-  INDEX(last_name)
+  FOREIGN KEY (dept_id) REFERENCES departments(id),
+  INDEX(last_name),
+  INDEX(username)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS administrators (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(40) NOT NULL,
+  first_name VARCHAR(30) NOT NULL,
+  last_name VARCHAR(30) NOT NULL,
+  email VARCHAR(40) NOT NULL,
+  phone VARCHAR(30),
+  INDEX(last_name),
+  INDEX(username)
 ) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS application_user (
@@ -27,21 +47,18 @@ CREATE TABLE IF NOT EXISTS application_user (
 
 CREATE TABLE IF NOT EXISTS shifts (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  emp_id INT(4) UNSIGNED NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
-  FOREIGN KEY (emp_id) REFERENCES employees(id),
-  INDEX(emp_id),
   INDEX(start_time),
-  INDEX(end_time),
-  UNIQUE(id, emp_id)
+  INDEX(end_time)
 ) engine=InnoDB;
 
-CREATE TABLE IF NOT EXISTS schedules (
-  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS assignments (
+  emp_id INT(4) UNSIGNED NOT NULL,
   shift_id INT(4) UNSIGNED NOT NULL,
+  FOREIGN KEY (emp_id) REFERENCES employees(id),
   FOREIGN KEY (shift_id) REFERENCES shifts(id),
   INDEX(shift_id),
-  UNIQUE(id, shift_id),
+  INDEX(emp_id),
   PRIMARY KEY (id, shift_id)
 ) engine=InnoDB;

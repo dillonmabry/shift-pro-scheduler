@@ -2,25 +2,37 @@ package com.projects.shiftproscheduler.employee;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 public class Person {
 
+    @Column(name = "username")
+    @NotNull
+    private String userName;
+
     @Column(name = "first_name")
-    @NotEmpty
+    @NotNull
     private String firstName;
 
     @Column(name = "last_name")
-    @NotEmpty
+    @NotNull
     private String lastName;
 
     @Column(name = "email")
-    @NotEmpty
+    @NotNull
     private String email;
 
     @Column(name = "phone")
     private String phone;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public String getFirstName() {
         return this.firstName;

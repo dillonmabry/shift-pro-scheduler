@@ -1,5 +1,8 @@
-package com.projects.shiftproscheduler.administrator;
+package com.projects.shiftproscheduler.applicationuser;
 
+import com.projects.shiftproscheduler.employee.EmployeeRepository;
+
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,16 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApplicationUserController {
 
     private ApplicationUserRepository applicationUserRepository;
+    private EmployeeRepository employeeRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public ApplicationUserController(ApplicationUserRepository applicationUserRepository,
-                                     BCryptPasswordEncoder bCryptPasswordEncoder) {
+            EmployeeRepository employeeRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.applicationUserRepository = applicationUserRepository;
+        this.employeeRepository = employeeRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    @PostMapping("/sign-up")
-    public void signUp(@RequestBody ApplicationUser user) {
+    @PostMapping("/register")
+    public void register(@RequestBody ApplicationUser user) {
+        if (employeeRepository.findByUserName(user.getUsername()) == null)
+            throw new UsernameNotFoundException("Employee does not exist in system please contact your administrator");
+
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         applicationUserRepository.save(user);
     }
