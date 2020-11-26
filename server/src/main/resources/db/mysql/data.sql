@@ -1,7 +1,3 @@
--- Employees
-INSERT IGNORE INTO administrators VALUES (1, 'jdean', 'Jimmy', 'Dean', 'jdean@gmail.com', '704-923-2368');
-INSERT IGNORE INTO administrators VALUES (2, 'msusan', 'Margaret', 'Susan' , 'mlinda@gmail.com', '980-555-4392');
-
 -- Administrators
 INSERT IGNORE INTO administrators VALUES (1, 'jdean', 'Jimmy', 'Dean', 'jdean@gmail.com', '704-923-2368');
 INSERT IGNORE INTO administrators VALUES (2, 'mlinda', 'Martha', 'Linda' , 'mlinda@gmail.com', '980-555-4392');
