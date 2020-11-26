@@ -12,13 +12,17 @@ services:
 
   shift_pro_mysql:
     container_name: shiftpro_mysql
-    image: mysql/mysql-server:5.7
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_DATABASE: root
-      MYSQL_ROOT_PASSWORD: shiftpro
-      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: shiftproscheduler
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
     ports:
     - "3306:3306"
+    volumes:
+    - ./server/src/main/resources/db/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
 
   shift_pro_server:
