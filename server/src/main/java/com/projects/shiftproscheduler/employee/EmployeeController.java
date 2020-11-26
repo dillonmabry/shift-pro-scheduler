@@ -2,6 +2,8 @@ package com.projects.shiftproscheduler.employee;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -13,9 +15,8 @@ class EmployeeController {
         this.employees = employeeService;
     }
 
-    @GetMapping({"/employees"})
-    public @ResponseBody
-    Employees getEmployees() {
+    @GetMapping("/employees")
+    public @ResponseBody Employees getEmployees() {
         Employees employees = new Employees();
         employees.getEmployeeList().addAll(this.employees.findAll());
         return employees;

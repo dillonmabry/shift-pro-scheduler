@@ -1,6 +1,6 @@
 package com.projects.shiftproscheduler.security;
 
-import com.projects.shiftproscheduler.administrator.ApplicationUserDetailsServiceImpl;
+import com.projects.shiftproscheduler.applicationuser.ApplicationUserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

@@ -1,4 +1,4 @@
-package com.projects.shiftproscheduler.administrator;
+package com.projects.shiftproscheduler.applicationuser;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

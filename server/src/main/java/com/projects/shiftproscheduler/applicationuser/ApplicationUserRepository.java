@@ -1,4 +1,4 @@
-package com.projects.shiftproscheduler.administrator;
+package com.projects.shiftproscheduler.applicationuser;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
