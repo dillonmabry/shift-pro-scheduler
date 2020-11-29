@@ -2,6 +2,7 @@ package com.projects.shiftproscheduler.shift;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,5 +18,12 @@ public interface ShiftRepository extends Repository<Shift, Integer> {
     @Transactional(readOnly = true)
     @Cacheable("shifts")
     Collection<Shift> findAll() throws DataAccessException;
+
+    /**
+     * Find a {@link Shift} by id
+     * 
+     */
+    @Transactional(readOnly = true)
+    Shift findById(Integer id);
 
 }

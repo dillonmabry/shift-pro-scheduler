@@ -11,7 +11,6 @@ USE shiftproscheduler;
 
 CREATE TABLE IF NOT EXISTS departments (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  admin_id INT(4),
   dept_name VARCHAR(40) NOT NULL
 ) engine=InnoDB;
 
@@ -35,6 +34,8 @@ CREATE TABLE IF NOT EXISTS administrators (
   last_name VARCHAR(30) NOT NULL,
   email VARCHAR(40) NOT NULL,
   phone VARCHAR(30),
+  dept_id INT(4) UNSIGNED,
+  FOREIGN KEY (dept_id) REFERENCES departments(id),
   INDEX(last_name),
   INDEX(username)
 ) engine=InnoDB;
@@ -48,18 +49,17 @@ CREATE TABLE IF NOT EXISTS application_user (
 
 CREATE TABLE IF NOT EXISTS shifts (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  start_time DATETIME NOT NULL,
-  end_time DATETIME NOT NULL,
+  start_time TIME NOT NULL,
+  end_time TIME NOT NULL,
   INDEX(start_time),
   INDEX(end_time)
 ) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS assignments (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   emp_id INT(4) UNSIGNED NOT NULL,
   shift_id INT(4) UNSIGNED NOT NULL,
+  day_id INT(4) UNSIGNED NOT NULL,
   FOREIGN KEY (emp_id) REFERENCES employees(id),
-  FOREIGN KEY (shift_id) REFERENCES shifts(id),
-  INDEX(shift_id),
-  INDEX(emp_id),
-  PRIMARY KEY (emp_id, shift_id)
+  FOREIGN KEY (shift_id) REFERENCES shifts(id)
 ) engine=InnoDB;

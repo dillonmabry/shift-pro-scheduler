@@ -2,11 +2,9 @@
 DROP TABLE departments IF EXISTS;
 CREATE TABLE departments (
   id         INTEGER IDENTITY PRIMARY KEY,
-  admin_id INTEGER,
   dept_name  VARCHAR(40)
 );
 CREATE INDEX departments_id ON departments (id);
--- ALTER TABLE departments ADD CONSTRAINT fk_departments_admin_id FOREIGN KEY (admin_id) REFERENCES administrators (id);
 
 -- Employees
 DROP TABLE employees IF EXISTS;
@@ -32,11 +30,13 @@ CREATE TABLE administrators (
   first_name VARCHAR(30),
   last_name  VARCHAR(30),
   email VARCHAR(40),
-  phone VARCHAR(30)
+  phone VARCHAR(30),
+  dept_id INTEGER
 );
 CREATE INDEX administrators_id ON administrators (id);
 CREATE INDEX administrators_username ON administrators (username);
 CREATE INDEX administrators_last_name ON administrators (last_name);
+ALTER TABLE administrators ADD CONSTRAINT fk_administrators_dept_id FOREIGN KEY (dept_id) REFERENCES departments (id);
 
 -- App users
 CREATE TABLE application_user (
@@ -51,8 +51,8 @@ CREATE INDEX application_user_username ON application_user (username);
 DROP TABLE shifts IF EXISTS;
 CREATE TABLE shifts (
   id         INTEGER IDENTITY PRIMARY KEY,
-  start_time  TIMESTAMP,
-  end_time TIMESTAMP,
+  start_time  TIME,
+  end_time TIME
 );
 CREATE INDEX shifts_id ON shifts (id);
 CREATE INDEX shifts_start_time ON shifts (start_time);
@@ -61,9 +61,10 @@ CREATE INDEX shifts_end_time ON shifts (end_time);
 -- Assignments
 DROP TABLE assignments IF EXISTS;
 CREATE TABLE assignments (
+  id  INTEGER IDENTITY PRIMARY KEY,
   emp_id  INTEGER NOT NULL,
   shift_id INTEGER NOT NULL,
-  PRIMARY KEY(emp_id, shift_id)
+  day_id INTEGER NOT NULL
 );
 ALTER TABLE assignments ADD CONSTRAINT fk_assignments_emp_id FOREIGN KEY (emp_id) REFERENCES employees (id);
 ALTER TABLE assignments ADD CONSTRAINT fk_assignments_shift_id FOREIGN KEY (shift_id) REFERENCES shifts (id);

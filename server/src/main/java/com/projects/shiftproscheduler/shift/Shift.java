@@ -1,12 +1,13 @@
 package com.projects.shiftproscheduler.shift;
 
-import java.sql.Timestamp;
+import java.sql.Time;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-import com.projects.shiftproscheduler.employee.Employee;
+import com.projects.shiftproscheduler.assignment.Assignment;
 
 @Entity
 @Table(name = "shifts")
@@ -16,16 +17,16 @@ public class Shift {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToMany(mappedBy = "shifts")
-    Set<Employee> employees;
+    @OneToMany(mappedBy = "shift")
+    private Set<Assignment> assignments = new HashSet<Assignment>();
 
     @Column(name = "start_time")
     @NotNull
-    private Timestamp startTime;
+    private Time startTime;
 
     @Column(name = "end_time")
     @NotNull
-    private Timestamp endTime;
+    private Time endTime;
 
     public Integer getId() {
         return id;
@@ -39,11 +40,16 @@ public class Shift {
         return this.id == null;
     }
 
-    public Timestamp getStartTime() {
+    public Time getStartTime() {
         return startTime;
     }
 
-    public Timestamp getEndTime() {
+    public Time getEndTime() {
         return endTime;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Start Time: %s, End Time: %s", startTime, endTime);
     }
 }
