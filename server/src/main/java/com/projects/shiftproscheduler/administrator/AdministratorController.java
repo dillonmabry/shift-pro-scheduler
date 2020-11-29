@@ -2,16 +2,17 @@ package com.projects.shiftproscheduler.administrator;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
-import com.projects.shiftproscheduler.employee.Employee;
-import com.projects.shiftproscheduler.employee.Employees;
+import com.projects.shiftproscheduler.assignment.Assignment;
+import com.projects.shiftproscheduler.assignment.Assignments;
 import com.projects.shiftproscheduler.optimizer.WeeklyOptimizer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -33,22 +34,22 @@ class AdministratorController {
         return administrators;
     }
 
-    @GetMapping("/administrators/schedule/{period}")
-    public @ResponseBody Employees getEmployeesSchedule(
+    @PostMapping("/administrators/schedule/{period}")
+    public @ResponseBody Assignments postScheduledAssignments(
             @PathVariable(value = "period", required = true) String period) {
-        Collection<Employee> scheduledEmployees = new ArrayList<Employee>();
+        List<Assignment> scheduledAssignments = new ArrayList<Assignment>();
 
         switch (period) {
             case "weekly":
-                scheduledEmployees = weeklyOptimizer.getSchedule();
+                scheduledAssignments.addAll(weeklyOptimizer.getSchedule());
                 break;
             default:
                 throw new InvalidParameterException();
         }
 
-        Employees employees = new Employees();
-        employees.getEmployeeList().addAll(scheduledEmployees);
-        return employees;
+        Assignments assignments = new Assignments();
+        assignments.getAssignmentList().addAll(scheduledAssignments);
+        return assignments;
     }
 
 }

@@ -39,11 +39,4 @@ public class Employee extends Person {
         return this.id == null;
     }
 
-    // public Set<Shift> getShifts() {
-    //     return shifts;
-    // }
-
-    // public void setShifts(Set<Shift> shifts) {
-    //     this.shifts = shifts;
-    // }
 }
