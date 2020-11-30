@@ -11,6 +11,7 @@ import javax.persistence.Table;
 
 import com.projects.shiftproscheduler.employee.Employee;
 import com.projects.shiftproscheduler.shift.Shift;
+import com.projects.shiftproscheduler.schedule.Schedule;
 
 @Entity
 @Table(name = "assignments")
@@ -27,6 +28,10 @@ public class Assignment {
     @ManyToOne
     @JoinColumn(name = "shift_id")
     private Shift shift;
+
+    @ManyToOne
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
 
     @Column(name = "day_id")
     private int dayId;
@@ -65,6 +70,14 @@ public class Assignment {
 
     public void setDayId(int dayId) {
         this.dayId = dayId;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
     }
 
 }

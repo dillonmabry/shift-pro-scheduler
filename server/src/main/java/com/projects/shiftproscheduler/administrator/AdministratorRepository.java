@@ -3,6 +3,7 @@ package com.projects.shiftproscheduler.administrator;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -17,5 +18,12 @@ public interface AdministratorRepository extends Repository<Administrator, Integ
     @Transactional(readOnly = true)
     @Cacheable("administrators")
     Collection<Administrator> findAll() throws DataAccessException;
+
+    /**
+     * Find a {@link Administrator} by username
+     * 
+     */
+    @Transactional(readOnly = true)
+    Administrator findByUserName(@Param("username") String username);
 
 }

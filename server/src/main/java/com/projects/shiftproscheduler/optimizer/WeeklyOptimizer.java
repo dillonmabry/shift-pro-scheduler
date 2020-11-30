@@ -4,10 +4,14 @@ import com.skaggsm.ortools.OrToolsHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.ortools.sat.IntVar;
 import com.google.ortools.sat.LinearExpr;
@@ -15,12 +19,12 @@ import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverSolutionCallback;
 import com.google.ortools.sat.CpSolverStatus;
-
 import com.projects.shiftproscheduler.assignment.Assignment;
 import com.projects.shiftproscheduler.assignment.AssignmentRepository;
 import com.projects.shiftproscheduler.constraint.DefaultConstraintService;
 import com.projects.shiftproscheduler.employee.Employee;
 import com.projects.shiftproscheduler.employee.EmployeeRepository;
+import com.projects.shiftproscheduler.schedule.Schedule;
 import com.projects.shiftproscheduler.shift.Shift;
 import com.projects.shiftproscheduler.shift.ShiftRepository;
 
@@ -36,6 +40,8 @@ public class WeeklyOptimizer implements IOptimizer {
     @Autowired
     AssignmentRepository assignmentRepository;
 
+    Logger logger = LoggerFactory.getLogger(WeeklyOptimizer.class);
+
     private final DefaultConstraintService constraintService;
 
     public WeeklyOptimizer(DefaultConstraintService constraintService) {
@@ -43,7 +49,8 @@ public class WeeklyOptimizer implements IOptimizer {
         this.constraintService = constraintService;
     }
 
-    public Collection<Assignment> getSchedule() throws IllegalStateException {
+    @Transactional
+    public Collection<Assignment> generateSchedule(Schedule schedule) throws IllegalStateException {
 
         CpModel model = new CpModel(); // Init model
         Collection<Employee> employees = employeeRepository.findAll();
@@ -119,15 +126,11 @@ public class WeeklyOptimizer implements IOptimizer {
         CpSolver solver = new CpSolver();
         CpSolverStatus status = solver.solve(model);
 
+        // Create the schedule and assignments
         Collection<Assignment> assignments = new ArrayList<Assignment>();
 
         if (status == CpSolverStatus.FEASIBLE || status == CpSolverStatus.OPTIMAL) {
-            // VarArraySolutionPrinter cb = new
-            // VarArraySolutionPrinter(shiftVars.values().toArray(new IntVar[0]));
-            // solver.searchAllSolutions(model, cb);
-            // System.out.println(cb.solutionCount);
-            for (IntVar v : shiftVars.values().toArray(new IntVar[0])) {
-
+            for (IntVar v : shiftVars.values().toArray(new IntVar[0])) { // Get first optimal solution
                 String[] varValues = v.getName().split("_"); // Get constraint var values
                 if (solver.value(v) == 1) {
                     // Get assignment values
@@ -139,17 +142,22 @@ public class WeeklyOptimizer implements IOptimizer {
                     assignment.setEmployee(emp);
                     assignment.setDayId(dayId);
                     assignment.setShift(shift);
+                    assignment.setSchedule(schedule);
                     assignments.add(assignment);
                 }
             }
         } else {
+            logger.error("Optmizer feasibility invalid for group of employees");
             throw new IllegalStateException("Model feasibility invalid");
         }
-
-        assignmentRepository.saveAll(assignments);
         return assignments;
     }
 
+    // Debugging
+    // VarArraySolutionPrinter cb = new
+    // VarArraySolutionPrinter(shiftVars.values().toArray(new IntVar[0]));
+    // solver.searchAllSolutions(model, cb);
+    // System.out.println(cb.solutionCount);
     static class VarArraySolutionPrinter extends CpSolverSolutionCallback {
 
         private int solutionCount;

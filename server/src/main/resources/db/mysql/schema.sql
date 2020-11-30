@@ -55,11 +55,24 @@ CREATE TABLE IF NOT EXISTS shifts (
   INDEX(end_time)
 ) engine=InnoDB;
 
+CREATE TABLE IF NOT EXISTS schedules (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  admin_id INT(4) UNSIGNED NOT NULL,
+  created_at DATE NOT NULL,
+  is_active BIT NOT NULL DEFAULT 0, 
+  INDEX(admin_id),
+  INDEX(created_at),
+  FOREIGN KEY (admin_id) REFERENCES administrators(id)
+) engine=InnoDB;
+
 CREATE TABLE IF NOT EXISTS assignments (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   emp_id INT(4) UNSIGNED NOT NULL,
   shift_id INT(4) UNSIGNED NOT NULL,
   day_id INT(4) UNSIGNED NOT NULL,
+  schedule_id INT(4) UNSIGNED NOT NULL,
   FOREIGN KEY (emp_id) REFERENCES employees(id),
-  FOREIGN KEY (shift_id) REFERENCES shifts(id)
+  FOREIGN KEY (shift_id) REFERENCES shifts(id),
+  FOREIGN KEY (schedule_id) REFERENCES schedules(id),
+  UNIQUE(emp_id, shift_id, day_id, schedule_id)
 ) engine=InnoDB;

@@ -58,15 +58,31 @@ CREATE INDEX shifts_id ON shifts (id);
 CREATE INDEX shifts_start_time ON shifts (start_time);
 CREATE INDEX shifts_end_time ON shifts (end_time);
 
+-- Schedules
+DROP TABLE schedules IF EXISTS; 
+CREATE TABLE schedules (
+  id INTEGER IDENTITY PRIMARY KEY,
+  admin_id INTEGER NOT NULL,
+  created_at DATE NOT NULL,
+  is_active BOOLEAN DEFAULT FALSE NOT NULL
+);
+CREATE INDEX schedules_admin_id ON schedules (admin_id);
+CREATE INDEX schedules_created_at ON schedules (created_at);
+ALTER TABLE schedules ADD CONSTRAINT fk_schedules_admin_id FOREIGN KEY (admin_id) REFERENCES administrators (id);
+
 -- Assignments
 DROP TABLE assignments IF EXISTS;
 CREATE TABLE assignments (
   id  INTEGER IDENTITY PRIMARY KEY,
   emp_id  INTEGER NOT NULL,
   shift_id INTEGER NOT NULL,
-  day_id INTEGER NOT NULL
+  day_id INTEGER NOT NULL,
+  schedule_id INTEGER NOT NULL
 );
 ALTER TABLE assignments ADD CONSTRAINT fk_assignments_emp_id FOREIGN KEY (emp_id) REFERENCES employees (id);
 ALTER TABLE assignments ADD CONSTRAINT fk_assignments_shift_id FOREIGN KEY (shift_id) REFERENCES shifts (id);
+ALTER TABLE assignments ADD CONSTRAINT fk_assignments_schedule_id FOREIGN KEY (schedule_id) REFERENCES schedules (id);
 CREATE INDEX assignments_shift_id ON assignments (shift_id);
 CREATE INDEX assignments_emp_id ON assignments (emp_id);
+CREATE INDEX assignments_schedule_id ON assignments (schedule_id);
+CREATE UNIQUE INDEX assignments_emp_shift_day ON assignments (emp_id, shift_id, day_id, schedule_id);
