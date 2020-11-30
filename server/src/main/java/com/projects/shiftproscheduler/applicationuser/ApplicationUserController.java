@@ -25,9 +25,12 @@ public class ApplicationUserController {
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody ApplicationUser user) {
+    public void register(@RequestBody ApplicationUser user) throws Exception {
         if (employeeRepository.findByUserName(user.getUsername()) == null)
             throw new UsernameNotFoundException("Employee does not exist in system please contact your administrator");
+
+        if (applicationUserRepository.findByUsername(user.getUsername()) != null)
+            throw new Exception("Employee account already exists, please login");
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         applicationUserRepository.save(user);
