@@ -1,10 +1,12 @@
 package com.projects.shiftproscheduler.employee;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 class EmployeeController {
 
     private final EmployeeRepository employees;
@@ -13,7 +15,8 @@ class EmployeeController {
         this.employees = employeeService;
     }
 
-    @GetMapping("/employees")
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "/employees", method = RequestMethod.GET)
     public @ResponseBody Employees getEmployees() {
         Employees employees = new Employees();
         employees.getEmployeeList().addAll(this.employees.findAll());

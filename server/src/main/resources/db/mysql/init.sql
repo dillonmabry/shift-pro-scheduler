@@ -11,7 +11,6 @@ USE shiftproscheduler;
 
 CREATE TABLE IF NOT EXISTS departments (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  admin_id INT(4),
   dept_name VARCHAR(40) NOT NULL
 ) engine=InnoDB;
 
@@ -35,47 +34,83 @@ CREATE TABLE IF NOT EXISTS administrators (
   last_name VARCHAR(30) NOT NULL,
   email VARCHAR(40) NOT NULL,
   phone VARCHAR(30),
+  dept_id INT(4) UNSIGNED,
+  FOREIGN KEY (dept_id) REFERENCES departments(id),
   INDEX(last_name),
   INDEX(username)
 ) engine=InnoDB;
 
-CREATE TABLE IF NOT EXISTS application_user (
+CREATE TABLE IF NOT EXISTS application_users (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(30) NOT NULL,
   password VARCHAR(60) NOT NULL,
   INDEX(username)
 ) engine=InnoDB;
 
+CREATE TABLE IF NOT EXISTS roles (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  description VARCHAR(60) NOT NULL,
+  INDEX(name)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS user_roles (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT(4) UNSIGNED NOT NULL,
+  role_id INT(4) UNSIGNED NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES application_users(id),
+  FOREIGN KEY (role_id) REFERENCES roles(id),
+  UNIQUE(user_id, role_id)
+) engine=InnoDB;
+
 CREATE TABLE IF NOT EXISTS shifts (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  start_time DATETIME NOT NULL,
-  end_time DATETIME NOT NULL,
+  start_time TIME NOT NULL,
+  end_time TIME NOT NULL,
   INDEX(start_time),
   INDEX(end_time)
 ) engine=InnoDB;
 
-CREATE TABLE IF NOT EXISTS assignments (
-  emp_id INT(4) UNSIGNED NOT NULL,
-  shift_id INT(4) UNSIGNED NOT NULL,
-  FOREIGN KEY (emp_id) REFERENCES employees(id),
-  FOREIGN KEY (shift_id) REFERENCES shifts(id),
-  INDEX(shift_id),
-  INDEX(emp_id),
-  PRIMARY KEY (emp_id, shift_id)
+CREATE TABLE IF NOT EXISTS schedules (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  admin_id INT(4) UNSIGNED NOT NULL,
+  created_at DATE NOT NULL,
+  is_active BIT NOT NULL DEFAULT 0, 
+  INDEX(admin_id),
+  INDEX(created_at),
+  FOREIGN KEY (admin_id) REFERENCES administrators(id)
 ) engine=InnoDB;
 
-INSERT IGNORE INTO administrators VALUES (1, 'jdean', 'Jimmy', 'Dean', 'jdean@gmail.com', '704-923-2368');
-INSERT IGNORE INTO administrators VALUES (2, 'msusan', 'Margaret', 'Susan' , 'mlinda@gmail.com', '980-555-4392');
+CREATE TABLE IF NOT EXISTS assignments (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  emp_id INT(4) UNSIGNED NOT NULL,
+  shift_id INT(4) UNSIGNED NOT NULL,
+  day_id INT(4) UNSIGNED NOT NULL,
+  schedule_id INT(4) UNSIGNED NOT NULL,
+  FOREIGN KEY (emp_id) REFERENCES employees(id),
+  FOREIGN KEY (shift_id) REFERENCES shifts(id),
+  FOREIGN KEY (schedule_id) REFERENCES schedules(id),
+  UNIQUE(emp_id, shift_id, day_id, schedule_id)
+) engine=InnoDB;
 
-INSERT IGNORE INTO administrators VALUES (1, 'jdean', 'Jimmy', 'Dean', 'jdean@gmail.com', '704-923-2368');
-INSERT IGNORE INTO administrators VALUES (2, 'mlinda', 'Martha', 'Linda' , 'mlinda@gmail.com', '980-555-4392');
+INSERT IGNORE INTO departments VALUES (1, 'Retail');
 
-INSERT IGNORE INTO departments VALUES (1, 1, 'Retail');
+INSERT IGNORE INTO administrators VALUES (1, 'admin', 'Admin', 'Admin' , 'administrator@gmail.com', '000-000-0000', 1);
+INSERT IGNORE INTO administrators VALUES (2, 'jdean', 'Jimmy', 'Dean', 'jdean@gmail.com', '704-923-2368', 1);
+INSERT IGNORE INTO administrators VALUES (3, 'mlinda', 'Martha', 'Linda' , 'mlinda@gmail.com', '980-555-4392', 1);
+
+INSERT IGNORE INTO application_users VALUES (1, 'admin', '$2a$10$Y1ZMm7OQpEs5HmwEHc55oeWQa3u8XXFIF18Y5jlCdVi7r8b7iB0E2');
+
+INSERT IGNORE INTO roles VALUES (1, 'USER', 'application user');
+INSERT IGNORE INTO roles VALUES (2, 'ADMIN', 'application administrator');
+
+INSERT IGNORE INTO user_roles VALUES (1, 1, 2);
 
 INSERT IGNORE INTO employees VALUES (1, 'jcarter', 'James', 'Carter', 'jcarter@gmail.com', '704-923-4432', 1);
 INSERT IGNORE INTO employees VALUES (2, 'hleary', 'Helen', 'Leary' , 'hleary@gmail.com', '704-923-5092', 1);
+INSERT IGNORE INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail.com', '704-920-3315', 1);
+INSERT IGNORE INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1);
 
-INSERT IGNORE INTO shifts VALUES (1, '2020-1-10 05:00:00', '2020-1-10 08:00:00');
-INSERT IGNORE INTO shifts VALUES (2, '2020-1-10 05:00:00', '2020-1-10 08:00:00');
-
-INSERT IGNORE INTO assignments VALUES (1, 1);
+INSERT IGNORE INTO shifts VALUES (1, '08:00:00', '16:00:00');
+INSERT IGNORE INTO shifts VALUES (2, '16:00:00', '24:00:00');
+INSERT IGNORE INTO shifts VALUES (3, '24:00:00', '08:00:00');
