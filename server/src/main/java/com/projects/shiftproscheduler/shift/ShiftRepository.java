@@ -18,4 +18,11 @@ public interface ShiftRepository extends Repository<Shift, Integer> {
     @Cacheable("shifts")
     Collection<Shift> findAll() throws DataAccessException;
 
+    /**
+     * Find a {@link Shift} by id
+     * 
+     */
+    @Transactional(readOnly = true)
+    Shift findById(Integer id);
+
 }

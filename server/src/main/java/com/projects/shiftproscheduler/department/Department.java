@@ -15,9 +15,6 @@ public class Department {
     @NotNull
     private String name;
 
-    @Column(name = "admin_id")
-    private Integer adminId;
-
     public Integer getId() {
         return id;
     }
@@ -32,14 +29,6 @@ public class Department {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(Integer adminId) {
-        this.adminId = adminId;
     }
 
     public boolean isNew() {

@@ -1,11 +1,12 @@
 package com.projects.shiftproscheduler.employee;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.*;
 
+import com.projects.shiftproscheduler.assignment.Assignment;
 import com.projects.shiftproscheduler.department.Department;
-import com.projects.shiftproscheduler.shift.Shift;
 
 @Entity
 @Table(name = "employees")
@@ -15,9 +16,8 @@ public class Employee extends Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToMany
-    @JoinTable(name = "assignments", joinColumns = @JoinColumn(name = "emp_id"), inverseJoinColumns = @JoinColumn(name = "shift_id"))
-    Set<Shift> shifts;
+    @OneToMany(mappedBy = "employee")
+    private Set<Assignment> assignments = new HashSet<Assignment>();
 
     @ManyToOne
     @JoinColumn(name = "dept_id", nullable = false)
@@ -38,4 +38,5 @@ public class Employee extends Person {
     public boolean isNew() {
         return this.id == null;
     }
+
 }
