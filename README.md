@@ -2,21 +2,39 @@
 [![Build Status](https://travis-ci.org/dillonmabry/shift-pro-scheduler.svg?branch=master)](https://travis-ci.org/dillonmabry/shift-pro-scheduler)
 [![Coverage Status](https://coveralls.io/repos/github/dillonmabry/shift-pro-scheduler/badge.svg?branch=master)](https://coveralls.io/github/dillonmabry/shift-pro-scheduler?branch=master)
 
-Shift Pro is an automated shift scheduling system which can assist your business with correctly assigning employees work shifts throughout the day.
+Shift Pro is an open source, automated employee scheduler which can assist your business with correctly assigning employees work shifts throughout the day.
 
-## Install Instructions
+## Development Instructions
+
+### Server (Requires MariaDB, OpenJDK 11)
 ```
+cd server
 ./mvnw package
-java -jar target/*.jar
+java -Dspring.profiles.active=development -jar target/*.jar
+```
+
+### Client
+```
+cd client
+npm install
+npm run start
+```
+
+## Docker Instructions
+```
+docker-compose build
+docker-compose up
 ```
 
 ## To-Do
 - [X] Create initial repo with basic spring project setup, tests, and basic CI
-- [ ] Create entity relation models and basic schema setup
-- [ ] Create scheduling algorithm to schedule shifts based on preferences
-- [ ] Seed/setup database model
-- [ ] Create services/workflows for running scheduling algorithm, queue basis? micro-task framework?
-- [ ] Setup server services and APIs
-- [ ] Create basic login/authentication for app
+- [X] Create entity relation models and basic schema setup
+- [X] Create basic scheduling algorithm to schedule shifts based on preferences
+- [X] Seed/setup database model
+- [X] Create services/workflows for running scheduling algorithm, queue basis? micro-task framework?
+- [X] Setup server services and APIs
+- [X] Create basic login/authentication for app
+- [ ] Create login/profile area for app to view schedules
 - [ ] Create shift scheduling portal for app, for administrators
 - [ ] Future: Ability for employees to set shift preferences
+- [ ] Future: add email and SMS notifications for employees

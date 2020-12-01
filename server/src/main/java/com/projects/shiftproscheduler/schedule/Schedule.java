@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projects.shiftproscheduler.administrator.Administrator;
@@ -41,6 +42,9 @@ public class Schedule {
 
     @Column(name = "is_active")
     private boolean isActive;
+
+    @Transient
+    private Date endDate;
 
     public Integer getId() {
         return id;
@@ -84,9 +88,12 @@ public class Schedule {
 
     public Date getEndDate() {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(createdAt);
-        Assignment lastAssignment = Collections.max(assignments, Comparator.comparing(c -> c.getDayId()));
-        cal.add(Calendar.DAY_OF_MONTH, lastAssignment.getDayId() + 1);
+        cal.setTime(new Date());
+        if (assignments != null) {
+            Assignment lastAssignment = Collections.max(assignments, Comparator.comparing(c -> c.getDayId()));
+            cal.add(Calendar.DAY_OF_MONTH, lastAssignment.getDayId() + 1);
+            return cal.getTime();
+        }
         return cal.getTime();
     }
 }
