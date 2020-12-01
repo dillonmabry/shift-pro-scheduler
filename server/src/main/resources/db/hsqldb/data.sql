@@ -4,7 +4,12 @@ INSERT INTO administrators VALUES (1, 'admin', 'Admin', 'Admin' , 'administrator
 INSERT INTO administrators VALUES (2, 'jdean', 'Jimmy', 'Dean', 'jdean@gmail.com', '704-923-2368', 1);
 INSERT INTO administrators VALUES (3, 'mlinda', 'Martha', 'Linda' , 'mlinda@gmail.com', '980-555-4392', 1);
 
-INSERT INTO application_user VALUES (1, 'admin', '$2a$10$Y1ZMm7OQpEs5HmwEHc55oeWQa3u8XXFIF18Y5jlCdVi7r8b7iB0E2');
+INSERT INTO application_users VALUES (1, 'admin', '$2a$10$Y1ZMm7OQpEs5HmwEHc55oeWQa3u8XXFIF18Y5jlCdVi7r8b7iB0E2');
+
+INSERT INTO roles VALUES (1, 'USER', 'application user');
+INSERT INTO roles VALUES (2, 'ADMIN', 'application administrator');
+
+INSERT INTO user_roles VALUES (1, 1, 2);
 
 INSERT INTO employees VALUES (1, 'jcarter', 'James', 'Carter', 'jcarter@gmail.com', '704-923-4432', 1);
 INSERT INTO employees VALUES (2, 'hleary', 'Helen', 'Leary' , 'hleary@gmail.com', '704-923-5092', 1);

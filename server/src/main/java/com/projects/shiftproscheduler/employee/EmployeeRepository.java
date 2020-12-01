@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface EmployeeRepository extends Repository<Employee, Integer> {
 
@@ -31,13 +32,13 @@ public interface EmployeeRepository extends Repository<Employee, Integer> {
      * 
      */
     @Transactional(readOnly = true)
-    Employee findById(Integer id);
+    Optional<Employee> findById(Integer id);
 
     /**
      * Find a {@link Employee} by username
      * 
      */
     @Transactional(readOnly = true)
-    Employee findByUserName(@Param("username") String username);
+    Optional<Employee> findByUserName(@Param("username") String username);
 
 }

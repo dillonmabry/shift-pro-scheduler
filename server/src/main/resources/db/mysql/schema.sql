@@ -40,11 +40,27 @@ CREATE TABLE IF NOT EXISTS administrators (
   INDEX(username)
 ) engine=InnoDB;
 
-CREATE TABLE IF NOT EXISTS application_user (
+CREATE TABLE IF NOT EXISTS application_users (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(30) NOT NULL,
   password VARCHAR(60) NOT NULL,
   INDEX(username)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS roles (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  description VARCHAR(60) NOT NULL,
+  INDEX(name)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS user_roles (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT(4) UNSIGNED NOT NULL,
+  role_id INT(4) UNSIGNED NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES application_users(id),
+  FOREIGN KEY (role_id) REFERENCES roles(id),
+  UNIQUE(user_id, role_id)
 ) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS shifts (

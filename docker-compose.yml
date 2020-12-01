@@ -23,15 +23,17 @@ services:
     - "3306:3306"
     volumes:
     - ./server/src/main/resources/db/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-    restart: always
+    restart: unless-stopped
 
   shift_pro_server:
-    restart: always
+    restart: unless-stopped
     build:
       context: ./server
     volumes:
     - ./server:/server
     - ~/.m2:/root/.m2
+    environment:
+      SPRING_PROFILES_ACTIVE: production
     ports:
     - "8080:8080"
     depends_on:

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,11 +131,13 @@ public class WeeklyOptimizer implements IOptimizer {
         Collection<Assignment> assignments = new ArrayList<Assignment>();
 
         if (status == CpSolverStatus.FEASIBLE || status == CpSolverStatus.OPTIMAL) {
+            // TODO: Determine if random selection of feasible/optimal solutions used
             for (IntVar v : shiftVars.values().toArray(new IntVar[0])) { // Get first optimal solution
                 String[] varValues = v.getName().split("_"); // Get constraint var values
                 if (solver.value(v) == 1) {
                     // Get assignment values
-                    Employee emp = employeeRepository.findById(Integer.parseInt(varValues[1]));
+                    Optional<Employee> employeeUser = employeeRepository.findById(Integer.parseInt(varValues[1]));
+                    Employee emp = employeeUser.orElseThrow();
                     int dayId = Integer.parseInt(varValues[2]);
                     Shift shift = shiftRepository.findById(Integer.parseInt(varValues[3]));
 
