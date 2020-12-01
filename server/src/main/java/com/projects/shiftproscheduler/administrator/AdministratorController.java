@@ -13,6 +13,7 @@ import com.projects.shiftproscheduler.schedule.Schedule;
 import com.projects.shiftproscheduler.schedule.ScheduleRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
+@PreAuthorize("hasRole('ADMIN')")
 class AdministratorController {
 
     private final AdministratorRepository administrators;

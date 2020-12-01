@@ -1,6 +1,10 @@
 package com.projects.shiftproscheduler.schedule;
 
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,9 +13,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projects.shiftproscheduler.administrator.Administrator;
+import com.projects.shiftproscheduler.assignment.Assignment;
 
 @Entity
 @Table(name = "schedules")
@@ -24,6 +31,10 @@ public class Schedule {
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
     private Administrator administrator;
+
+    @OneToMany(mappedBy = "schedule")
+    @JsonIgnoreProperties("schedule")
+    private Set<Assignment> assignments;
 
     @Column(name = "created_at")
     private Date createdAt;
@@ -65,5 +76,17 @@ public class Schedule {
 
     public boolean isNew() {
         return this.id == null;
+    }
+
+    public Set<Assignment> getAssignments() {
+        return assignments;
+    }
+
+    public Date getEndDate() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(createdAt);
+        Assignment lastAssignment = Collections.max(assignments, Comparator.comparing(c -> c.getDayId()));
+        cal.add(Calendar.DAY_OF_MONTH, lastAssignment.getDayId() + 1);
+        return cal.getTime();
     }
 }

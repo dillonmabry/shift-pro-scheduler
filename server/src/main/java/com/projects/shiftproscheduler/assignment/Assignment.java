@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projects.shiftproscheduler.employee.Employee;
 import com.projects.shiftproscheduler.shift.Shift;
 import com.projects.shiftproscheduler.schedule.Schedule;
@@ -31,6 +32,7 @@ public class Assignment {
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
+    @JsonIgnoreProperties("assignments")
     private Schedule schedule;
 
     @Column(name = "day_id")

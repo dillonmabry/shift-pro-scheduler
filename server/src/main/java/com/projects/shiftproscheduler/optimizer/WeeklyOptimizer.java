@@ -130,6 +130,7 @@ public class WeeklyOptimizer implements IOptimizer {
         Collection<Assignment> assignments = new ArrayList<Assignment>();
 
         if (status == CpSolverStatus.FEASIBLE || status == CpSolverStatus.OPTIMAL) {
+            //TODO: Determine if random selection of feasible/optimal solutions should be used
             for (IntVar v : shiftVars.values().toArray(new IntVar[0])) { // Get first optimal solution
                 String[] varValues = v.getName().split("_"); // Get constraint var values
                 if (solver.value(v) == 1) {
