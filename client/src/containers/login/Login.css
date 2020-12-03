@@ -1,0 +1,16 @@
+#normal_login .login-form-forgot {
+    float: right;
+}
+#normal_login .ant-col-rtl .login-form-forgot {
+    float: left;
+}
+#normal_login .login-form-button {
+    width: 100%;
+}
+.ant-card {
+    width: 50%;
+    display: inline-block;
+}
+.ant-checkbox-wrapper {
+    float: left;
+}
