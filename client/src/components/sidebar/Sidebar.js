@@ -53,8 +53,8 @@ class SideMenu extends React.Component {
           mode="inline"
         >
           {(showAdmin || showUser) && (
-            <Menu.Item key="/schedule" icon={<CalendarOutlined />}>
-              <NavLink to="/schedule">
+            <Menu.Item key="/" icon={<CalendarOutlined />}>
+              <NavLink to="/">
                 <span>Schedule</span>
               </NavLink>
             </Menu.Item>

@@ -12,10 +12,10 @@ class Main extends React.Component {
     return (
       <BrowserRouter>
         <Switch>
-          <Route exact path="/employees" component={Employees} />
+          <PrivateRoute exact path="/" component={Schedule} />
+          <PrivateRoute exact path="/employees" component={Employees} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
-          <PrivateRoute exact path="/schedule" component={Schedule} />
           <Route component={NotFound} />
         </Switch>
       </BrowserRouter>

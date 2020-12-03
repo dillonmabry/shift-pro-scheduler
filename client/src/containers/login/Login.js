@@ -13,7 +13,7 @@ const Login = (props) => {
     AuthService.login(values.username, values.password)
         .then(() => {
           NotificationService.notify('success', 'Successfully logged in');
-          props.history.push('/schedule');
+          props.history.push('/');
         })
         .catch((err) => {
           if (err.response) {
