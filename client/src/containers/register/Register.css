@@ -1,0 +1,10 @@
+#register .register-form-button {
+    width: 100%;
+}
+.ant-card {
+    width: 50%;
+    display: inline-block;
+}
+.ant-checkbox-wrapper {
+    float: left;
+}
