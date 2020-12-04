@@ -19,6 +19,12 @@ cd client
 npm install
 npm run start
 ```
+#### Linting/Style
+```
+npm run lint
+npm run lint-fix
+npm run format
+```
 
 ## Docker Instructions
 ```
@@ -34,7 +40,8 @@ docker-compose up
 - [X] Create services/workflows for running scheduling algorithm, queue basis? micro-task framework?
 - [X] Setup server services and APIs
 - [X] Create basic login/authentication for app
-- [ ] Create login/profile area for app to view schedules
-- [ ] Create shift scheduling portal for app, for administrators
+- [ ] Create shift scheduling portal for app, for administrators and employees
+- [ ] Create profile area for employees/administrators
+- [ ] Create area to add new employees
 - [ ] Future: Ability for employees to set shift preferences
 - [ ] Future: add email and SMS notifications for employees

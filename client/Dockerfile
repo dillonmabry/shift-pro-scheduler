@@ -12,5 +12,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 # Copy static assets
 COPY --from=build-deps /app/build /usr/share/nginx/html
+# Update nginx config
+COPY nginx/default.conf /etc/nginx/conf.d
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
