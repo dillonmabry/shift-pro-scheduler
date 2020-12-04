@@ -36,3 +36,6 @@
     transform: rotate(360deg);
   }
 }
+
+/* Ant Design */
+@import '~antd/dist/antd.css';
