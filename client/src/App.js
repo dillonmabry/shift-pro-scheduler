@@ -1,6 +1,6 @@
-import React from 'react';
-import './App.css';
-import Main from './components/Router';
+import React from "react";
+import "./App.css";
+import Main from "./components/Router";
 
 function App() {
   return (

@@ -1,18 +1,18 @@
-import React from 'react';
-import './Sidebar.css';
-import {Layout, Menu} from 'antd';
+import React from "react";
+import "./Sidebar.css";
+import { Layout, Menu } from "antd";
 import {
   CalendarOutlined,
   LogoutOutlined,
   LoginOutlined,
   UserOutlined,
   UsergroupAddOutlined,
-} from '@ant-design/icons';
-import {NavLink, withRouter} from 'react-router-dom';
-import PropTypes from 'prop-types';
-import AuthService from '../../services/AuthService';
+} from "@ant-design/icons";
+import { NavLink, withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import AuthService from "../../services/AuthService";
 
-const {Sider} = Layout;
+const { Sider } = Layout;
 
 class SideMenu extends React.Component {
   state = {
@@ -20,7 +20,7 @@ class SideMenu extends React.Component {
   };
 
   onCollapse = (collapsed) => {
-    this.setState({collapsed}); // eslint-disable-line
+    this.setState({ collapsed }); // eslint-disable-line
   };
 
   onLogOut = () => {
@@ -30,25 +30,26 @@ class SideMenu extends React.Component {
   componentDidMount() {
     const user = AuthService.getCurrentUser();
     if (user) {
-      this.setState({ // eslint-disable-line
+      this.setState({
+        // eslint-disable-line
         currentUser: user,
         showAdmin: AuthService.getRoles(user.authorities).includes(
-            'ROLE_ADMIN',
+          "ROLE_ADMIN"
         ),
-        showUser: AuthService.getRoles(user.authorities).includes('ROLE_USER'),
+        showUser: AuthService.getRoles(user.authorities).includes("ROLE_USER"),
       });
     }
   }
 
   render() {
-    const {collapsed, currentUser, showAdmin, showUser} = this.state;
-    const {location} = this.props;
+    const { collapsed, currentUser, showAdmin, showUser } = this.state;
+    const { location } = this.props;
     return (
       <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
         <div className="logo" />
         <Menu
           theme="dark"
-          defaultSelectedKeys={['/']}
+          defaultSelectedKeys={["/"]}
           selectedKeys={[location.pathname]}
           mode="inline"
         >

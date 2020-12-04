@@ -17,6 +17,11 @@
 .ant-layout-content {
     background: #fff;
 }
+.ant-layout-footer {
+    height: 48px;
+    line-height: 48px;
+    padding: 0;
+}
 .logo {
     height: 32px;
     margin: 16px;

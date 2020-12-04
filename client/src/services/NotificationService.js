@@ -1,4 +1,4 @@
-import {notification} from 'antd';
+import { notification } from "antd";
 
 const notify = (type, message) => {
   notification[type]({

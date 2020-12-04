@@ -1,28 +1,28 @@
-import './Login.css';
-import Container from '../../components/container/Container';
-import React from 'react';
-import {Form, Input, Button, Checkbox, Card} from 'antd';
-import {UserOutlined, LockOutlined} from '@ant-design/icons';
-import NotificationService from '../../services/NotificationService';
-import {Link} from 'react-router-dom';
-import PropTypes from 'prop-types';
-import AuthService from '../../services/AuthService';
+import "./Login.css";
+import Container from "../../components/container/Container";
+import React from "react";
+import { Form, Input, Button, Checkbox, Card } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import NotificationService from "../../services/NotificationService";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import AuthService from "../../services/AuthService";
 
 const Login = (props) => {
   const onFinish = (values) => {
     AuthService.login(values.username, values.password)
-        .then(() => {
-          NotificationService.notify('success', 'Successfully logged in');
-          props.history.push('/');
-        })
-        .catch((err) => {
-          if (err.response) {
-            NotificationService.notify(
-                'error',
-                'Something went wrong with your login please try again',
-            );
-          }
-        });
+      .then(() => {
+        NotificationService.notify("success", "Successfully logged in");
+        props.history.push("/");
+      })
+      .catch((err) => {
+        if (err.response) {
+          NotificationService.notify(
+            "error",
+            "Something went wrong with your login please try again"
+          );
+        }
+      });
   };
 
   return (
@@ -42,7 +42,7 @@ const Login = (props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your Username!',
+                  message: "Please input your Username!",
                 },
               ]}
             >
@@ -56,7 +56,7 @@ const Login = (props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your Password!',
+                  message: "Please input your Password!",
                 },
               ]}
             >
