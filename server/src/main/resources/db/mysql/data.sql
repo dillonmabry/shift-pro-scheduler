@@ -17,5 +17,5 @@ INSERT IGNORE INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail
 INSERT IGNORE INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1);
 
 INSERT IGNORE INTO shifts VALUES (1, '08:00:00', '16:00:00');
-INSERT IGNORE INTO shifts VALUES (2, '16:00:00', '24:00:00');
+INSERT IGNORE INTO shifts VALUES (2, '16:00:00', '23:59:59');
 INSERT IGNORE INTO shifts VALUES (3, '24:00:00', '08:00:00');

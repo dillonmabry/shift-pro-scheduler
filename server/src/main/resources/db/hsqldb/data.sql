@@ -17,5 +17,5 @@ INSERT INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail.com', 
 INSERT INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1);
 
 INSERT INTO shifts VALUES (1, '00:08:00.000000', '00:16:00.000000');
-INSERT INTO shifts VALUES (2, '00:16:00.000000', '00:24:00.000000');
+INSERT INTO shifts VALUES (2, '00:16:00.000000', '00:23:59.999999');
 INSERT INTO shifts VALUES (3, '00:24:00.000000', '00:08:00.000000');
