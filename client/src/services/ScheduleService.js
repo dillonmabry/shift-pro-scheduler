@@ -1,10 +1,10 @@
-import axios from 'axios';
-import AuthService from './AuthService';
+import axios from "axios";
+import AuthService from "./AuthService";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const getSchedules = () => {
-  return axios.get(API_URL + '/schedules', {
+  return axios.get(API_URL + "/schedules", {
     headers: AuthService.authHeader(),
   });
 };

@@ -1,48 +1,41 @@
-import './Login.css';
-import Container from '../../components/container/Container';
-import React from 'react';
-import {Form, Input, Button, Checkbox, Card} from 'antd';
-import {UserOutlined, LockOutlined} from '@ant-design/icons';
-import NotificationService from '../../services/NotificationService';
-import {Link} from 'react-router-dom';
-import PropTypes from 'prop-types';
-import AuthService from '../../services/AuthService';
+import "./Login.css";
+import Container from "../../components/container/Container";
+import React from "react";
+import { Form, Input, Button, Card } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import NotificationService from "../../services/NotificationService";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import AuthService from "../../services/AuthService";
 
 const Login = (props) => {
   const onFinish = (values) => {
     AuthService.login(values.username, values.password)
-        .then(() => {
-          NotificationService.notify('success', 'Successfully logged in');
-          props.history.push('/');
-        })
-        .catch((err) => {
-          if (err.response) {
-            NotificationService.notify(
-                'error',
-                'Something went wrong with your login please try again',
-            );
-          }
-        });
+      .then(() => {
+        NotificationService.notify("success", "Successfully logged in");
+        props.history.push("/");
+      })
+      .catch((err) => {
+        if (err.response) {
+          NotificationService.notify(
+            "error",
+            "Something went wrong with your login please try again"
+          );
+        }
+      });
   };
 
   return (
     <Container
       content={
         <Card>
-          <Form
-            name="normal_login"
-            className="login-form"
-            initialValues={{
-              remember: true,
-            }}
-            onFinish={onFinish}
-          >
+          <Form name="normal_login" className="login-form" onFinish={onFinish}>
             <Form.Item
               name="username"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your Username!',
+                  message: "Please input your Username!",
                 },
               ]}
             >
@@ -56,7 +49,7 @@ const Login = (props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your Password!',
+                  message: "Please input your Password!",
                 },
               ]}
             >
@@ -67,14 +60,6 @@ const Login = (props) => {
               />
             </Form.Item>
             <Form.Item>
-              <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox>Remember me</Checkbox>
-              </Form.Item>
-
-              <Link to="/forgot-password">Forgot password</Link>
-            </Form.Item>
-
-            <Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
@@ -82,7 +67,8 @@ const Login = (props) => {
               >
                 Log in
               </Button>
-              Or <Link to="/register">register now</Link>
+              <Link to="/register">Register now</Link> Or{" "}
+              <Link to="/forgot-password">Forgot password</Link>
             </Form.Item>
           </Form>
         </Card>

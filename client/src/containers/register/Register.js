@@ -1,29 +1,29 @@
-import './Register.css';
-import React from 'react';
-import Container from '../../components/container/Container';
-import {Form, Input, Button, Card} from 'antd';
-import {UserOutlined, LockOutlined} from '@ant-design/icons';
-import NotificationService from '../../services/NotificationService';
-import PropTypes from 'prop-types';
-import AuthService from '../../services/AuthService';
+import "./Register.css";
+import React from "react";
+import Container from "../../components/container/Container";
+import { Form, Input, Button, Card } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import NotificationService from "../../services/NotificationService";
+import PropTypes from "prop-types";
+import AuthService from "../../services/AuthService";
 
 const Register = (props) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
     AuthService.register(values.username, values.password)
-        .then(() => {
-          NotificationService.notify('success', 'Successfully registered');
-          props.history.push('/');
-        })
-        .catch((err) => {
-          if (err.response) {
-            NotificationService.notify(
-                'error',
-                'Something went wrong with your registration please try again',
-            );
-          }
-        });
+      .then(() => {
+        NotificationService.notify("success", "Successfully registered");
+        props.history.push("/");
+      })
+      .catch((err) => {
+        if (err.response) {
+          NotificationService.notify(
+            "error",
+            "Something went wrong with your registration please try again"
+          );
+        }
+      });
   };
 
   return (
@@ -42,7 +42,7 @@ const Register = (props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your desired User Name!',
+                  message: "Please input your desired User Name!",
                 },
               ]}
             >
@@ -57,7 +57,7 @@ const Register = (props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your password!',
+                  message: "Please input your password!",
                 },
               ]}
               hasFeedback
@@ -71,20 +71,22 @@ const Register = (props) => {
 
             <Form.Item
               name="confirm"
-              dependencies={['password']}
+              dependencies={["password"]}
               hasFeedback
               rules={[
                 {
                   required: true,
-                  message: 'Please confirm your password!',
+                  message: "Please confirm your password!",
                 },
-                ({getFieldValue}) => ({
+                ({ getFieldValue }) => ({
                   validator(rule, value) {
-                    if (!value || getFieldValue('password') === value) {
+                    if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject( // eslint-disable-line
-                        'The two passwords that you entered do not match!',
+                    return Promise.reject(
+                      new Error(
+                        "The two passwords that you entered do not match!"
+                      )
                     );
                   },
                 }),

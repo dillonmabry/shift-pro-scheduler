@@ -5,22 +5,6 @@ CREATE TABLE departments (
   dept_name  VARCHAR(40)
 );
 
--- Employees
-DROP TABLE employees IF EXISTS;
-CREATE TABLE employees (
-  id         INTEGER IDENTITY PRIMARY KEY,
-  username VARCHAR(40),
-  first_name VARCHAR(30),
-  last_name  VARCHAR(30),
-  email VARCHAR(40),
-  phone VARCHAR(30),
-  dept_id INTEGER
-);
-CREATE INDEX employees_dept_id ON employees (dept_id);
-CREATE INDEX employees_last_name ON employees (last_name);
-CREATE INDEX employees_username ON employees (username);
-ALTER TABLE employees ADD CONSTRAINT fk_employees_dept_id FOREIGN KEY (dept_id) REFERENCES departments (id);
-
 -- Administrators
 DROP TABLE administrators IF EXISTS;
 CREATE TABLE administrators (
@@ -36,6 +20,24 @@ CREATE INDEX administrators_dept_id ON administrators (dept_id);
 CREATE INDEX administrators_username ON administrators (username);
 CREATE INDEX administrators_last_name ON administrators (last_name);
 ALTER TABLE administrators ADD CONSTRAINT fk_administrators_dept_id FOREIGN KEY (dept_id) REFERENCES departments (id);
+
+-- Employees
+DROP TABLE employees IF EXISTS;
+CREATE TABLE employees (
+  id         INTEGER IDENTITY PRIMARY KEY,
+  username VARCHAR(40),
+  first_name VARCHAR(30),
+  last_name  VARCHAR(30),
+  email VARCHAR(40),
+  phone VARCHAR(30),
+  dept_id INTEGER,
+  supervisor_id INTEGER
+);
+CREATE INDEX employees_dept_id ON employees (dept_id);
+CREATE INDEX employees_last_name ON employees (last_name);
+CREATE INDEX employees_username ON employees (username);
+ALTER TABLE employees ADD CONSTRAINT fk_employees_dept_id FOREIGN KEY (dept_id) REFERENCES departments (id);
+ALTER TABLE employees ADD CONSTRAINT fk_employees_supervisor_id FOREIGN KEY (supervisor_id) REFERENCES administrators (id);
 
 -- App users
 DROP TABLE application_users IF EXISTS
