@@ -1,6 +1,6 @@
 import React from "react";
 import "./Sidebar.css";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Avatar } from "antd";
 import {
   CalendarOutlined,
   LogoutOutlined,
@@ -14,9 +14,31 @@ import AuthService from "../../services/AuthService";
 
 const { Sider } = Layout;
 
+const displayAvatar = (user, collapsed) => {
+  if (collapsed) {
+    return user && user.username ? (
+      <Avatar style={{ color: "#fff", backgroundColor: "#f56a00" }} size={32}>
+        {user.username[0].toUpperCase()}
+      </Avatar>
+    ) : (
+      <Avatar icon={<UserOutlined />} size={32} />
+    );
+  }
+  return user && user.username ? (
+    <Avatar style={{ color: "#fff", backgroundColor: "#f56a00" }} size={50}>
+      {user.username.toUpperCase()}
+    </Avatar>
+  ) : (
+    <Avatar icon={<UserOutlined />} size={50} />
+  );
+};
+
 class SideMenu extends React.Component {
   state = {
-    collapsed: false,
+    collapsed: true,
+    currentUser: null,
+    showAdmin: false,
+    showUser: false,
   };
 
   onCollapse = (collapsed) => {
@@ -29,7 +51,7 @@ class SideMenu extends React.Component {
 
   componentDidMount() {
     const user = AuthService.getCurrentUser();
-    if (user) {
+    if (AuthService.isAuthenticated() && user) {
       this.setState({
         // eslint-disable-line
         currentUser: user,
@@ -46,7 +68,9 @@ class SideMenu extends React.Component {
     const { location } = this.props;
     return (
       <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
-        <div className="logo" />
+        <div className="logo">
+          {displayAvatar(currentUser, this.state.collapsed)}
+        </div>
         <Menu
           theme="dark"
           defaultSelectedKeys={["/"]}
@@ -67,7 +91,7 @@ class SideMenu extends React.Component {
               </NavLink>
             </Menu.Item>
           )}
-          {(showAdmin || showUser) && (
+          {currentUser && (
             <Menu.Item key="/profile" icon={<UserOutlined />}>
               <NavLink to="/profile">
                 <span>Profile</span>

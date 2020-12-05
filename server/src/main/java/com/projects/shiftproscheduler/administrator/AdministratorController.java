@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import com.projects.shiftproscheduler.assignment.Assignment;
 import com.projects.shiftproscheduler.assignment.AssignmentRepository;
 import com.projects.shiftproscheduler.assignment.Assignments;
@@ -47,13 +49,18 @@ class AdministratorController {
         return administrators;
     }
 
+    @GetMapping("/administrator/{username}")
+    public @ResponseBody Administrator getAdministrator(@PathVariable(value = "username", required = true) String username) {
+        return this.administrators.findByUserName(username).orElseThrow(() -> new EntityNotFoundException());
+    }
+
     @PostMapping("/administrators/schedule/{period}")
     @Transactional
     public @ResponseBody Assignments postScheduledAssignments(
             @PathVariable(value = "period", required = true) String period) {
 
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Administrator administrator = administrators.findByUserName(username);
+        Administrator administrator = administrators.findByUserName(username).orElseThrow(() -> new EntityNotFoundException());
 
         Schedule schedule = new Schedule();
         schedule.setAdministrator(administrator);

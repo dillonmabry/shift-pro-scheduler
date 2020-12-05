@@ -1,7 +1,7 @@
 import "./Login.css";
 import Container from "../../components/container/Container";
 import React from "react";
-import { Form, Input, Button, Checkbox, Card } from "antd";
+import { Form, Input, Button, Card } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import NotificationService from "../../services/NotificationService";
 import { Link } from "react-router-dom";
@@ -29,14 +29,7 @@ const Login = (props) => {
     <Container
       content={
         <Card>
-          <Form
-            name="normal_login"
-            className="login-form"
-            initialValues={{
-              remember: true,
-            }}
-            onFinish={onFinish}
-          >
+          <Form name="normal_login" className="login-form" onFinish={onFinish}>
             <Form.Item
               name="username"
               rules={[
@@ -67,14 +60,6 @@ const Login = (props) => {
               />
             </Form.Item>
             <Form.Item>
-              <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox>Remember me</Checkbox>
-              </Form.Item>
-
-              <Link to="/forgot-password">Forgot password</Link>
-            </Form.Item>
-
-            <Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
@@ -82,7 +67,8 @@ const Login = (props) => {
               >
                 Log in
               </Button>
-              Or <Link to="/register">register now</Link>
+              <Link to="/register">Register now</Link> Or{" "}
+              <Link to="/forgot-password">Forgot password</Link>
             </Form.Item>
           </Form>
         </Card>
