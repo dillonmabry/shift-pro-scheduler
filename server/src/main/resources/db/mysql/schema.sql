@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS departments (
   dept_name VARCHAR(40) NOT NULL
 ) engine=InnoDB;
 
-CREATE TABLE IF NOT EXISTS employees (
+CREATE TABLE IF NOT EXISTS administrators (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(40) NOT NULL,
   first_name VARCHAR(30) NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS employees (
   INDEX(username)
 ) engine=InnoDB;
 
-CREATE TABLE IF NOT EXISTS administrators (
+CREATE TABLE IF NOT EXISTS employees (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(40) NOT NULL,
   first_name VARCHAR(30) NOT NULL,
@@ -35,7 +35,9 @@ CREATE TABLE IF NOT EXISTS administrators (
   email VARCHAR(40) NOT NULL,
   phone VARCHAR(30),
   dept_id INT(4) UNSIGNED,
+  supervisor_id INT(4) UNSIGNED,
   FOREIGN KEY (dept_id) REFERENCES departments(id),
+  FOREIGN KEY (supervisor_id) REFERENCES administrators(id),
   INDEX(last_name),
   INDEX(username)
 ) engine=InnoDB;

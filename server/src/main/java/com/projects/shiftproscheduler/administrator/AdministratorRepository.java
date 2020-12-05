@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface AdministratorRepository extends Repository<Administrator, Integer> {
 
@@ -24,6 +25,6 @@ public interface AdministratorRepository extends Repository<Administrator, Integ
      * 
      */
     @Transactional(readOnly = true)
-    Administrator findByUserName(@Param("username") String username);
+    Optional<Administrator> findByUserName(@Param("username") String username);
 
 }

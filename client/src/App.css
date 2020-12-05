@@ -39,3 +39,6 @@
 
 /* Ant Design */
 @import '~antd/dist/antd.css';
+
+/* React Big Calendar */
+@import 'react-big-calendar/lib/css/react-big-calendar.css';
