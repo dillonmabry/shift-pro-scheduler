@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 
+import com.projects.shiftproscheduler.administrator.Administrator;
+
 public interface EmployeeRepository extends Repository<Employee, Integer> {
 
     /**
@@ -40,5 +42,12 @@ public interface EmployeeRepository extends Repository<Employee, Integer> {
      */
     @Transactional(readOnly = true)
     Optional<Employee> findByUserName(@Param("username") String username);
+
+    /**
+     * Find {@link Employee}s by supervisor username
+     * 
+     */
+    @Transactional(readOnly = true)
+    Collection<Employee> findBySupervisor(Administrator supervisor);
 
 }

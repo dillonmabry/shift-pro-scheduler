@@ -11,13 +11,25 @@ import {
 import { NavLink, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AuthService from "../../services/AuthService";
+import Generation from "../../utilities/Generation";
+import Colors from "../../constants/Colors";
 
 const { Sider } = Layout;
 
 const displayAvatar = (user, collapsed) => {
   if (collapsed) {
     return user && user.username ? (
-      <Avatar style={{ color: "#fff", backgroundColor: "#f56a00" }} size={32}>
+      <Avatar
+        style={{
+          color: "#fff",
+          backgroundColor:
+            Colors.avatarColors[
+              Generation.numberFromText(user.username[0]) %
+                Colors.avatarColors.length
+            ],
+        }}
+        size={32}
+      >
         {user.username[0].toUpperCase()}
       </Avatar>
     ) : (
@@ -25,7 +37,17 @@ const displayAvatar = (user, collapsed) => {
     );
   }
   return user && user.username ? (
-    <Avatar style={{ color: "#fff", backgroundColor: "#f56a00" }} size={50}>
+    <Avatar
+      style={{
+        color: "#fff",
+        backgroundColor:
+          Colors.avatarColors[
+            Generation.numberFromText(user.username[0]) %
+              Colors.avatarColors.length
+          ],
+      }}
+      size={50}
+    >
       {user.username.toUpperCase()}
     </Avatar>
   ) : (

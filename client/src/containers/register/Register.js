@@ -42,12 +42,12 @@ const Register = (props) => {
               rules={[
                 {
                   required: true,
-                  message: "Please input your desired User Name!",
+                  message: "Please input your desired Username!",
                 },
               ]}
             >
               <Input
-                placeholder="Enter registration User Name"
+                placeholder="Enter registration Username"
                 prefix={<UserOutlined className="site-form-item-icon" />}
               />
             </Form.Item>
