@@ -9,6 +9,12 @@ const getEmployees = () => {
   });
 };
 
+const getEmployeesBySupervisor = (supervisor) => {
+  return axios.get(API_URL + `/employees/${supervisor}`, {
+    headers: AuthService.authHeader(),
+  });
+};
+
 const getEmployee = (username) => {
   return axios.get(API_URL + `/employee/${username}`, {
     headers: AuthService.authHeader(),
@@ -18,6 +24,7 @@ const getEmployee = (username) => {
 const EmployeeService = {
   getEmployees,
   getEmployee,
+  getEmployeesBySupervisor,
 };
 
 export default EmployeeService;
