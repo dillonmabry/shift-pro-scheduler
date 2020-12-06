@@ -2,6 +2,8 @@ package com.projects.shiftproscheduler.employee;
 
 import javax.persistence.EntityNotFoundException;
 
+import com.projects.shiftproscheduler.administrator.Administrator;
+import com.projects.shiftproscheduler.administrator.AdministratorRepository;
 import com.projects.shiftproscheduler.security.JWTUtil;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -18,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 class EmployeeController {
 
     private final EmployeeRepository employees;
+    private final AdministratorRepository administrators;
 
-    public EmployeeController(EmployeeRepository employeeService) {
-        this.employees = employeeService;
+    public EmployeeController(EmployeeRepository employees, AdministratorRepository administrators) {
+        this.employees = employees;
+        this.administrators = administrators;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -28,6 +32,16 @@ class EmployeeController {
     public @ResponseBody Employees getEmployees() {
         Employees employees = new Employees();
         employees.getEmployeeList().addAll(this.employees.findAll());
+        return employees;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "/employees/{supervisor}", method = RequestMethod.GET)
+    public @ResponseBody Employees getEmployeesBySupervisor(@PathVariable(value = "supervisor", required = true) String supervisor) {
+        Employees employees = new Employees();
+        employees.getEmployeeList().addAll(
+            this.employees.findBySupervisor(administrators.findByUserName(supervisor).orElseThrow())
+        );
         return employees;
     }
 

@@ -1,6 +1,7 @@
 import Container from "../../components/container/Container";
 import React, { Component } from "react";
 import "./Schedule.css";
+import { Spin, Empty } from "antd";
 import ScheduleService from "../../services/ScheduleService";
 import BigCalendar from "../../components/calendar/BigCalendar";
 import TabsCard from "../../components/tabs/TabsCard";
@@ -90,6 +91,7 @@ export default class Schedule extends Component {
       <Container
         content={
           <div>
+            {this.state.loading && <Spin />}
             {!this.state.loading && (
               <div>
                 {this.state.tabList.length > 0 ? (
@@ -99,7 +101,7 @@ export default class Schedule extends Component {
                     contentList={this.state.contentList}
                   />
                 ) : (
-                  <div>No Schedules</div>
+                  <Empty />
                 )}
               </div>
             )}
