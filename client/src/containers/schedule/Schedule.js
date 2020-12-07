@@ -1,7 +1,7 @@
 import Container from "../../components/container/Container";
 import React, { Component } from "react";
 import "./Schedule.css";
-import { Spin, Empty } from "antd";
+import { Spin, Empty, Tag } from "antd";
 import ScheduleService from "../../services/ScheduleService";
 import BigCalendar from "../../components/calendar/BigCalendar";
 import TabsCard from "../../components/tabs/TabsCard";
@@ -14,6 +14,22 @@ import format from "date-fns/format";
 const formatScheduleKey = (start, end, style) => {
   return `${format(parseISO(start), style)} - ${format(parseISO(end), style)}`;
 };
+
+const formatScheduleContent = (schedule, assignments) => {
+  return (
+    <div>
+      <div>
+        {schedule.isActive ? (
+          <Tag color="green">Active</Tag>
+        ) : (
+          <Tag color="red">Inactive</Tag>
+        )}
+      </div>
+      <BigCalendar events={assignments} />
+    </div>
+  );
+};
+
 export default class Schedule extends Component {
   constructor(props) {
     super(props);
@@ -56,7 +72,10 @@ export default class Schedule extends Component {
                   ),
                 });
               });
-              _schedules[schedule.id] = <BigCalendar events={_assignments} />;
+              _schedules[schedule.id] = formatScheduleContent(
+                schedule,
+                _assignments
+              );
             });
 
             this.setState({

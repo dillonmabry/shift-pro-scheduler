@@ -43,6 +43,9 @@ public class Schedule {
     @Column(name = "is_active")
     private boolean isActive;
 
+    @Column(name = "days")
+    private Integer days;
+
     @Transient
     private Date endDate;
 
@@ -78,6 +81,14 @@ public class Schedule {
         this.isActive = isActive;
     }
 
+    public Integer getDays() {
+        return days;
+    }
+
+    public void setDays(Integer days) {
+        this.days = days;
+    }
+
     public boolean isNew() {
         return this.id == null;
     }
@@ -89,11 +100,7 @@ public class Schedule {
     public Date getEndDate() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        if (assignments != null) {
-            Assignment lastAssignment = Collections.max(assignments, Comparator.comparing(c -> c.getDayId()));
-            cal.add(Calendar.DAY_OF_MONTH, lastAssignment.getDayId() + 1);
-            return cal.getTime();
-        }
+        cal.add(Calendar.DAY_OF_MONTH, days);
         return cal.getTime();
     }
 }

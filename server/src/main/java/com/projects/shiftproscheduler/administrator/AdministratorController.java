@@ -10,7 +10,7 @@ import javax.persistence.EntityNotFoundException;
 import com.projects.shiftproscheduler.assignment.Assignment;
 import com.projects.shiftproscheduler.assignment.AssignmentRepository;
 import com.projects.shiftproscheduler.assignment.Assignments;
-import com.projects.shiftproscheduler.optimizer.WeeklyOptimizer;
+import com.projects.shiftproscheduler.optimizer.DefaultOptimizer;
 import com.projects.shiftproscheduler.schedule.Schedule;
 import com.projects.shiftproscheduler.schedule.ScheduleRepository;
 
@@ -33,7 +33,7 @@ class AdministratorController {
     private final AssignmentRepository assignments;
 
     @Autowired
-    public WeeklyOptimizer weeklyOptimizer;
+    public DefaultOptimizer defaultOptimizer;
 
     public AdministratorController(AdministratorRepository administrators, ScheduleRepository schedules,
             AssignmentRepository assignments) {
@@ -54,10 +54,10 @@ class AdministratorController {
         return this.administrators.findByUserName(username).orElseThrow(() -> new EntityNotFoundException());
     }
 
-    @PostMapping("/administrators/schedule/{period}")
+    @PostMapping("/administrators/schedule/{days}")
     @Transactional
     public @ResponseBody Assignments postScheduledAssignments(
-            @PathVariable(value = "period", required = true) String period) {
+            @PathVariable(value = "days", required = true) Integer days) {
 
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Administrator administrator = administrators.findByUserName(username).orElseThrow(() -> new EntityNotFoundException());
@@ -65,17 +65,11 @@ class AdministratorController {
         Schedule schedule = new Schedule();
         schedule.setAdministrator(administrator);
         schedule.setCreatedAt(new Date());
+        schedule.setDays(days);
         schedules.save(schedule);
 
         List<Assignment> scheduledAssignments = new ArrayList<Assignment>();
-        switch (period) {
-            case "weekly":
-                scheduledAssignments.addAll(weeklyOptimizer.generateSchedule(schedule));
-                break;
-            // TODO: Add Monthly Optimizer
-            default:
-                throw new InvalidParameterException();
-        }
+        scheduledAssignments.addAll(defaultOptimizer.generateSchedule(schedule));
         assignments.saveAll(scheduledAssignments);
 
         Assignments assignments = new Assignments();

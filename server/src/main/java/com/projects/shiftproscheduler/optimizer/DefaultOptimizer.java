@@ -30,7 +30,7 @@ import com.projects.shiftproscheduler.shift.Shift;
 import com.projects.shiftproscheduler.shift.ShiftRepository;
 
 @Service
-public class WeeklyOptimizer implements IOptimizer {
+public class DefaultOptimizer implements IOptimizer {
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -41,11 +41,11 @@ public class WeeklyOptimizer implements IOptimizer {
     @Autowired
     AssignmentRepository assignmentRepository;
 
-    Logger logger = LoggerFactory.getLogger(WeeklyOptimizer.class);
+    Logger logger = LoggerFactory.getLogger(DefaultOptimizer.class);
 
     private final DefaultConstraintService constraintService;
 
-    public WeeklyOptimizer(DefaultConstraintService constraintService) {
+    public DefaultOptimizer(DefaultConstraintService constraintService) {
         OrToolsHelper.loadLibrary(); // Load Google OR Tools per maven spec
         this.constraintService = constraintService;
     }
@@ -61,7 +61,7 @@ public class WeeklyOptimizer implements IOptimizer {
         // shift_e_d_s: employee 'e' works shift 's' on day 'd'
         HashMap<String, IntVar> shiftVars = new HashMap<String, IntVar>();
         for (Employee employee : employees) {
-            for (int d = 0; d < constraintService.getNumberOfDays(); d++) {
+            for (int d = 0; d < schedule.getDays(); d++) {
                 for (Shift shift : shifts) {
                     shiftVars.put(String.format("%d, %d, %d", employee.getId(), d, shift.getId()),
                             model.newBoolVar(String.format("shift_%d_%d_%d", employee.getId(), d, shift.getId())));
@@ -70,7 +70,7 @@ public class WeeklyOptimizer implements IOptimizer {
         }
 
         // Each shift assigned exactly MIN_EMPLOYEES per period
-        for (int d = 0; d < constraintService.getNumberOfDays(); d++) {
+        for (int d = 0; d < schedule.getDays(); d++) {
             for (Shift shift : shifts) {
                 ArrayList<IntVar> localVars = new ArrayList<IntVar>();
                 for (Employee employee : employees) {
@@ -86,7 +86,7 @@ public class WeeklyOptimizer implements IOptimizer {
 
         // Each employee works at most MAX_SHIFTS per day
         for (Employee employee : employees) {
-            for (int d = 0; d < constraintService.getNumberOfDays(); d++) {
+            for (int d = 0; d < schedule.getDays(); d++) {
                 ArrayList<IntVar> localVars = new ArrayList<IntVar>();
                 for (Shift shift : shifts) {
                     IntVar shiftVar = shiftVars
@@ -100,18 +100,18 @@ public class WeeklyOptimizer implements IOptimizer {
         }
 
         // Distribute shifts evenly by default if possible
-        int minShiftsPerEmployee = Math.floorDiv((shifts.size() * constraintService.getNumberOfDays()),
+        int minShiftsPerEmployee = Math.floorDiv((shifts.size() * schedule.getDays()),
                 employees.size());
         int maxShiftsPerEmployee = 0;
 
-        if (shifts.size() * constraintService.getNumberOfDays() % employees.size() == 0) {
+        if (shifts.size() * schedule.getDays() % employees.size() == 0) {
             maxShiftsPerEmployee = minShiftsPerEmployee;
         } else {
             maxShiftsPerEmployee = minShiftsPerEmployee + 1;
         }
         for (Employee employee : employees) {
             ArrayList<IntVar> localVars = new ArrayList<IntVar>();
-            for (int d = 0; d < constraintService.getNumberOfDays(); d++) {
+            for (int d = 0; d < schedule.getDays(); d++) {
                 for (Shift shift : shifts) {
                     IntVar shiftVar = shiftVars.get(String.format("%d, %d, %d", employee.getId(), d, shift.getId()));
                     if (shiftVar != null)
