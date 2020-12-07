@@ -21,6 +21,13 @@ public interface AdministratorRepository extends Repository<Administrator, Integ
     Collection<Administrator> findAll() throws DataAccessException;
 
     /**
+     * Save a {@link Administrator} to the data store, either inserting or updating
+     * 
+     * @param administrator the {@link Administrator} tp save
+     */
+    void save(Administrator administrator);
+
+    /**
      * Find a {@link Administrator} by username
      * 
      */

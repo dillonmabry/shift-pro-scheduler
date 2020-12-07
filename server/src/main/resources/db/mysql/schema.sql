@@ -77,7 +77,8 @@ CREATE TABLE IF NOT EXISTS schedules (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   admin_id INT(4) UNSIGNED NOT NULL,
   created_at DATE NOT NULL,
-  is_active BIT NOT NULL DEFAULT 0, 
+  is_active BIT NOT NULL DEFAULT 0,
+  days INT(4) NOT NULL DEFAULT 7,
   INDEX(admin_id),
   INDEX(created_at),
   FOREIGN KEY (admin_id) REFERENCES administrators(id)

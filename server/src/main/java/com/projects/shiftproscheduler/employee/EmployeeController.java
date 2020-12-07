@@ -2,7 +2,6 @@ package com.projects.shiftproscheduler.employee;
 
 import javax.persistence.EntityNotFoundException;
 
-import com.projects.shiftproscheduler.administrator.Administrator;
 import com.projects.shiftproscheduler.administrator.AdministratorRepository;
 import com.projects.shiftproscheduler.security.JWTUtil;
 
