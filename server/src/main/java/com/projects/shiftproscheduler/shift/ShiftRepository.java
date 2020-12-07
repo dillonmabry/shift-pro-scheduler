@@ -25,4 +25,11 @@ public interface ShiftRepository extends Repository<Shift, Integer> {
     @Transactional(readOnly = true)
     Shift findById(Integer id);
 
+    /**
+     * Save a {@link Shift} to the data store, either inserting or updating
+     * 
+     * @param shift the {@link Shift} tp save
+     */
+    void save(Shift shift);
+
 }
