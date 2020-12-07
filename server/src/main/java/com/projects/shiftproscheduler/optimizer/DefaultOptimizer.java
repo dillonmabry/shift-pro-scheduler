@@ -4,7 +4,6 @@ import com.skaggsm.ortools.OrToolsHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +49,6 @@ public class DefaultOptimizer implements IOptimizer {
         this.constraintService = constraintService;
     }
 
-    @Transactional
     public Collection<Assignment> generateSchedule(Schedule schedule) throws IllegalStateException {
 
         CpModel model = new CpModel(); // Init model
