@@ -76,9 +76,10 @@ CREATE TABLE IF NOT EXISTS shifts (
 CREATE TABLE IF NOT EXISTS schedules (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   admin_id INT(4) UNSIGNED NOT NULL,
-  created_at DATE NOT NULL,
-  is_active BIT NOT NULL DEFAULT 0,
-  days INT(4) NOT NULL DEFAULT 7,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  is_active BOOLEAN NOT NULL DEFAULT 0,
   INDEX(admin_id),
   INDEX(created_at),
   FOREIGN KEY (admin_id) REFERENCES administrators(id)

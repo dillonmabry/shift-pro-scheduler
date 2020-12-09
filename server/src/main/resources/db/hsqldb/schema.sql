@@ -84,9 +84,10 @@ DROP TABLE schedules IF EXISTS;
 CREATE TABLE schedules (
   id INTEGER IDENTITY PRIMARY KEY,
   admin_id INTEGER NOT NULL,
-  created_at DATE NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   is_active BOOLEAN DEFAULT FALSE NOT NULL,
-  days INTEGER DEFAULT 7 NOT NULL
 );
 CREATE INDEX schedules_admin_id ON schedules (admin_id);
 CREATE INDEX schedules_created_at ON schedules (created_at);

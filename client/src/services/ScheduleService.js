@@ -15,8 +15,34 @@ const getSchedule = (id) => {
   });
 };
 
+const deleteSchedule = (id) => {
+  return axios.delete(API_URL + `/schedule/${id}`, {
+    headers: AuthService.authHeader(),
+  });
+};
+
+const activateSchedule = (id) => {
+  return axios.post(API_URL + `/schedule/${id}`, null, {
+    headers: AuthService.authHeader(),
+  });
+};
+
+const postSchedules = (startDate, endDate, numSchedules) => {
+  return axios.post(API_URL + `/administrators/schedules`, null, {
+    headers: AuthService.authHeader(),
+    params: {
+      startDate,
+      endDate,
+      numSchedules,
+    },
+  });
+};
+
 const ScheduleService = {
   getSchedules,
   getSchedule,
+  postSchedules,
+  deleteSchedule,
+  activateSchedule,
 };
 export default ScheduleService;
