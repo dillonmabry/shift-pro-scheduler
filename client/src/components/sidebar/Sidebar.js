@@ -90,9 +90,7 @@ class SideMenu extends React.Component {
     const { location } = this.props;
     return (
       <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
-        <div className="logo">
-          {displayAvatar(currentUser, this.state.collapsed)}
-        </div>
+        <div className="logo">{displayAvatar(currentUser, collapsed)}</div>
         <Menu
           theme="dark"
           defaultSelectedKeys={["/"]}

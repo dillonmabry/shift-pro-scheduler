@@ -1,9 +1,11 @@
 package com.projects.shiftproscheduler.schedule;
 
-import java.util.Calendar;
+import java.sql.Timestamp;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projects.shiftproscheduler.administrator.Administrator;
 import com.projects.shiftproscheduler.assignment.Assignment;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Entity
 @Table(name = "schedules")
 public class Schedule {
@@ -31,21 +35,25 @@ public class Schedule {
     @JoinColumn(name = "admin_id", nullable = false)
     private Administrator administrator;
 
-    @OneToMany(mappedBy = "schedule")
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("schedule")
     private Set<Assignment> assignments;
 
-    @Column(name = "created_at")
-    private Date createdAt;
+    @Column(name = "start_date")
+    private Date startDate;
+
+    @Column(name = "end_date")
+    private Date endDate;
+
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
+    private Timestamp createdAt;
 
     @Column(name = "is_active")
     private boolean isActive;
 
-    @Column(name = "days")
-    private Integer days;
-
     @Transient
-    private Date endDate;
+    private Integer days;
 
     public Integer getId() {
         return id;
@@ -67,24 +75,12 @@ public class Schedule {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public boolean getIsActive() {
         return isActive;
     }
 
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
-    }
-
-    public Integer getDays() {
-        return days;
-    }
-
-    public void setDays(Integer days) {
-        this.days = days;
     }
 
     public boolean isNew() {
@@ -95,10 +91,24 @@ public class Schedule {
         return assignments;
     }
 
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
     public Date getEndDate() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_MONTH, days);
-        return cal.getTime();
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public Integer getDays() {
+        long days = ChronoUnit.DAYS.between(startDate.toInstant(), endDate.toInstant());
+        return (int) days;
     }
 }
