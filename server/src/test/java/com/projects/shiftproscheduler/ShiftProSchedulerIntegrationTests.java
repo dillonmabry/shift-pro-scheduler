@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
@@ -22,6 +23,7 @@ import com.projects.shiftproscheduler.employee.EmployeeRepository;
 import com.projects.shiftproscheduler.optimizer.DefaultOptimizer;
 import com.projects.shiftproscheduler.schedule.Schedule;
 import com.projects.shiftproscheduler.schedule.ScheduleRepository;
+import com.projects.shiftproscheduler.schedule.Schedules;
 import com.projects.shiftproscheduler.shift.Shift;
 import com.projects.shiftproscheduler.shift.ShiftRepository;
 
@@ -70,8 +72,11 @@ public class ShiftProSchedulerIntegrationTests {
 
         Schedule schedule = new Schedule();
         schedule.setAdministrator(administrators.findByUserName("admin").orElseThrow());
-        schedule.setCreatedAt(new Date());
-        schedule.setDays(7);
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE, 7);
+        schedule.setStartDate(new Date());
+        schedule.setEndDate(c.getTime());
         schedules.save(schedule);
 
         assertEquals(1, schedules.findAll().size());
@@ -134,7 +139,10 @@ public class ShiftProSchedulerIntegrationTests {
 
         assertEquals(4, employees.findAll().size());
 
-        Collection<Assignment> assignments = optimizer.generateSchedule(schedule);
+        Schedules schedules = new Schedules();
+        schedules.getScheduleList().add(schedule);
+
+        Collection<Assignment> assignments = optimizer.generateSchedules(schedules);
         assertEquals(21, assignments.size());
     }
 }
