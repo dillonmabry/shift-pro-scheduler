@@ -2,6 +2,7 @@ import React from "react";
 import { Form, DatePicker, Button, InputNumber } from "antd";
 import ScheduleService from "../../services/ScheduleService";
 import NotificationService from "../../services/NotificationService";
+import PropTypes from "prop-types";
 
 const { RangePicker } = DatePicker;
 
@@ -35,6 +36,7 @@ export default class CreateSchedule extends React.Component {
         .then(
           (response) => {
             if (response.data && response.data.assignmentList.length > 0) {
+              this.props.updateEventsList(); //eslint-disable-line
               NotificationService.notify(
                 "success",
                 "Successfully created schedules"
@@ -87,3 +89,7 @@ export default class CreateSchedule extends React.Component {
     );
   }
 }
+
+CreateSchedule.propTypes = {
+  updateEventsList: PropTypes.func,
+};

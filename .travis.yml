@@ -1,5 +1,6 @@
 language: java
-sudo: false
+os: linux
+dist: xenial
 jdk: oraclejdk11
 script: ./build.sh
 before_install:
