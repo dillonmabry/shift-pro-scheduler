@@ -18,78 +18,6 @@ const formatScheduleKey = (start, end, style) => {
   return `${format(parseISO(start), style)} - ${format(parseISO(end), style)}`;
 };
 
-const formatScheduleContent = (schedule, assignments, user) => {
-  return (
-    <div style={{ textAlign: "left", margin: "15px" }}>
-      <div>
-        <div style={{ marginBottom: "15px" }}>
-          {schedule.isActive ? (
-            <Tag color="green">Active</Tag>
-          ) : (
-            <Tag color="red">Inactive</Tag>
-          )}
-        </div>
-        <div style={{ marginBottom: "15px" }}>
-          {AuthService.getRoles(user.authorities).includes("ROLE_ADMIN") && (
-            <ScheduleDetail schedule={schedule} />
-          )}
-        </div>
-      </div>
-      <BigCalendar events={assignments} />
-    </div>
-  );
-};
-
-const getScheduleList = (scheduleList, user) => {
-  const _schedules = {};
-  const assignedScheduleList = AuthService.getRoles(
-    user.authorities
-  ).includes("ROLE_USER")
-    ? scheduleList.filter(
-      s => s.isActive === true
-    ) : scheduleList;
-  assignedScheduleList.forEach((schedule) => {
-    const _assignments = [];
-    const startDate = parseISO(schedule.createdAt);
-    const scheduledAssignments = AuthService.getRoles(
-      user.authorities
-    ).includes("ROLE_USER")
-      ? schedule.assignments.filter(
-          (a) => a.employee.userName === user.username
-        )
-      : schedule.assignments;
-    scheduledAssignments.forEach((assignment) => {
-      _assignments.push({
-        id: assignment.id,
-        schedule_id: schedule.id,
-        title: `${assignment.employee.lastName}, ${assignment.employee.firstName}`,
-        allDay: false,
-        start: setMinutes(
-          setHours(
-            addDays(startDate, assignment.dayId),
-            assignment.shift.startTime.split(":")[0]
-          ),
-          assignment.shift.startTime.split(":")[1]
-        ),
-        end: setMinutes(
-          setHours(
-            addDays(startDate, assignment.dayId),
-            assignment.shift.endTime.split(":")[0]
-          ),
-          assignment.shift.endTime.split(":")[1]
-        ),
-      });
-    });
-    if (_assignments.length > 0)
-      _schedules[schedule.id] = formatScheduleContent(
-        schedule,
-        _assignments,
-        user
-      );
-  });
-  return _schedules;
-};
-
 export default class Schedule extends Component {
   constructor(props) {
     super(props);
@@ -98,15 +26,91 @@ export default class Schedule extends Component {
       tabList: [],
       contentList: {},
       loading: true,
-      showUser: true,
+      showUser: false,
       showAdmin: false,
     };
   }
 
-  componentDidMount() {
+  formatScheduleContent = (schedule, assignments, user) => {
+    return (
+      <div style={{ textAlign: "left", margin: "15px" }}>
+        <div>
+          <div style={{ marginBottom: "15px" }}>
+            {schedule.isActive ? (
+              <Tag color="green">Active</Tag>
+            ) : (
+              <Tag color="red">Inactive</Tag>
+            )}
+          </div>
+          <div style={{ marginBottom: "15px" }}>
+            {AuthService.getRoles(user.authorities).includes("ROLE_ADMIN") && (
+              <ScheduleDetail
+                schedule={schedule}
+                updateEventsList={this.updateEventsList}
+              /> //eslint-disable-line
+            )}
+          </div>
+        </div>
+        <BigCalendar events={assignments} />
+      </div>
+    );
+  };
+
+  getScheduleList = (scheduleList, user) => {
+    const _schedules = {};
+    const assignedScheduleList = AuthService.getRoles(
+      user.authorities
+    ).includes("ROLE_USER")
+      ? scheduleList.filter((s) => s.isActive === true)
+      : scheduleList;
+    assignedScheduleList.forEach((schedule) => {
+      const _assignments = [];
+      const startDate = parseISO(schedule.createdAt);
+      const scheduledAssignments = AuthService.getRoles(
+        user.authorities
+      ).includes("ROLE_USER")
+        ? schedule.assignments.filter(
+            (a) => a.employee.userName === user.username
+          )
+        : schedule.assignments;
+      scheduledAssignments.forEach((assignment) => {
+        _assignments.push({
+          id: assignment.id,
+          schedule_id: schedule.id,
+          title: `${assignment.employee.lastName}, ${assignment.employee.firstName}`,
+          allDay: false,
+          start: setMinutes(
+            setHours(
+              addDays(startDate, assignment.dayId),
+              assignment.shift.startTime.split(":")[0]
+            ),
+            assignment.shift.startTime.split(":")[1]
+          ),
+          end: setMinutes(
+            setHours(
+              addDays(startDate, assignment.dayId),
+              assignment.shift.endTime.split(":")[0]
+            ),
+            assignment.shift.endTime.split(":")[1]
+          ),
+        });
+      });
+      if (_assignments.length > 0)
+        _schedules[schedule.id] = this.formatScheduleContent(
+          //eslint-disable-line
+          schedule,
+          _assignments,
+          user
+        );
+    });
+    return _schedules;
+  };
+
+  updateEventsList = () => {
     const user = AuthService.getCurrentUser();
     if (user) {
       this.setState({
+        //eslint-disable-line
         showAdmin: AuthService.getRoles(user.authorities).includes(
           "ROLE_ADMIN"
         ),
@@ -119,12 +123,13 @@ export default class Schedule extends Component {
               response.data.scheduleList &&
               response.data.scheduleList.length > 0
             ) {
-              const schedules = getScheduleList(
+              const schedules = this.getScheduleList(
+                //eslint-disable-line
                 response.data.scheduleList,
                 user
               );
-              //eslint-disable-line
               this.setState({
+                //eslint-disable-line
                 tabList: response.data.scheduleList
                   .filter((s) => s.id in schedules)
                   .map((s) => ({
@@ -137,6 +142,7 @@ export default class Schedule extends Component {
           },
           (error) => {
             this.setState({
+              //eslint-disable-line
               content:
                 (error.response &&
                   error.response.data &&
@@ -148,10 +154,15 @@ export default class Schedule extends Component {
         )
         .then(() => {
           this.setState({
+            //eslint-disable-line
             loading: false,
           });
         });
     }
+  };
+
+  componentDidMount() {
+    this.updateEventsList();
   }
 
   render() {
@@ -165,7 +176,7 @@ export default class Schedule extends Component {
               <div>
                 {showAdmin && (
                   <div>
-                    <CreateSchedule />
+                    <CreateSchedule updateEventsList={this.updateEventsList} />
                   </div>
                 )}
                 <br />
