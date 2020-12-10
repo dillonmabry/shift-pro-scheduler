@@ -10,12 +10,14 @@ export default class ScheduleDetail extends React.Component {
   };
 
   onActivate = () => {
-    this.setState({ //eslint-disable-line
+    this.setState({
+      //eslint-disable-line
       loading: true,
     });
     ScheduleService.activateSchedule(this.props.schedule.id) //eslint-disable-line
       .then(
         () => {
+          this.props.updateEventsList(); //eslint-disable-line
           NotificationService.notify(
             "success",
             "Successfully activated schedule"
@@ -33,19 +35,22 @@ export default class ScheduleDetail extends React.Component {
         }
       )
       .then(() => {
-        this.setState({ //eslint-disable-line
+        this.setState({
+          //eslint-disable-line
           loading: false,
         });
       });
   };
 
   onDelete = () => {
-    this.setState({ //eslint-disable-line
+    this.setState({
+      //eslint-disable-line
       loading: true,
     });
     ScheduleService.deleteSchedule(this.props.schedule.id) //eslint-disable-line
       .then(
         () => {
+          this.props.updateEventsList(); //eslint-disable-line
           NotificationService.notify(
             "success",
             "Successfully deleted schedule"
@@ -63,7 +68,8 @@ export default class ScheduleDetail extends React.Component {
         }
       )
       .then(() => {
-        this.setState({ //eslint-disable-line
+        this.setState({
+          //eslint-disable-line
           loading: false,
         });
       });
@@ -73,11 +79,11 @@ export default class ScheduleDetail extends React.Component {
     return (
       <Form name="schedule_controls" layout={"inline"}>
         {!this.props.schedule.isActive && (
-        <Form.Item>
-          <Button type="primary" htmlType="submit" onClick={this.onActivate}>
-            Mark Active
-          </Button>
-        </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" onClick={this.onActivate}>
+              Mark Active
+            </Button>
+          </Form.Item>
         )}
         <Form.Item>
           <Button
@@ -96,4 +102,5 @@ export default class ScheduleDetail extends React.Component {
 
 ScheduleDetail.propTypes = {
   schedule: PropTypes.object,
+  updateEventsList: PropTypes.func,
 };
