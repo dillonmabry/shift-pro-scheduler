@@ -33,14 +33,12 @@ class Employees extends React.Component {
                 });
               });
               this.setState({
-                //eslint-disable-line
                 employees: _employees,
               });
             }
           },
           (error) => {
             this.setState({
-              //eslint-disable-line
               content:
                 (error.response &&
                   error.response.data &&

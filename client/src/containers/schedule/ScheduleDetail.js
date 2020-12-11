@@ -11,13 +11,12 @@ export default class ScheduleDetail extends React.Component {
 
   onActivate = () => {
     this.setState({
-      //eslint-disable-line
       loading: true,
     });
-    ScheduleService.activateSchedule(this.props.schedule.id) //eslint-disable-line
+    ScheduleService.activateSchedule(this.props.schedule.id)
       .then(
         () => {
-          this.props.updateEventsList(); //eslint-disable-line
+          this.props.updateEventsList();
           NotificationService.notify(
             "success",
             "Successfully activated schedule"
@@ -36,7 +35,6 @@ export default class ScheduleDetail extends React.Component {
       )
       .then(() => {
         this.setState({
-          //eslint-disable-line
           loading: false,
         });
       });
@@ -44,13 +42,12 @@ export default class ScheduleDetail extends React.Component {
 
   onDelete = () => {
     this.setState({
-      //eslint-disable-line
       loading: true,
     });
-    ScheduleService.deleteSchedule(this.props.schedule.id) //eslint-disable-line
+    ScheduleService.deleteSchedule(this.props.schedule.id)
       .then(
         () => {
-          this.props.updateEventsList(); //eslint-disable-line
+          this.props.updateEventsList();
           NotificationService.notify(
             "success",
             "Successfully deleted schedule"
@@ -69,7 +66,6 @@ export default class ScheduleDetail extends React.Component {
       )
       .then(() => {
         this.setState({
-          //eslint-disable-line
           loading: false,
         });
       });

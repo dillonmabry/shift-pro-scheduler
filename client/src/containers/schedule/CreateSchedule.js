@@ -29,14 +29,14 @@ export default class CreateSchedule extends React.Component {
     const endDate = values["rangePicker"][1];
 
     if (inputNumber && startDate && endDate) {
-      this.setState({ //eslint-disable-line
+      this.setState({
         loading: true,
       });
-      ScheduleService.postSchedules(startDate, endDate, inputNumber)
+      ScheduleService.postSchedules(inputNumber, startDate, endDate)
         .then(
           (response) => {
             if (response.data && response.data.assignmentList.length > 0) {
-              this.props.updateEventsList(); //eslint-disable-line
+              this.props.updateEventsList();
               NotificationService.notify(
                 "success",
                 "Successfully created schedules"
@@ -55,7 +55,7 @@ export default class CreateSchedule extends React.Component {
           }
         )
         .then(() => {
-          this.setState({ //eslint-disable-line
+          this.setState({
             loading: false,
           });
         });
