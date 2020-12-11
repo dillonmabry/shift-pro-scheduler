@@ -47,7 +47,7 @@ export default class Schedule extends Component {
               <ScheduleDetail
                 schedule={schedule}
                 updateEventsList={this.updateEventsList}
-              /> //eslint-disable-line
+              />
             )}
           </div>
         </div>
@@ -65,7 +65,7 @@ export default class Schedule extends Component {
       : scheduleList;
     assignedScheduleList.forEach((schedule) => {
       const _assignments = [];
-      const startDate = parseISO(schedule.createdAt);
+      const startDate = parseISO(schedule.startDate);
       const scheduledAssignments = AuthService.getRoles(
         user.authorities
       ).includes("ROLE_USER")
@@ -97,7 +97,6 @@ export default class Schedule extends Component {
       });
       if (_assignments.length > 0)
         _schedules[schedule.id] = this.formatScheduleContent(
-          //eslint-disable-line
           schedule,
           _assignments,
           user
@@ -110,7 +109,6 @@ export default class Schedule extends Component {
     const user = AuthService.getCurrentUser();
     if (user) {
       this.setState({
-        //eslint-disable-line
         showAdmin: AuthService.getRoles(user.authorities).includes(
           "ROLE_ADMIN"
         ),
@@ -124,25 +122,27 @@ export default class Schedule extends Component {
               response.data.scheduleList.length > 0
             ) {
               const schedules = this.getScheduleList(
-                //eslint-disable-line
                 response.data.scheduleList,
                 user
               );
               this.setState({
-                //eslint-disable-line
                 tabList: response.data.scheduleList
                   .filter((s) => s.id in schedules)
                   .map((s) => ({
                     key: s.id,
-                    tab: formatScheduleKey(s.createdAt, s.endDate, "MMM d"),
+                    tab: formatScheduleKey(s.startDate, s.endDate, "MMM d"),
                   })),
                 contentList: schedules,
+              });
+            } else {
+              this.setState({
+                tabList: [],
+                contentList: {}
               });
             }
           },
           (error) => {
             this.setState({
-              //eslint-disable-line
               content:
                 (error.response &&
                   error.response.data &&
@@ -154,7 +154,6 @@ export default class Schedule extends Component {
         )
         .then(() => {
           this.setState({
-            //eslint-disable-line
             loading: false,
           });
         });

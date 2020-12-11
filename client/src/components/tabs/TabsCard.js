@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 class TabsCard extends React.Component {
   state = {
-    key: this.props.tabList.length > 0 ? this.props.tabList[0].key : "", //eslint-disable-line
+    key: this.props.tabList.length > 0 ? this.props.tabList[0].key : "",
   };
 
   componentDidUpdate() {
@@ -16,7 +16,7 @@ class TabsCard extends React.Component {
   }
 
   onTabChange = (key, type) => {
-    this.setState({ [type]: key }); //eslint-disable-line
+    this.setState({ [type]: key });
   };
 
   render() {

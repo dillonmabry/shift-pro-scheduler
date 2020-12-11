@@ -8,10 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 
 import com.projects.shiftproscheduler.administrator.Administrator;
 import com.projects.shiftproscheduler.administrator.AdministratorRepository;
@@ -72,11 +71,8 @@ public class ShiftProSchedulerIntegrationTests {
 
         Schedule schedule = new Schedule();
         schedule.setAdministrator(administrators.findByUserName("admin").orElseThrow());
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.DATE, 7);
-        schedule.setStartDate(new Date());
-        schedule.setEndDate(c.getTime());
+        schedule.setStartDate(LocalDate.now());
+        schedule.setEndDate(LocalDate.now().plusDays(7));
         schedules.save(schedule);
 
         assertEquals(1, schedules.findAll().size());
