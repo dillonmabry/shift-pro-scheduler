@@ -1,6 +1,7 @@
 package com.projects.shiftproscheduler.schedule;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Set;
@@ -40,10 +41,10 @@ public class Schedule {
     private Set<Assignment> assignments;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
@@ -91,24 +92,24 @@ public class Schedule {
         return assignments;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
     public Integer getDays() {
-        long days = ChronoUnit.DAYS.between(startDate.toInstant(), endDate.toInstant());
+        long days = ChronoUnit.DAYS.between(startDate, endDate);
         return (int) days;
     }
 }

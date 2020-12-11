@@ -1,5 +1,6 @@
 package com.projects.shiftproscheduler.administrator;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -61,12 +63,12 @@ class AdministratorController {
         return this.administrators.findByUserName(username).orElseThrow(() -> new EntityNotFoundException());
     }
 
-    @PostMapping("/administrators/schedules")
+    @PostMapping("/administrators/schedules/{numSchedules}/{startDate}/{endDate}")
     @Transactional
     public @ResponseBody Assignments postScheduledAssignments(
-            @RequestParam(value = "numSchedules", required = true) @Range(min = 1, max = 10, message = "Number of schedules created must be between 1 and 10") Integer numSchedules,
-            @RequestParam(value = "startDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
-            @RequestParam(value = "endDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+            @PathVariable(value = "numSchedules", required = true) @Range(min = 1, max = 10, message = "Number of schedules created must be between 1 and 10") Integer numSchedules,
+            @PathVariable(value = "startDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @PathVariable(value = "endDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Administrator administrator = administrators.findByUserName(username)

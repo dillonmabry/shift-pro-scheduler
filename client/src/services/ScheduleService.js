@@ -27,14 +27,9 @@ const activateSchedule = (id) => {
   });
 };
 
-const postSchedules = (startDate, endDate, numSchedules) => {
-  return axios.post(API_URL + `/administrators/schedules`, null, {
+const postSchedules = (numSchedules, startDate, endDate) => {
+  return axios.post(API_URL + `/administrators/schedules/${numSchedules}/${startDate}/${endDate}`, null, {
     headers: AuthService.authHeader(),
-    params: {
-      startDate,
-      endDate,
-      numSchedules,
-    },
   });
 };
 

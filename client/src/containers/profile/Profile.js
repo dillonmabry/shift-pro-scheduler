@@ -34,14 +34,12 @@ class Profile extends React.Component {
             (response) => {
               if (response.data) {
                 this.setState({
-                  //eslint-disable-line
                   userInfo: { ...response.data, username: user.username },
                 });
               }
             },
             (error) => {
               this.setState({
-                //eslint-disable-line
                 content:
                   (error.response &&
                     error.response.data &&
@@ -63,14 +61,12 @@ class Profile extends React.Component {
             (response) => {
               if (response.data) {
                 this.setState({
-                  //eslint-disable-line
                   userInfo: { ...response.data, username: user.username },
                 });
               }
             },
             (error) => {
               this.setState({
-                //eslint-disable-line
                 content:
                   (error.response &&
                     error.response.data &&
