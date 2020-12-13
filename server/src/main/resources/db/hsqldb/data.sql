@@ -12,9 +12,9 @@ INSERT INTO roles VALUES (2, 'ADMIN', 'application administrator');
 INSERT INTO user_roles VALUES (1, 1, 2);
 
 INSERT INTO employees VALUES (1, 'jcarter', 'James', 'Carter', 'jcarter@gmail.com', '704-923-4432', 1, 1);
-INSERT INTO employees VALUES (2, 'hleary', 'Helen', 'Leary' , 'hleary@gmail.com', '704-923-5092', 1, 2);
-INSERT INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail.com', '704-920-3315', 1, 3);
-INSERT INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1, 3);
+INSERT INTO employees VALUES (2, 'hleary', 'Helen', 'Leary' , 'hleary@gmail.com', '704-923-5092', 1, 1);
+INSERT INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail.com', '704-920-3315', 1, 1);
+INSERT INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1, 1);
 
 INSERT INTO shifts VALUES (1, '00:08:00.000000', '00:16:00.000000');
 INSERT INTO shifts VALUES (2, '00:16:00.000000', '00:23:59.999999');
