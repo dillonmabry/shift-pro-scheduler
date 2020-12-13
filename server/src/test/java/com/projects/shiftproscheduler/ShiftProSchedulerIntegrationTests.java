@@ -6,11 +6,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import com.projects.shiftproscheduler.administrator.Administrator;
 import com.projects.shiftproscheduler.administrator.AdministratorRepository;
@@ -140,5 +142,73 @@ public class ShiftProSchedulerIntegrationTests {
 
         Collection<Assignment> assignments = optimizer.generateSchedules(schedules);
         assertEquals(21, assignments.size());
+    }
+
+    @Test void testDefaultOptimizerByAdmin() throws Exception {
+
+        Administrator administrator = new Administrator();
+        administrator.setFirstName("James");
+        administrator.setLastName("Dean");
+        administrator.setEmail("jdean@gmail.com");
+        administrator.setUserName("jdean");
+        administrator.setDepartment(departments.findByName("Supplies").orElseThrow());
+        administrator.setPhone("000-000-0000");
+        administrators.save(administrator);
+
+        Schedule schedule = new Schedule();
+        schedule.setAdministrator(administrator);
+        schedule.setStartDate(LocalDate.now());
+        schedule.setEndDate(LocalDate.now().plusDays(7));
+        schedules.save(schedule);
+
+        Employee emp1 = new Employee();
+        emp1.setFirstName("James");
+        emp1.setLastName("Carter");
+        emp1.setEmail("jcarter1@gmail.com");
+        emp1.setUserName("jcarter1");
+        emp1.setDepartment(departments.findByName("Supplies").orElseThrow());
+        emp1.setPhone("999-999-9999");
+        emp1.setSupervisor(administrator);
+        employees.save(emp1);
+
+        Employee emp2 = new Employee();
+        emp2.setFirstName("Helen");
+        emp2.setLastName("Leary");
+        emp2.setEmail("hleary1@gmail.com");
+        emp2.setUserName("hleary1");
+        emp2.setDepartment(departments.findByName("Supplies").orElseThrow());
+        emp2.setPhone("999-999-9999");
+        emp2.setSupervisor(administrator);
+        employees.save(emp2);
+
+        Employee emp3 = new Employee();
+        emp3.setFirstName("John");
+        emp3.setLastName("Smith");
+        emp3.setEmail("jsmith1@gmail.com");
+        emp3.setUserName("jsmith1");
+        emp3.setDepartment(departments.findByName("Supplies").orElseThrow());
+        emp3.setPhone("999-999-9999");
+        emp3.setSupervisor(administrator);
+        employees.save(emp3);
+
+        Employee emp4 = new Employee();
+        emp4.setFirstName("Adam");
+        emp4.setLastName("Thomas");
+        emp4.setEmail("athomas1@gmail.com");
+        emp4.setUserName("athomas1");
+        emp4.setDepartment(departments.findByName("Supplies").orElseThrow());
+        emp4.setPhone("999-999-9999");
+        emp4.setSupervisor(administrator);
+        employees.save(emp4);
+
+        assertEquals(4, employees.findBySupervisor(administrator).size());
+
+        Schedules schedules = new Schedules();
+        schedules.getScheduleList().add(schedule);
+
+        Collection<Assignment> assignments = optimizer.generateSchedules(schedules);
+        assertEquals(21, assignments.size());
+        assertEquals(0, assignments.stream().filter(a -> a.getEmployee().getUserName().equals("jcarter")).collect(Collectors.toList()).size());
+        assertTrue(assignments.stream().filter(a -> a.getEmployee().getUserName().equals("jcarter1")).collect(Collectors.toList()).size() > 0);
     }
 }

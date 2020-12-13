@@ -62,7 +62,7 @@ export default class Schedule extends Component {
       user.authorities
     ).includes("ROLE_USER")
       ? scheduleList.filter((s) => s.isActive === true)
-      : scheduleList;
+      : scheduleList.filter((s) => s.administrator.userName === user.username);
     assignedScheduleList.forEach((schedule) => {
       const _assignments = [];
       const startDate = parseISO(schedule.startDate);
