@@ -27,6 +27,7 @@ class Employees extends React.Component {
                   lastName: employee.lastName,
                   email: employee.email,
                   phone: employee.phone,
+                  userName: employee.userName,
                   department: employee.department
                     ? employee.department.name
                     : "N/A",
@@ -87,7 +88,7 @@ class Employees extends React.Component {
                       key="action"
                       render={(text, record) => (
                         <Space size="middle">
-                          <a>Invite {record.firstName}</a>
+                          {!record.userName && (<a>Invite {record.firstName}</a>)}
                           <a>Delete</a>
                         </Space>
                       )}

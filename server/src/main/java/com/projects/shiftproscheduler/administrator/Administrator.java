@@ -14,6 +14,7 @@ import com.projects.shiftproscheduler.employee.Person;
 @Entity
 @Table(name = "administrators")
 public class Administrator extends Person {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
