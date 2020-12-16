@@ -46,7 +46,8 @@ CREATE TABLE IF NOT EXISTS application_users (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(30) NOT NULL,
   password VARCHAR(60) NOT NULL,
-  INDEX(username)
+  INDEX(username),
+  UNIQUE(username)
 ) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS roles (
@@ -76,8 +77,10 @@ CREATE TABLE IF NOT EXISTS shifts (
 CREATE TABLE IF NOT EXISTS schedules (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   admin_id INT(4) UNSIGNED NOT NULL,
-  created_at DATE NOT NULL,
-  is_active BIT NOT NULL DEFAULT 0, 
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  is_active BOOLEAN NOT NULL DEFAULT 0,
   INDEX(admin_id),
   INDEX(created_at),
   FOREIGN KEY (admin_id) REFERENCES administrators(id)
@@ -109,11 +112,10 @@ INSERT IGNORE INTO roles VALUES (2, 'ADMIN', 'application administrator');
 INSERT IGNORE INTO user_roles VALUES (1, 1, 2);
 
 INSERT IGNORE INTO employees VALUES (1, 'jcarter', 'James', 'Carter', 'jcarter@gmail.com', '704-923-4432', 1, 1);
-INSERT IGNORE INTO employees VALUES (2, 'hleary', 'Helen', 'Leary' , 'hleary@gmail.com', '704-923-5092', 1, 2);
-INSERT IGNORE INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail.com', '704-920-3315', 1, 3);
-INSERT IGNORE INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1, 3);
+INSERT IGNORE INTO employees VALUES (2, 'hleary', 'Helen', 'Leary' , 'hleary@gmail.com', '704-923-5092', 1, 1);
+INSERT IGNORE INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail.com', '704-920-3315', 1, 1);
+INSERT IGNORE INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1, 1);
 
 INSERT IGNORE INTO shifts VALUES (1, '08:00:00', '16:00:00');
 INSERT IGNORE INTO shifts VALUES (2, '16:00:00', '23:59:59');
 INSERT IGNORE INTO shifts VALUES (3, '24:00:00', '08:00:00');
-

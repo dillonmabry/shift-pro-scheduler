@@ -26,4 +26,13 @@ public interface ScheduleRepository extends CrudRepository<Schedule, Integer> {
     @Transactional(readOnly = true)
     Optional<Schedule> findById(Integer id);
 
+    /**
+     * Retrieve all <code>Schedule</code>s by active status
+     *
+     * @return a Optional <code>Collection</code> of <code>Schedule</code>s
+     */
+    @Transactional(readOnly = true)
+    @Cacheable("schedules")
+    Optional<Collection<Schedule>> findAllByIsActive(boolean isActive) throws DataAccessException;
+
 }

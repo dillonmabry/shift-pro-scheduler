@@ -211,4 +211,5 @@ public class ShiftProSchedulerIntegrationTests {
         assertEquals(0, assignments.stream().filter(a -> a.getEmployee().getUserName().equals("jcarter")).collect(Collectors.toList()).size());
         assertTrue(assignments.stream().filter(a -> a.getEmployee().getUserName().equals("jcarter1")).collect(Collectors.toList()).size() > 0);
     }
+
 }
