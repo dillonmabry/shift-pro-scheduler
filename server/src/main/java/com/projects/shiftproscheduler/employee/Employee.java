@@ -28,7 +28,6 @@ public class Employee extends Person {
     @JoinColumn(name = "supervisor_id", nullable = false)
     private Administrator supervisor;
 
-
     public Integer getId() {
         return id;
     }

@@ -2,11 +2,11 @@ package com.projects.shiftproscheduler.administrator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.IntStream;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 
 import com.projects.shiftproscheduler.assignment.Assignment;
 import com.projects.shiftproscheduler.assignment.AssignmentRepository;
@@ -15,23 +15,25 @@ import com.projects.shiftproscheduler.optimizer.DefaultOptimizer;
 import com.projects.shiftproscheduler.schedule.Schedule;
 import com.projects.shiftproscheduler.schedule.ScheduleRepository;
 import com.projects.shiftproscheduler.schedule.Schedules;
+import com.projects.shiftproscheduler.security.ErrorInfo;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @Validated
 @PreAuthorize("hasRole('ADMIN')")
 class AdministratorController {
@@ -92,5 +94,14 @@ class AdministratorController {
         assignments.getAssignmentList().addAll(scheduledAssignments);
         return assignments;
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseBody
+    ErrorInfo duplicateActiveScheduleException(HttpServletRequest req, IllegalStateException ex) {
+        return new ErrorInfo(req.getRequestURL().toString(), ex,
+                "Model cannot be generated with available employees and shifts with date range");
+    }
+
 
 }

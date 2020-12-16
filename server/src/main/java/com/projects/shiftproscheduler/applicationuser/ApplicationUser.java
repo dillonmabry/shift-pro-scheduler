@@ -21,7 +21,7 @@ public class ApplicationUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
     private String username;
     private String password;
 
@@ -30,8 +30,12 @@ public class ApplicationUser {
             @JoinColumn(name = "role_id") })
     private Set<Role> roles;
 
-    public long getId() {
+    public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getUsername() {

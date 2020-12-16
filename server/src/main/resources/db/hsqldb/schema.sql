@@ -47,6 +47,7 @@ CREATE TABLE application_users (
   password  VARCHAR(60)
 );
 CREATE INDEX application_users_username ON application_users (username);
+CREATE UNIQUE INDEX application_users_un_username ON application_users (username);
 
 -- Roles
 DROP TABLE roles IF EXISTS 

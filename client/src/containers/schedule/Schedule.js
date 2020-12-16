@@ -4,6 +4,7 @@ import "./Schedule.css";
 import { Spin, Empty, Tag } from "antd";
 import ScheduleService from "../../services/ScheduleService";
 import BigCalendar from "../../components/calendar/BigCalendar";
+// import DnDCalendar from "../../components/calendar/DragAndDropCalendar";
 import CreateSchedule from "./CreateSchedule";
 import TabsCard from "../../components/tabs/TabsCard";
 import parseISO from "date-fns/parseISO";
@@ -37,9 +38,9 @@ export default class Schedule extends Component {
         <div>
           <div style={{ marginBottom: "15px" }}>
             {schedule.isActive ? (
-              <Tag color="green">Active</Tag>
+              <Tag color="blue">Live</Tag>
             ) : (
-              <Tag color="red">Inactive</Tag>
+              <Tag color="orange">Draft</Tag>
             )}
           </div>
           <div style={{ marginBottom: "15px" }}>
@@ -62,7 +63,7 @@ export default class Schedule extends Component {
       user.authorities
     ).includes("ROLE_USER")
       ? scheduleList.filter((s) => s.isActive === true)
-      : scheduleList;
+      : scheduleList.filter((s) => s.administrator.userName === user.username);
     assignedScheduleList.forEach((schedule) => {
       const _assignments = [];
       const startDate = parseISO(schedule.startDate);

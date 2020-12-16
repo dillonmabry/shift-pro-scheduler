@@ -52,7 +52,7 @@ public class DefaultOptimizer implements IOptimizer {
     public Collection<Assignment> generateSchedules(Schedules schedules) throws IllegalStateException {
 
         CpModel model = new CpModel(); // Init model
-        Collection<Employee> employees = employeeRepository.findAll();
+        Collection<Employee> employees = employeeRepository.findBySupervisor(schedules.getScheduleList().get(0).getAdministrator()); // Filter by administrator
         Collection<Shift> shifts = shiftRepository.findAll();
 
         // Create shift variables

@@ -39,7 +39,7 @@ class EmployeeController {
     public @ResponseBody Employees getEmployeesBySupervisor(@PathVariable(value = "supervisor", required = true) String supervisor) {
         Employees employees = new Employees();
         employees.getEmployeeList().addAll(
-            this.employees.findBySupervisor(administrators.findByUserName(supervisor).orElseThrow())
+            this.employees.findAllBySupervisor(administrators.findByUserName(supervisor).orElseThrow().getUserName())
         );
         return employees;
     }
