@@ -1,39 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "antd";
 import PropTypes from "prop-types";
 
-class TabsCard extends React.Component {
-  state = {
-    key: this.props.tabList.length > 0 ? this.props.tabList[0].key : "",
-  };
+const TabsCard = (props) => {
+  const [state, setState] = useState({
+    key: props.tabList.length > 0 ? props.tabList[0].key : "",
+  });
 
-  componentDidUpdate() {
-    if (!(this.state.key in this.props.contentList)) {
-      this.setState({
-        key: this.props.tabList.length > 0 ? this.props.tabList[0].key : "",
+  useEffect(() => {
+    if (!(state.key in props.contentList)) {
+      setState({
+        key: props.tabList.length > 0 ? props.tabList[0].key : "",
       });
     }
-  }
+  }, []);
 
-  onTabChange = (key, type) => {
-    this.setState({ [type]: key });
+  const onTabChange = (key, type) => {
+    setState({
+      [type]: key,
+    });
   };
 
-  render() {
-    return (
-      <Card
-        style={{ width: "100%" }}
-        title={this.props.title}
-        tabList={this.props.tabList}
-        onTabChange={(key) => {
-          this.onTabChange(key, "key");
-        }}
-      >
-        {this.props.contentList[this.state.key]}
-      </Card>
-    );
-  }
-}
+  return (
+    <Card
+      style={{ width: "100%" }}
+      title={props.title}
+      tabList={props.tabList}
+      onTabChange={(key) => {
+        onTabChange(key, "key");
+      }}
+    >
+      {props.contentList[state.key]}
+    </Card>
+  );
+};
 
 TabsCard.propTypes = {
   title: PropTypes.string,

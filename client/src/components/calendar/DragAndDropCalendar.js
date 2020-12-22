@@ -21,7 +21,7 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-const DateCell = ({ range, value, children }) => { //eslint-disable-line
+const DateCell = ({ range, value, children }) => {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
   return <div className={value < now ? "date-in-past" : ""}>{children}</div>;
@@ -76,7 +76,7 @@ class DnDCalendar extends React.Component {
     if (!event.allDay && droppedOnAllDaySlot) {
       allDay = true;
     } else if (event.allDay && !droppedOnAllDaySlot) {
-      allDay = false; //eslint-disable-line
+      allDay = false;
     }
 
     const nextEvents = events.map((existingEvent) => {

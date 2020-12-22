@@ -4,19 +4,13 @@ import PropTypes from "prop-types";
 import ScheduleService from "../../services/ScheduleService";
 import NotificationService from "../../services/NotificationService";
 
-export default class ScheduleDetail extends React.Component {
-  state = {
-    loading: false,
-  };
-
-  onActivate = () => {
-    this.setState({
-      loading: true,
-    });
-    ScheduleService.activateSchedule(this.props.schedule.id)
+const ScheduleDetail = (props) => {
+  const onActivate = () => {
+    props.setLoading(true);
+    ScheduleService.activateSchedule(props.schedule.id)
       .then(
         () => {
-          this.props.updateEventsList();
+          props.updateEventsList();
           NotificationService.notify(
             "success",
             "Successfully activated schedule"
@@ -34,20 +28,16 @@ export default class ScheduleDetail extends React.Component {
         }
       )
       .then(() => {
-        this.setState({
-          loading: false,
-        });
+        props.setLoading(false);
       });
   };
 
-  onDelete = () => {
-    this.setState({
-      loading: true,
-    });
-    ScheduleService.deleteSchedule(this.props.schedule.id)
+  const onDelete = () => {
+    props.setLoading(true);
+    ScheduleService.deleteSchedule(props.schedule.id)
       .then(
         () => {
-          this.props.updateEventsList();
+          props.updateEventsList();
           NotificationService.notify(
             "success",
             "Successfully deleted schedule"
@@ -65,38 +55,32 @@ export default class ScheduleDetail extends React.Component {
         }
       )
       .then(() => {
-        this.setState({
-          loading: false,
-        });
+        props.setLoading(false);
       });
   };
 
-  render() {
-    return (
-      <Form name="schedule_controls" layout={"inline"}>
-        {!this.props.schedule.isActive && (
-          <Form.Item>
-            <Button type="primary" htmlType="submit" onClick={this.onActivate}>
-              Mark Active
-            </Button>
-          </Form.Item>
-        )}
+  return (
+    <Form name="schedule_controls" layout={"inline"}>
+      {!props.schedule.isActive && (
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            onClick={this.onDelete}
-            danger
-          >
-            Delete
+          <Button type="primary" htmlType="submit" onClick={onActivate}>
+            Mark Active
           </Button>
         </Form.Item>
-      </Form>
-    );
-  }
-}
+      )}
+      <Form.Item>
+        <Button type="primary" htmlType="submit" onClick={onDelete} danger>
+          Delete
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
 
 ScheduleDetail.propTypes = {
   schedule: PropTypes.object,
   updateEventsList: PropTypes.func,
+  setLoading: PropTypes.func,
 };
+
+export default ScheduleDetail;
