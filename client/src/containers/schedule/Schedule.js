@@ -1,5 +1,5 @@
 import Container from "../../components/container/Container";
-import React, { Component } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Schedule.css";
 import { Spin, Empty, Tag } from "antd";
 import ScheduleService from "../../services/ScheduleService";
@@ -14,25 +14,22 @@ import setMinutes from "date-fns/setMinutes";
 import format from "date-fns/format";
 import AuthService from "../../services/AuthService";
 import ScheduleDetail from "./ScheduleDetail";
+import NotificationService from "../../services/NotificationService";
 
-const formatScheduleKey = (start, end, style) => {
-  return `${format(parseISO(start), style)} - ${format(parseISO(end), style)}`;
-};
+const Schedule = () => {
+  const [loading, setLoading] = useState(true);
+  const [tabList, setTabList] = useState([]);
+  const [contentList, setContentList] = useState({});
+  const userInfoRef = useRef(null);
 
-export default class Schedule extends Component {
-  constructor(props) {
-    super(props);
+  const formatScheduleKey = (start, end, style) => {
+    return `${format(parseISO(start), style)} - ${format(
+      parseISO(end),
+      style
+    )}`;
+  };
 
-    this.state = {
-      tabList: [],
-      contentList: {},
-      loading: true,
-      showUser: false,
-      showAdmin: false,
-    };
-  }
-
-  formatScheduleContent = (schedule, assignments, user) => {
+  const formatScheduleContent = (schedule, assignments) => {
     return (
       <div style={{ textAlign: "left", margin: "15px" }}>
         <div>
@@ -44,10 +41,13 @@ export default class Schedule extends Component {
             )}
           </div>
           <div style={{ marginBottom: "15px" }}>
-            {AuthService.getRoles(user.authorities).includes("ROLE_ADMIN") && (
+            {AuthService.getRoles(userInfoRef.current.authorities).includes(
+              "ROLE_ADMIN"
+            ) && (
               <ScheduleDetail
                 schedule={schedule}
-                updateEventsList={this.updateEventsList}
+                updateEventsList={updateEventsList}
+                setLoading={setLoading}
               />
             )}
           </div>
@@ -57,21 +57,23 @@ export default class Schedule extends Component {
     );
   };
 
-  getScheduleList = (scheduleList, user) => {
+  const getScheduleList = (scheduleList) => {
     const _schedules = {};
     const assignedScheduleList = AuthService.getRoles(
-      user.authorities
+      userInfoRef.current.authorities
     ).includes("ROLE_USER")
       ? scheduleList.filter((s) => s.isActive === true)
-      : scheduleList.filter((s) => s.administrator.userName === user.username);
+      : scheduleList.filter(
+          (s) => s.administrator.userName === userInfoRef.current.username
+        );
     assignedScheduleList.forEach((schedule) => {
       const _assignments = [];
       const startDate = parseISO(schedule.startDate);
       const scheduledAssignments = AuthService.getRoles(
-        user.authorities
+        userInfoRef.current.authorities
       ).includes("ROLE_USER")
         ? schedule.assignments.filter(
-            (a) => a.employee.userName === user.username
+            (a) => a.employee.userName === userInfoRef.current.username
           )
         : schedule.assignments;
       scheduledAssignments.forEach((assignment) => {
@@ -97,24 +99,13 @@ export default class Schedule extends Component {
         });
       });
       if (_assignments.length > 0)
-        _schedules[schedule.id] = this.formatScheduleContent(
-          schedule,
-          _assignments,
-          user
-        );
+        _schedules[schedule.id] = formatScheduleContent(schedule, _assignments);
     });
     return _schedules;
   };
 
-  updateEventsList = () => {
-    const user = AuthService.getCurrentUser();
-    if (user) {
-      this.setState({
-        showAdmin: AuthService.getRoles(user.authorities).includes(
-          "ROLE_ADMIN"
-        ),
-        showUser: AuthService.getRoles(user.authorities).includes("ROLE_USER"),
-      });
+  const updateEventsList = () => {
+    if (userInfoRef.current) {
       ScheduleService.getSchedules()
         .then(
           (response) => {
@@ -122,80 +113,79 @@ export default class Schedule extends Component {
               response.data.scheduleList &&
               response.data.scheduleList.length > 0
             ) {
-              const schedules = this.getScheduleList(
-                response.data.scheduleList,
-                user
-              );
-              this.setState({
-                tabList: response.data.scheduleList
+              const schedules = getScheduleList(response.data.scheduleList);
+              setTabList(
+                response.data.scheduleList
                   .filter((s) => s.id in schedules)
                   .map((s) => ({
                     key: s.id,
                     tab: formatScheduleKey(s.startDate, s.endDate, "MMM d"),
-                  })),
-                contentList: schedules,
-              });
+                  }))
+              );
+              setContentList(schedules);
             } else {
-              this.setState({
-                tabList: [],
-                contentList: {}
-              });
+              setTabList([]);
+              setContentList({});
             }
           },
           (error) => {
-            this.setState({
-              content:
-                (error.response &&
-                  error.response.data &&
-                  error.response.data.message) ||
+            NotificationService.notify(
+              "error",
+              (error.response &&
+                error.response.data &&
+                error.response.data.message) ||
                 error.message ||
-                error.toString(),
-            });
+                error.toString()
+            );
           }
         )
         .then(() => {
-          this.setState({
-            loading: false,
-          });
+          setLoading(false);
         });
     }
   };
 
-  componentDidMount() {
-    this.updateEventsList();
-  }
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+    userInfoRef.current = user;
+    updateEventsList();
+  }, []);
 
-  render() {
-    const { loading, tabList, contentList, showAdmin } = this.state;
-    return (
-      <Container
-        content={
-          <div>
-            {loading && <Spin />}
-            {!loading && (
-              <div>
-                {showAdmin && (
-                  <div>
-                    <CreateSchedule updateEventsList={this.updateEventsList} />
-                  </div>
-                )}
-                <br />
+  return (
+    <Container
+      content={
+        <div>
+          {loading && <Spin />}
+          {!loading && (
+            <div>
+              {AuthService.getRoles(userInfoRef.current.authorities).includes(
+                "ROLE_ADMIN"
+              ) && (
                 <div>
-                  {tabList.length > 0 ? (
-                    <TabsCard
-                      title={"Schedules"}
-                      tabList={tabList}
-                      contentList={contentList}
-                    />
-                  ) : (
-                    <Empty />
-                  )}
+                  <CreateSchedule
+                    updateEventsList={updateEventsList}
+                    setLoading={setLoading}
+                  />
                 </div>
+              )}
+              <br />
+              <div>
+                {tabList.length > 0 ? (
+                  <TabsCard
+                    title={"Schedules"}
+                    tabList={tabList}
+                    contentList={contentList}
+                  />
+                ) : (
+                  <Empty />
+                )}
               </div>
-            )}
-          </div>
-        }
-      ></Container>
-    );
-  }
-}
+            </div>
+          )}
+        </div>
+      }
+    ></Container>
+  );
+};
+
+export default Schedule;

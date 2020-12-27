@@ -28,6 +28,7 @@ import com.projects.shiftproscheduler.schedule.Schedules;
 import com.projects.shiftproscheduler.shift.Shift;
 import com.projects.shiftproscheduler.shift.ShiftRepository;
 
+
 @SpringBootTest
 @AutoConfigureTestDatabase
 public class ShiftProSchedulerIntegrationTests {

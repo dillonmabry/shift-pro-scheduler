@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Sidebar.css";
 import { Layout, Menu, Avatar } from "antd";
 import {
@@ -55,93 +55,90 @@ const displayAvatar = (user, collapsed) => {
   );
 };
 
-class SideMenu extends React.Component {
-  state = {
-    collapsed: true,
-    currentUser: null,
-    showAdmin: false,
-    showUser: false,
+const SideMenu = (props) => {
+  const [collapsed, setCollapsed] = useState(true);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [showUser, setShowUser] = useState(false);
+  const userInfoRef = useRef(null);
+
+  const onCollapse = (collapsed) => {
+    setCollapsed(collapsed);
   };
 
-  onCollapse = (collapsed) => {
-    this.setState({ collapsed }); // eslint-disable-line
-  };
-
-  onLogOut = () => {
+  const onLogOut = () => {
     AuthService.logout();
   };
 
-  componentDidMount() {
+  useEffect(() => {
     const user = AuthService.getCurrentUser();
-    if (AuthService.isAuthenticated() && user) {
-      this.setState({
-        // eslint-disable-line
-        currentUser: user,
-        showAdmin: AuthService.getRoles(user.authorities).includes(
+    userInfoRef.current = user;
+    if (AuthService.isAuthenticated() && userInfoRef.current) {
+      setShowUser(
+        AuthService.getRoles(userInfoRef.current.authorities).includes(
+          "ROLE_USER"
+        )
+      );
+      setShowAdmin(
+        AuthService.getRoles(userInfoRef.current.authorities).includes(
           "ROLE_ADMIN"
-        ),
-        showUser: AuthService.getRoles(user.authorities).includes("ROLE_USER"),
-      });
+        )
+      );
     }
-  }
+  }, []);
 
-  render() {
-    const { collapsed, currentUser, showAdmin, showUser } = this.state;
-    const { location } = this.props;
-    return (
-      <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
-        <div className="logo">{displayAvatar(currentUser, collapsed)}</div>
-        <Menu
-          theme="dark"
-          defaultSelectedKeys={["/"]}
-          selectedKeys={[location.pathname]}
-          mode="inline"
-        >
-          {(showAdmin || showUser) && (
-            <Menu.Item key="/" icon={<CalendarOutlined />}>
-              <NavLink to="/">
-                <span>Schedule</span>
-              </NavLink>
-            </Menu.Item>
-          )}
-          {showAdmin && (
-            <Menu.Item key="/employees" icon={<UsergroupAddOutlined />}>
-              <NavLink to="/employees">
-                <span>Employees</span>
-              </NavLink>
-            </Menu.Item>
-          )}
-          {currentUser && (
-            <Menu.Item key="/profile" icon={<UserOutlined />}>
-              <NavLink to="/profile">
-                <span>Profile</span>
-              </NavLink>
-            </Menu.Item>
-          )}
-          {!currentUser && (
-            <Menu.Item key="/login" icon={<LoginOutlined />}>
-              <NavLink to="/login">
-                <span>Login</span>
-              </NavLink>
-            </Menu.Item>
-          )}
-          {currentUser && (
-            <Menu.Item key="/logout" icon={<LogoutOutlined />}>
-              <NavLink to="/login" onClick={this.onLogOut}>
-                <span>Logout</span>
-              </NavLink>
-            </Menu.Item>
-          )}
-        </Menu>
-      </Sider>
-    );
-  }
-}
+  return (
+    <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
+      <div className="logo">
+        {displayAvatar(userInfoRef.current, collapsed)}
+      </div>
+      <Menu
+        theme="dark"
+        defaultSelectedKeys={["/"]}
+        selectedKeys={[props.pathname]}
+        mode="inline"
+      >
+        {(showAdmin || showUser) && (
+          <Menu.Item key="/" icon={<CalendarOutlined />}>
+            <NavLink to="/">
+              <span>Schedule</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+        {showAdmin && (
+          <Menu.Item key="/employees" icon={<UsergroupAddOutlined />}>
+            <NavLink to="/employees">
+              <span>Employees</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+        {userInfoRef.current && (
+          <Menu.Item key="/profile" icon={<UserOutlined />}>
+            <NavLink to="/profile">
+              <span>Profile</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+        {!userInfoRef.current && (
+          <Menu.Item key="/login" icon={<LoginOutlined />}>
+            <NavLink to="/login">
+              <span>Login</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+        {userInfoRef.current && (
+          <Menu.Item key="/logout" icon={<LogoutOutlined />}>
+            <NavLink to="/login" onClick={onLogOut}>
+              <span>Logout</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+      </Menu>
+    </Sider>
+  );
+};
 
 SideMenu.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-  }),
+  pathname: PropTypes.string,
 };
 
 export default withRouter(SideMenu);
