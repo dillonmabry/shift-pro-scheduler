@@ -1,62 +1,80 @@
 import React from "react";
-import { Form, Button } from "antd";
+import { Form, Button, Modal } from "antd";
 import PropTypes from "prop-types";
 import ScheduleService from "../../services/ScheduleService";
 import NotificationService from "../../services/NotificationService";
 
 const ScheduleDetail = (props) => {
   const onActivate = () => {
-    props.setLoading(true);
-    ScheduleService.activateSchedule(props.schedule.id)
-      .then(
-        () => {
-          props.updateEventsList();
-          NotificationService.notify(
-            "success",
-            "Successfully activated schedule"
-          );
-        },
-        (error) => {
-          NotificationService.notify(
-            "error",
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-              error.message ||
-              error.toString()
-          );
-        }
-      )
-      .then(() => {
-        props.setLoading(false);
-      });
+    Modal.confirm({
+      content: "Are you sure you wish to activate this schedule?",
+      title: "Confirm Activate",
+      cancelText: "No",
+      okText: "Yes",
+      onOk: () => {
+        props.setLoading(true);
+        ScheduleService.activateSchedule(props.schedule.id)
+          .then(
+            () => {
+              props.updateEventsList();
+              NotificationService.notify(
+                "success",
+                "Successfully activated schedule"
+              );
+            },
+            (error) => {
+              NotificationService.notify(
+                "error",
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.message) ||
+                  error.message ||
+                  error.toString()
+              );
+            }
+          )
+          .then(() => {
+            props.setLoading(false);
+          });
+      },
+      onCancel: () => {},
+    });
   };
 
   const onDelete = () => {
-    props.setLoading(true);
-    ScheduleService.deleteSchedule(props.schedule.id)
-      .then(
-        () => {
-          props.updateEventsList();
-          NotificationService.notify(
-            "success",
-            "Successfully deleted schedule"
-          );
-        },
-        (error) => {
-          NotificationService.notify(
-            "error",
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-              error.message ||
-              error.toString()
-          );
-        }
-      )
-      .then(() => {
-        props.setLoading(false);
-      });
+    Modal.confirm({
+      content: "Are you sure you wish to delete this schedule?",
+      title: "Confirm Delete",
+      cancelText: "No",
+      okText: "Yes",
+      onOk: () => {
+        props.setLoading(true);
+        ScheduleService.deleteSchedule(props.schedule.id)
+          .then(
+            () => {
+              props.updateEventsList();
+              NotificationService.notify(
+                "success",
+                "Successfully deleted schedule"
+              );
+            },
+            (error) => {
+              NotificationService.notify(
+                "error",
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.message) ||
+                  error.message ||
+                  error.toString()
+              );
+            }
+          )
+          .then(() => {
+            props.setLoading(false);
+          });
+      },
+      onCancel: () => {},
+    });
   };
 
   return (
