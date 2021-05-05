@@ -44,8 +44,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
-        res.getWriter().write(String.format("{\"accessToken\": \"%s\", \"username\": \"%s\", \"authorities\": \"%s\"}", token,
-                auth.getName(), authorities));
+        res.getWriter().write(String.format("{\"accessToken\": \"%s\", \"username\": \"%s\", \"authorities\": \"%s\"}",
+                token, auth.getName(), authorities));
         res.getWriter().flush();
     }
 }

@@ -81,7 +81,6 @@ const Employees = () => {
                     key="action"
                     render={(text, record) => (
                       <Space size="middle">
-                        {!record.userName && <a>Invite {record.firstName}</a>}
                         <a>Delete</a>
                       </Space>
                     )}

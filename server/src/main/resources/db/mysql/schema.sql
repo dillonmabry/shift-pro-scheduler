@@ -46,8 +46,18 @@ CREATE TABLE IF NOT EXISTS application_users (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(30) NOT NULL,
   password VARCHAR(60) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT 0,
   INDEX(username),
   UNIQUE(username)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS confirmation_tokens (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT(4) UNSIGNED,
+  confirmation_token VARCHAR(255),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  FOREIGN KEY (user_id) REFERENCES application_users(id),
+  INDEX(created_at)
 ) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS roles (

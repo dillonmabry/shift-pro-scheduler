@@ -38,3 +38,9 @@ services:
     - "8080:8080"
     depends_on:
     - shift_pro_mysql
+    - shift_pro_email
+
+  shift_pro_email:
+    container_name: shiftpro_email
+    image: bytemark/smtp
+    restart: unless-stopped

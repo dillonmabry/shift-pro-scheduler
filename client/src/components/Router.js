@@ -7,6 +7,7 @@ import Schedule from "../containers/schedule/Schedule";
 import PrivateRoute from "../security/PrivateRoute";
 import Employees from "../containers/employees/Employees";
 import Profile from "../containers/profile/Profile";
+import Shifts from "../containers/shifts/Shifts";
 
 class Main extends React.Component {
   render() {
@@ -16,6 +17,7 @@ class Main extends React.Component {
           <PrivateRoute exact path="/" component={Schedule} />
           <PrivateRoute exact path="/profile" component={Profile} />
           <PrivateRoute exact path="/employees" component={Employees} />
+          <PrivateRoute exact path="/shifts" component={Shifts} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route component={NotFound} />

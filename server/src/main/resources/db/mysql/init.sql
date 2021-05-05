@@ -46,8 +46,18 @@ CREATE TABLE IF NOT EXISTS application_users (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(30) NOT NULL,
   password VARCHAR(60) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT 0,
   INDEX(username),
   UNIQUE(username)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS confirmation_tokens (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT(4) UNSIGNED,
+  confirmation_token VARCHAR(255),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  FOREIGN KEY (user_id) REFERENCES application_users(id),
+  INDEX(created_at)
 ) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS roles (
@@ -104,7 +114,7 @@ INSERT IGNORE INTO administrators VALUES (1, 'admin', 'Admin', 'Admin' , 'admini
 INSERT IGNORE INTO administrators VALUES (2, 'jdean', 'Jimmy', 'Dean', 'jdean@gmail.com', '704-923-2368', 1);
 INSERT IGNORE INTO administrators VALUES (3, 'mlinda', 'Martha', 'Linda' , 'mlinda@gmail.com', '980-555-4392', 1);
 
-INSERT IGNORE INTO application_users VALUES (1, 'admin', '$2a$10$Y1ZMm7OQpEs5HmwEHc55oeWQa3u8XXFIF18Y5jlCdVi7r8b7iB0E2');
+INSERT IGNORE INTO application_users VALUES (1, 'admin', '$2a$10$Y1ZMm7OQpEs5HmwEHc55oeWQa3u8XXFIF18Y5jlCdVi7r8b7iB0E2', 1);
 
 INSERT IGNORE INTO roles VALUES (1, 'USER', 'application user');
 INSERT IGNORE INTO roles VALUES (2, 'ADMIN', 'application administrator');

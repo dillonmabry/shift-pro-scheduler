@@ -7,6 +7,7 @@ import {
   LoginOutlined,
   UserOutlined,
   UsergroupAddOutlined,
+  ScheduleOutlined
 } from "@ant-design/icons";
 import { NavLink, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -108,6 +109,13 @@ const SideMenu = (props) => {
           <Menu.Item key="/employees" icon={<UsergroupAddOutlined />}>
             <NavLink to="/employees">
               <span>Employees</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+        {showAdmin && (
+          <Menu.Item key="/shifts" icon={<ScheduleOutlined />}>
+            <NavLink to="/shifts">
+              <span>Shifts</span>
             </NavLink>
           </Menu.Item>
         )}
