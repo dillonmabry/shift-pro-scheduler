@@ -1,6 +1,6 @@
 language: java
 os: linux
-dist: xenial
+dist: bionic
 jdk: oraclejdk11
 script: ./build.sh
 before_install:
