@@ -1,5 +1,6 @@
 package com.projects.shiftproscheduler.applicationuser;
 
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,9 +21,11 @@ public class ApplicationUserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, LockedException {
         Optional<ApplicationUser> applicationUser = applicationUserRepository.findByUsername(username);
         ApplicationUser user = applicationUser.orElseThrow();
+        if (!user.getIsActive())
+            throw new LockedException("User account not activated");
         return new User(user.getUsername(), user.getPassword(), getAuthority(user));
     }
 

@@ -3,6 +3,7 @@ package com.projects.shiftproscheduler.applicationuser;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -29,6 +30,9 @@ public class ApplicationUser {
     @JoinTable(name = "user_roles", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
             @JoinColumn(name = "role_id") })
     private Set<Role> roles;
+
+    @Column(name = "is_active")
+    private boolean isActive;
 
     public Integer getId() {
         return id;
@@ -60,5 +64,13 @@ public class ApplicationUser {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 }

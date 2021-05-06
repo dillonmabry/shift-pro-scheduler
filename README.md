@@ -6,12 +6,14 @@ Shift Pro is an open source, automated employee scheduler which can assist your 
 
 ## Development Instructions
 
-### Server (Requires MariaDB, OpenJDK 11)
+### Server (Requires MariaDB, OpenJDK 11, Postfix or local SMTP server)
 ```
 cd server
 ./mvnw package
 java -Dspring.profiles.active=development -jar target/*.jar
 ```
+### Installing Postfix or local SMTP
+Server requires some type of SMTP connection to send client emails. Setup via `application.properties` or production properties for production.
 
 ### Client
 ```
