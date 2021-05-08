@@ -7,13 +7,15 @@ import {
   LoginOutlined,
   UserOutlined,
   UsergroupAddOutlined,
-  ScheduleOutlined
+  ScheduleOutlined,
+  ApartmentOutlined
 } from "@ant-design/icons";
 import { NavLink, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AuthService from "../../services/AuthService";
 import Generation from "../../utilities/Generation";
 import Colors from "../../constants/Colors";
+import ROLES from "../../constants/Roles";
 
 const { Sider } = Layout;
 
@@ -25,8 +27,8 @@ const displayAvatar = (user, collapsed) => {
           color: "#fff",
           backgroundColor:
             Colors.avatarColors[
-              Generation.numberFromText(user.username[0]) %
-                Colors.avatarColors.length
+            Generation.numberFromText(user.username[0]) %
+            Colors.avatarColors.length
             ],
         }}
         size={32}
@@ -43,8 +45,8 @@ const displayAvatar = (user, collapsed) => {
         color: "#fff",
         backgroundColor:
           Colors.avatarColors[
-            Generation.numberFromText(user.username[0]) %
-              Colors.avatarColors.length
+          Generation.numberFromText(user.username[0]) %
+          Colors.avatarColors.length
           ],
       }}
       size={50}
@@ -76,12 +78,12 @@ const SideMenu = (props) => {
     if (AuthService.isAuthenticated() && userInfoRef.current) {
       setShowUser(
         AuthService.getRoles(userInfoRef.current.authorities).includes(
-          "ROLE_USER"
+          ROLES.User
         )
       );
       setShowAdmin(
         AuthService.getRoles(userInfoRef.current.authorities).includes(
-          "ROLE_ADMIN"
+          ROLES.Admin
         )
       );
     }
@@ -116,6 +118,13 @@ const SideMenu = (props) => {
           <Menu.Item key="/shifts" icon={<ScheduleOutlined />}>
             <NavLink to="/shifts">
               <span>Shifts</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+        {showAdmin && (
+          <Menu.Item key="/departments" icon={<ApartmentOutlined />}>
+            <NavLink to="/departments">
+              <span>Departments</span>
             </NavLink>
           </Menu.Item>
         )}
