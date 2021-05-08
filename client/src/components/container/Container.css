@@ -5,7 +5,7 @@
 }
 #components-layout-demo-top .logo {
     float: left;
-    width: 120px;
+    width: 120px; 
     height: 31px;
     margin: 16px 24px 16px 0;
 }
@@ -24,4 +24,5 @@
 .logo {
     height: 40px;
     margin: 16px;
+    text-align: center;
 }

@@ -21,10 +21,39 @@ const getEmployee = (username) => {
   });
 };
 
+const deleteEmployee = (id) => {
+  return axios.delete(API_URL + `/employee/${id}`, {
+    headers: AuthService.authHeader(),
+  });
+};
+
+const saveEmployee = (emp) => {
+  return axios.post(
+    API_URL + '/employees',
+    emp,
+    {
+      headers: AuthService.authHeader(),
+    }
+  );
+};
+
+const saveEmployeeProfile = (username, emp) => {
+  return axios.post(
+    API_URL + `/employees/${username}`,
+    emp,
+    {
+      headers: AuthService.authHeader(),
+    }
+  );
+};
+
 const EmployeeService = {
   getEmployees,
   getEmployee,
   getEmployeesBySupervisor,
+  deleteEmployee,
+  saveEmployee,
+  saveEmployeeProfile
 };
 
 export default EmployeeService;

@@ -1,44 +1,36 @@
-import Container from "../../components/container/Container";
 import React, { useState, useEffect } from "react";
-import { Spin, Empty } from "antd";
-import ShiftService from "../../services/ShiftService";
+import Container from "../../components/container/Container";
+import { Spin, Empty } from 'antd';
+import DepartmentService from "../../services/DepartmentService";
 import NotificationService from "../../services/NotificationService";
 import DataTable from "../../components/data-table/DataTable";
 
-const Shifts = () => {
-  const [shifts, setShifts] = useState([]);
+const Departments = () => {
+  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const columns = [
     {
-      title: 'Start Time',
-      dataIndex: 'startTime',
-      width: '50%',
-      editable: true,
-      dataType: 'time'
-    },
-    {
-      title: 'End Time',
-      dataIndex: 'endTime',
-      width: '50%',
-      editable: true,
-      dataType: 'time'
-    },
+      title: 'Name',
+      dataIndex: 'name',
+      width: '80%',
+      editable: true
+    }
   ];
-
+  
   const handleDelete = (key) => {
-    return ShiftService.deleteShift(key)
+    return DepartmentService.deleteDepartment(key)
   };
   const handleSave = (row) => {
-    return ShiftService.saveShift(row);
+    return DepartmentService.saveDepartment(row);
   };
 
   useEffect(() => {
-    ShiftService.getShifts()
+    DepartmentService.getDepartments()
       .then(
         (response) => {
           if (response.data) {
-            setShifts(response.data.shiftsList.map(item => ({ ...item, key: item.id })));
+            setDepartments(response.data.departmentsList.map(item => ({ ...item, key: item.id })));
           }
         },
         (error) => {
@@ -59,15 +51,15 @@ const Shifts = () => {
 
   return (
     <Container
-      navItems={['Home', 'Shifts']}
+      navItems={['Home', 'Departments']}
       content={
         <div>
           {loading && <Spin />}
           {!loading && (
             <div>
-              {shifts.length > 0 ? (
+              {departments.length > 0 ? (
                 <DataTable
-                  dataSource={shifts}
+                  dataSource={departments}
                   columns={columns}
                   handleDelete={handleDelete}
                   handleSave={handleSave}
@@ -83,4 +75,4 @@ const Shifts = () => {
   );
 };
 
-export default Shifts;
+export default Departments;

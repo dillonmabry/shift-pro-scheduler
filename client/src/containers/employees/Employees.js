@@ -1,15 +1,63 @@
 import Container from "../../components/container/Container";
 import React, { useState, useEffect } from "react";
-import { Table, Space, Spin, Empty } from "antd";
+import { Spin, Empty } from "antd";
 import EmployeeService from "../../services/EmployeeService";
 import AuthService from "../../services/AuthService";
 import NotificationService from "../../services/NotificationService";
-
-const { Column } = Table;
+import DataTable from "../../components/data-table/DataTable";
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const columns = [
+    {
+      title: 'First Name',
+      dataIndex: 'firstName',
+      width: '20%',
+      editable: true
+    },
+    {
+      title: 'Last Name',
+      dataIndex: 'lastName',
+      width: '20%',
+      editable: true
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      width: '20%',
+      editable: true
+    },
+    {
+      title: 'Phone',
+      dataIndex: 'phone',
+      width: '20%',
+      editable: true
+    },
+    {
+      title: 'Department',
+      dataIndex: 'department',
+      width: '20%',
+      editable: false,
+      dataType: 'object'
+    },
+    {
+      title: 'Supervisor',
+      dataIndex: 'supervisor',
+      width: '20%',
+      editable: false,
+      dataType: 'object'
+    }
+
+  ];
+
+  const handleDelete = (key) => {
+    return EmployeeService.deleteEmployee(key)
+  };
+  const handleSave = (row) => {
+    return EmployeeService.saveEmployee(row);
+  };
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
@@ -17,21 +65,7 @@ const Employees = () => {
       .then(
         (response) => {
           if (response.data) {
-            const _employees = [];
-            response.data.employeeList.forEach((employee) => {
-              _employees.push({
-                key: employee.id,
-                firstName: employee.firstName,
-                lastName: employee.lastName,
-                email: employee.email,
-                phone: employee.phone,
-                userName: employee.userName,
-                department: employee.department
-                  ? employee.department.name
-                  : "N/A",
-              });
-            });
-            setEmployees(_employees);
+            setEmployees(response.data.employeeList.map(item => ({ ...item, key: item.id })));
           }
         },
         (error) => {
@@ -40,8 +74,8 @@ const Employees = () => {
             (error.response &&
               error.response.data &&
               error.response.data.message) ||
-              error.message ||
-              error.toString()
+            error.message ||
+            error.toString()
           );
         }
       )
@@ -52,40 +86,19 @@ const Employees = () => {
 
   return (
     <Container
+      navItems={['Home', 'Employees']}
       content={
         <div>
           {loading && <Spin />}
           {!loading && (
             <div>
               {employees.length > 0 ? (
-                <Table dataSource={employees}>
-                  <Column
-                    title="First Name"
-                    dataIndex="firstName"
-                    key="firstName"
-                  />
-                  <Column
-                    title="Last Name"
-                    dataIndex="lastName"
-                    key="lastName"
-                  />
-                  <Column title="Email" dataIndex="email" key="email" />
-                  <Column title="Phone" dataIndex="phone" key="phone" />
-                  <Column
-                    title="Department"
-                    dataIndex="department"
-                    key="department"
-                  />
-                  <Column
-                    title="Action"
-                    key="action"
-                    render={(text, record) => (
-                      <Space size="middle">
-                        <a>Delete</a>
-                      </Space>
-                    )}
-                  />
-                </Table>
+                <DataTable
+                  dataSource={employees}
+                  columns={columns}
+                  handleDelete={handleDelete}
+                  handleSave={handleSave}
+                />
               ) : (
                 <Empty />
               )}

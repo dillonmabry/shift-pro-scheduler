@@ -15,6 +15,7 @@ import format from "date-fns/format";
 import AuthService from "../../services/AuthService";
 import ScheduleDetail from "./ScheduleDetail";
 import NotificationService from "../../services/NotificationService";
+import ROLES from "../../constants/Roles";
 
 const Schedule = () => {
   const [loading, setLoading] = useState(true);
@@ -42,14 +43,14 @@ const Schedule = () => {
           </div>
           <div style={{ marginBottom: "15px" }}>
             {AuthService.getRoles(userInfoRef.current.authorities).includes(
-              "ROLE_ADMIN"
+              ROLES.Admin
             ) && (
-              <ScheduleDetail
-                schedule={schedule}
-                updateEventsList={updateEventsList}
-                setLoading={setLoading}
-              />
-            )}
+                <ScheduleDetail
+                  schedule={schedule}
+                  updateEventsList={updateEventsList}
+                  setLoading={setLoading}
+                />
+              )}
           </div>
         </div>
         <BigCalendar events={assignments} />
@@ -61,20 +62,20 @@ const Schedule = () => {
     const _schedules = {};
     const assignedScheduleList = AuthService.getRoles(
       userInfoRef.current.authorities
-    ).includes("ROLE_USER")
+    ).includes(ROLES.User)
       ? scheduleList.filter((s) => s.isActive === true)
       : scheduleList.filter(
-          (s) => s.administrator.userName === userInfoRef.current.username
-        );
+        (s) => s.administrator.userName === userInfoRef.current.username
+      );
     assignedScheduleList.forEach((schedule) => {
       const _assignments = [];
       const startDate = parseISO(schedule.startDate);
       const scheduledAssignments = AuthService.getRoles(
         userInfoRef.current.authorities
-      ).includes("ROLE_USER")
+      ).includes(ROLES.User)
         ? schedule.assignments.filter(
-            (a) => a.employee.userName === userInfoRef.current.username
-          )
+          (a) => a.employee.userName === userInfoRef.current.username
+        )
         : schedule.assignments;
       scheduledAssignments.forEach((assignment) => {
         _assignments.push({
@@ -134,8 +135,8 @@ const Schedule = () => {
               (error.response &&
                 error.response.data &&
                 error.response.data.message) ||
-                error.message ||
-                error.toString()
+              error.message ||
+              error.toString()
             );
           }
         )
@@ -153,26 +154,26 @@ const Schedule = () => {
 
   return (
     <Container
+      navItems={['Home', 'Schedules']}
       content={
         <div>
           {loading && <Spin />}
           {!loading && (
             <div>
               {AuthService.getRoles(userInfoRef.current.authorities).includes(
-                "ROLE_ADMIN"
+                ROLES.Admin
               ) && (
-                <div>
-                  <CreateSchedule
-                    updateEventsList={updateEventsList}
-                    setLoading={setLoading}
-                  />
-                </div>
-              )}
+                  <div>
+                    <CreateSchedule
+                      updateEventsList={updateEventsList}
+                      setLoading={setLoading}
+                    />
+                  </div>
+                )}
               <br />
               <div>
                 {tabList.length > 0 ? (
                   <TabsCard
-                    title={"Schedules"}
                     tabList={tabList}
                     contentList={contentList}
                   />

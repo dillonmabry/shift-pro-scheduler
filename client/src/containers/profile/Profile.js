@@ -7,6 +7,7 @@ import EmployeeService from "../../services/EmployeeService";
 import AdministratorService from "../../services/AdministratorService";
 import AuthService from "../../services/AuthService";
 import NotificationService from "../../services/NotificationService";
+import ROLES from "../../constants/Roles";
 
 const DescriptionItem = ({ title, content }) => (
   <div className="site-description-item-profile-wrapper">
@@ -26,7 +27,7 @@ const Profile = () => {
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
-    if (AuthService.getRoles(user.authorities).includes("ROLE_USER")) {
+    if (AuthService.getRoles(user.authorities).includes(ROLES.User)) {
       EmployeeService.getEmployee(user.username)
         .then(
           (response) => {
@@ -49,7 +50,7 @@ const Profile = () => {
           setLoading(false);
         });
     }
-    if (AuthService.getRoles(user.authorities).includes("ROLE_ADMIN")) {
+    if (AuthService.getRoles(user.authorities).includes(ROLES.Admin)) {
       AdministratorService.getAdministrator(user.username)
         .then(
           (response) => {
@@ -76,14 +77,14 @@ const Profile = () => {
 
   return (
     <Container
+      navItems={['Home', 'Profile']}
       content={
         <div>
           {loading && <Spin />}
           {!loading && (
             <div>
               {userInfo && (
-                <Card title="User Profile" style={{ width: "75%" }}>
-                  <p className="site-description-item-profile-p">Personal</p>
+                <Card title="Employee Info" style={{ width: "75%" }}>
                   <Row>
                     <Col xs={4} sm={8} md={12}>
                       <DescriptionItem
@@ -98,7 +99,7 @@ const Profile = () => {
                   <Row>
                     <Col xs={4} sm={8} md={12}>
                       <DescriptionItem
-                        title="User Name"
+                        title="Username"
                         content={userInfo.username}
                       />
                     </Col>
