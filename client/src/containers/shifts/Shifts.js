@@ -1,71 +1,44 @@
 import Container from "../../components/container/Container";
 import React, { useState, useEffect } from "react";
 import { Spin, Empty } from "antd";
-import EmployeeService from "../../services/EmployeeService";
-import AuthService from "../../services/AuthService";
+import ShiftService from "../../services/ShiftService";
 import NotificationService from "../../services/NotificationService";
 import DataTable from "../../components/data-table/DataTable";
 
-const Employees = () => {
-  const [employees, setEmployees] = useState([]);
+const Shifts = () => {
+  const [shifts, setShifts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const columns = [
     {
-      title: 'First Name',
-      dataIndex: 'firstName',
-      width: '20%',
-      editable: true
+      title: 'Start Time',
+      dataIndex: 'startTime',
+      width: '50%',
+      editable: true,
+      dataType: 'time'
     },
     {
-      title: 'Last Name',
-      dataIndex: 'lastName',
-      width: '20%',
-      editable: true
+      title: 'End Time',
+      dataIndex: 'endTime',
+      width: '50%',
+      editable: true,
+      dataType: 'time'
     },
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      width: '20%',
-      editable: true
-    },
-    {
-      title: 'Phone',
-      dataIndex: 'phone',
-      width: '20%',
-      editable: true
-    },
-    {
-      title: 'Department',
-      dataIndex: 'department',
-      width: '20%',
-      editable: false,
-      dataType: 'object'
-    },
-    {
-      title: 'Supervisor',
-      dataIndex: 'supervisor',
-      width: '20%',
-      editable: false,
-      dataType: 'object'
-    }
-
   ];
 
   const handleDelete = (key) => {
-    return EmployeeService.deleteEmployee(key)
+    return ShiftService.deleteShift(key)
   };
   const handleSave = (row) => {
-    return EmployeeService.saveEmployee(row);
+    return ShiftService.saveShift(row);
   };
 
   useEffect(() => {
-    const user = AuthService.getCurrentUser();
-    EmployeeService.getEmployeesBySupervisor(user.username)
+    ShiftService.getShifts()
       .then(
         (response) => {
           if (response.data) {
-            setEmployees(response.data.employeeList.map(item => ({ ...item, key: item.id })));
+            setShifts(response.data.shiftsList.map(item => ({ ...item, key: item.id })));
           }
         },
         (error) => {
@@ -86,15 +59,15 @@ const Employees = () => {
 
   return (
     <Container
-      navItems={['Home', 'Employees']}
+      navItems={['Home', 'Shifts']}
       content={
         <div>
           {loading && <Spin />}
           {!loading && (
             <div>
-              {employees.length > 0 ? (
+              {shifts.length > 0 ? (
                 <DataTable
-                  dataSource={employees}
+                  dataSource={shifts}
                   columns={columns}
                   handleDelete={handleDelete}
                   handleSave={handleSave}
@@ -110,4 +83,4 @@ const Employees = () => {
   );
 };
 
-export default Employees;
+export default Shifts;

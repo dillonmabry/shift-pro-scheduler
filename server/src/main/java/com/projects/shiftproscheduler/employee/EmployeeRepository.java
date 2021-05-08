@@ -2,7 +2,6 @@ package com.projects.shiftproscheduler.employee;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,12 +49,5 @@ public interface EmployeeRepository extends Repository<Employee, Integer> {
      */
     @Transactional(readOnly = true)
     Collection<Employee> findBySupervisor(Administrator supervisor);
-
-    /**
-     * Find {@link Employee}s by supervisor username
-     * 
-     */
-    @Query(value = "select e.id, e.first_name, e.last_name, e.email, e.phone, d.id as dept_id, d.dept_name, a.username, ad.username as supervisor, ad.id as supervisor_id from employees e left join application_users a on a.username = e.username join departments d on d.id = e.dept_id join administrators ad on ad.id = e.supervisor_id where ad.username = ?1", nativeQuery = true)
-    Collection<Employee> findAllBySupervisor(String username);
 
 }

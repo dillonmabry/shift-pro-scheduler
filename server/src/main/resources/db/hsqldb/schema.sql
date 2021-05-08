@@ -44,10 +44,22 @@ DROP TABLE application_users IF EXISTS
 CREATE TABLE application_users (
   id         INTEGER IDENTITY PRIMARY KEY,
   username VARCHAR(40),
-  password  VARCHAR(60)
+  password  VARCHAR(60),
+  is_active BOOLEAN DEFAULT FALSE NOT NULL,
 );
 CREATE INDEX application_users_username ON application_users (username);
 CREATE UNIQUE INDEX application_users_un_username ON application_users (username);
+
+-- Token Registration
+DROP TABLE confirmation_tokens IF EXISTS
+CREATE TABLE confirmation_tokens (
+  id  INTEGER IDENTITY PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  confirmation_token VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+CREATE INDEX confirmation_tokens_created_at ON confirmation_tokens (created_at);
+ALTER TABLE confirmation_tokens ADD CONSTRAINT fk_confirmation_tokens_user_id FOREIGN KEY (user_id) REFERENCES application_users (id);
 
 -- Roles
 DROP TABLE roles IF EXISTS 

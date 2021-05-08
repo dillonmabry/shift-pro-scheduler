@@ -1,7 +1,5 @@
 package com.projects.shiftproscheduler.optimizer;
 
-import com.skaggsm.ortools.OrToolsHelper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +11,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.skaggsm.ortools.OrToolsHelper;
 import com.google.ortools.sat.IntVar;
 import com.google.ortools.sat.LinearExpr;
 import com.google.ortools.sat.CpModel;
@@ -55,8 +54,12 @@ public class DefaultOptimizer implements IOptimizer {
         Collection<Employee> employees = employeeRepository.findBySupervisor(schedules.getScheduleList().get(0).getAdministrator()); // Filter by administrator
         Collection<Shift> shifts = shiftRepository.findAll();
 
+        if(employees.size() < shifts.size()) {
+            throw new IllegalStateException("Number of employees less than shifts needed");
+        }
+
         // Create shift variables
-        // shift_e_d_s: employee 'e' works shift 's' on day 'd'
+        // shift_e_d_s: employee 'e' works shift 's' on day 'd' 
         HashMap<String, IntVar> shiftVars = new HashMap<String, IntVar>();
         for (Employee employee : employees) {
             for (int d = 0; d < schedules.getScheduleList().get(0).getDays(); d++) {
