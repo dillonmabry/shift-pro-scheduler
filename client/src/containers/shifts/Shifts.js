@@ -11,23 +11,23 @@ const Shifts = () => {
 
   const columns = [
     {
-      title: 'Start Time',
-      dataIndex: 'startTime',
-      width: '50%',
+      title: "Start Time",
+      dataIndex: "startTime",
+      width: "50%",
       editable: true,
-      dataType: 'time'
+      dataType: "time",
     },
     {
-      title: 'End Time',
-      dataIndex: 'endTime',
-      width: '50%',
+      title: "End Time",
+      dataIndex: "endTime",
+      width: "50%",
       editable: true,
-      dataType: 'time'
+      dataType: "time",
     },
   ];
 
   const handleDelete = (key) => {
-    return ShiftService.deleteShift(key)
+    return ShiftService.deleteShift(key);
   };
   const handleSave = (row) => {
     return ShiftService.saveShift(row);
@@ -38,7 +38,12 @@ const Shifts = () => {
       .then(
         (response) => {
           if (response.data) {
-            setShifts(response.data.shiftsList.map(item => ({ ...item, key: item.id })));
+            setShifts(
+              response.data.shiftsList.map((item) => ({
+                ...item,
+                key: item.id,
+              }))
+            );
           }
         },
         (error) => {
@@ -47,8 +52,8 @@ const Shifts = () => {
             (error.response &&
               error.response.data &&
               error.response.data.message) ||
-            error.message ||
-            error.toString()
+              error.message ||
+              error.toString()
           );
         }
       )
@@ -59,7 +64,7 @@ const Shifts = () => {
 
   return (
     <Container
-      navItems={['Home', 'Shifts']}
+      navItems={["Home", "Shifts"]}
       content={
         <div>
           {loading && <Spin />}

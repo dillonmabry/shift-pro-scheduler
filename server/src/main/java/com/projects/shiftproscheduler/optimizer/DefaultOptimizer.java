@@ -162,7 +162,7 @@ public class DefaultOptimizer implements IOptimizer {
                     Optional<Employee> employeeUser = employeeRepository.findById(Integer.parseInt(varValues[1]));
                     Employee emp = employeeUser.orElseThrow();
                     int dayId = Integer.parseInt(varValues[2]);
-                    Shift shift = shiftRepository.findById(Integer.parseInt(varValues[3]));
+                    Shift shift = shiftRepository.findById(Integer.parseInt(varValues[3])).orElseThrow();
 
                     Assignment assignment = new Assignment();
                     assignment.setEmployee(emp);
