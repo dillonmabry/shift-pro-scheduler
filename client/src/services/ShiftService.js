@@ -16,19 +16,15 @@ const deleteShift = (id) => {
 };
 
 const saveShift = (shift) => {
-  return axios.post(
-    API_URL + '/shifts',
-    shift,
-    {
-      headers: AuthService.authHeader(),
-    }
-  );
+  return axios.post(API_URL + "/shifts", shift, {
+    headers: AuthService.authHeader(),
+  });
 };
 
 const ShiftService = {
   getShifts,
   deleteShift,
-  saveShift
+  saveShift,
 };
 
 export default ShiftService;

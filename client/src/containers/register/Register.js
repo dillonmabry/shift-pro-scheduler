@@ -28,7 +28,7 @@ const Register = (props) => {
 
   return (
     <Container
-      navItems={['Home', 'Register']}
+      navItems={["Home", "Register"]}
       content={
         <Card>
           <Form

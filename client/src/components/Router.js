@@ -16,11 +16,36 @@ class Main extends React.Component {
     return (
       <BrowserRouter>
         <Switch>
-          <PrivateRoute exact path="/" component={Schedule} roles={[ROLES.User, ROLES.Admin]} />
-          <PrivateRoute exact path="/profile" component={Profile} roles={[ROLES.User, ROLES.Admin]} />
-          <PrivateRoute exact path="/employees" component={Employees} roles={[ROLES.Admin]} />
-          <PrivateRoute exact path="/shifts" component={Shifts} roles={[ROLES.Admin]} />
-          <PrivateRoute exact path="/departments" component={Departments} roles={[ROLES.Admin]} />
+          <PrivateRoute
+            exact
+            path="/"
+            component={Schedule}
+            roles={[ROLES.User, ROLES.Admin]}
+          />
+          <PrivateRoute
+            exact
+            path="/profile"
+            component={Profile}
+            roles={[ROLES.User, ROLES.Admin]}
+          />
+          <PrivateRoute
+            exact
+            path="/employees"
+            component={Employees}
+            roles={[ROLES.Admin]}
+          />
+          <PrivateRoute
+            exact
+            path="/shifts"
+            component={Shifts}
+            roles={[ROLES.Admin]}
+          />
+          <PrivateRoute
+            exact
+            path="/departments"
+            component={Departments}
+            roles={[ROLES.Admin]}
+          />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route component={NotFound} />

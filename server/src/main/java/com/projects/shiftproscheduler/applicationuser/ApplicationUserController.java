@@ -1,8 +1,11 @@
 package com.projects.shiftproscheduler.applicationuser;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
 import com.projects.shiftproscheduler.email.EmailService;
@@ -15,10 +18,12 @@ import com.projects.shiftproscheduler.security.Role;
 import com.projects.shiftproscheduler.security.RoleRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +35,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 @RestController
 @RequestMapping("/users")
@@ -53,6 +60,12 @@ public class ApplicationUserController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private SpringTemplateEngine templateEngine;
+
+    @Value("classpath:/static/images/handshake-icon.png")
+    Resource welcomeResource;
+
     @PostMapping("/register")
     @Transactional
     public void register(@RequestBody ApplicationUser user) throws Exception {
@@ -70,18 +83,34 @@ public class ApplicationUserController {
         confirmationToken.setUser(user);
         confirmationTokenRepository.save(confirmationToken);
 
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
         Employee employee = employeeRepository.findByUserName(user.getUsername()).orElseThrow();
-        mailMessage.setTo(employee.getEmail());
-        mailMessage.setSubject("Complete Shift Pro Registration!");
-        mailMessage.setFrom("shiftproadmin@shiftproscheduler.com");
-        mailMessage.setText("To confirm your Shift Pro account, please click here : "
-                + "http://localhost:8080/api/users/confirm-account/" + confirmationToken.getConfirmationToken());
 
-        emailService.sendMail(mailMessage);
+        MimeMessage message = emailService.createMimeMessage();
+        MimeMessageHelper helper = emailService.createMimeMessageHelper(message);
+
+        String adminEmail = "shiftproadmin@shiftproscheduler.com";
+        Map<String, Object> mailProps = new HashMap<String, Object>() {
+            {
+                put("confirmLink",
+                        "http://localhost:8080/api/users/confirm-account/" + confirmationToken.getConfirmationToken());
+                put("adminMail", adminEmail);
+            }
+        };
+        Context context = new Context();
+        context.setVariables(mailProps);
+        String html = templateEngine.process("email-confirmation", context);
+
+        helper.setTo(employee.getEmail());
+        helper.setText(html, true);
+        helper.setSubject("Complete Shift Pro Registration!");
+        helper.setFrom(adminEmail);
+
+        helper.addInline("handshake-icon.png", welcomeResource);
+        emailService.sendMail(message);
     }
 
     @GetMapping(value = "/confirm-account/{token}")
+    @Transactional
     public ResponseEntity<String> confirmUserAccount(@PathVariable("token") String confirmationToken) throws Exception {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
         if (token == null)
@@ -91,7 +120,10 @@ public class ApplicationUserController {
         user.setIsActive(true);
         applicationUserRepository.save(user);
 
-        return new ResponseEntity<String>("Successful confirmation", HttpStatus.OK);
+        Context context = new Context();
+        String html = templateEngine.process("email-successful", context);
+
+        return new ResponseEntity<String>(html, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

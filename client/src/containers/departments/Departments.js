@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Container from "../../components/container/Container";
-import { Spin, Empty } from 'antd';
+import { Spin, Empty } from "antd";
 import DepartmentService from "../../services/DepartmentService";
 import NotificationService from "../../services/NotificationService";
 import DataTable from "../../components/data-table/DataTable";
@@ -11,15 +11,15 @@ const Departments = () => {
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      width: '80%',
-      editable: true
-    }
+      title: "Name",
+      dataIndex: "name",
+      width: "80%",
+      editable: true,
+    },
   ];
-  
+
   const handleDelete = (key) => {
-    return DepartmentService.deleteDepartment(key)
+    return DepartmentService.deleteDepartment(key);
   };
   const handleSave = (row) => {
     return DepartmentService.saveDepartment(row);
@@ -30,7 +30,12 @@ const Departments = () => {
       .then(
         (response) => {
           if (response.data) {
-            setDepartments(response.data.departmentsList.map(item => ({ ...item, key: item.id })));
+            setDepartments(
+              response.data.departmentsList.map((item) => ({
+                ...item,
+                key: item.id,
+              }))
+            );
           }
         },
         (error) => {
@@ -39,8 +44,8 @@ const Departments = () => {
             (error.response &&
               error.response.data &&
               error.response.data.message) ||
-            error.message ||
-            error.toString()
+              error.message ||
+              error.toString()
           );
         }
       )
@@ -51,7 +56,7 @@ const Departments = () => {
 
   return (
     <Container
-      navItems={['Home', 'Departments']}
+      navItems={["Home", "Departments"]}
       content={
         <div>
           {loading && <Spin />}

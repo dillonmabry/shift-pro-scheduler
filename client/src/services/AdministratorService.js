@@ -9,8 +9,15 @@ const getAdministrator = (username) => {
   });
 };
 
+const saveAdministratorProfile = (username, admin) => {
+  return axios.post(API_URL + `/administrators/${username}`, admin, {
+    headers: AuthService.authHeader(),
+  });
+};
+
 const AdministratorService = {
   getAdministrator,
+  saveAdministratorProfile,
 };
 
 export default AdministratorService;

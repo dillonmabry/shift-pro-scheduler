@@ -8,7 +8,7 @@ import {
   UserOutlined,
   UsergroupAddOutlined,
   ScheduleOutlined,
-  ApartmentOutlined
+  ApartmentOutlined,
 } from "@ant-design/icons";
 import { NavLink, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -27,8 +27,8 @@ const displayAvatar = (user, collapsed) => {
           color: "#fff",
           backgroundColor:
             Colors.avatarColors[
-            Generation.numberFromText(user.username[0]) %
-            Colors.avatarColors.length
+              Generation.numberFromText(user.username[0]) %
+                Colors.avatarColors.length
             ],
         }}
         size={32}
@@ -45,8 +45,8 @@ const displayAvatar = (user, collapsed) => {
         color: "#fff",
         backgroundColor:
           Colors.avatarColors[
-          Generation.numberFromText(user.username[0]) %
-          Colors.avatarColors.length
+            Generation.numberFromText(user.username[0]) %
+              Colors.avatarColors.length
           ],
       }}
       size={50}

@@ -27,7 +27,7 @@ const Login = (props) => {
 
   return (
     <Container
-      navItems={['Home', 'Login']}
+      navItems={["Home", "Login"]}
       content={
         <Card>
           <Form name="normal_login" className="login-form" onFinish={onFinish}>

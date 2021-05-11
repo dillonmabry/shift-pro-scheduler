@@ -2,12 +2,13 @@ package com.projects.shiftproscheduler.shift;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Optional;
 
-public interface ShiftRepository extends Repository<Shift, Integer> {
+public interface ShiftRepository extends CrudRepository<Shift, Integer> {
 
     /**
      * Retrieve all <code>Shift</code>s from the data store.
@@ -19,17 +20,10 @@ public interface ShiftRepository extends Repository<Shift, Integer> {
     Collection<Shift> findAll() throws DataAccessException;
 
     /**
-     * Find a {@link Shift} by id
+     * Find a {@link Schedule} by id
      * 
      */
     @Transactional(readOnly = true)
-    Shift findById(Integer id);
-
-    /**
-     * Save a {@link Shift} to the data store, either inserting or updating
-     * 
-     * @param shift the {@link Shift} tp save
-     */
-    void save(Shift shift);
+    Optional<Shift> findById(Integer id);
 
 }

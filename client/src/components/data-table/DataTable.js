@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
-import { Table, Input, Button, Form, Empty, Popconfirm } from 'antd';
+import React, { useContext, useState, useEffect, useRef } from "react";
+import { Table, Input, Button, Form, Empty, Popconfirm } from "antd";
 const EditableContext = React.createContext(null);
 import PropTypes from "prop-types";
 import NotificationService from "../../services/NotificationService";
@@ -81,19 +81,21 @@ const EditableCell = ({
 };
 
 const DataTable = (props) => {
-
   const [dataSource, setDataSource] = useState(props.dataSource);
   const [count, setCount] = useState(props.dataSource.length);
 
   const dataColumns = [
     ...props.columns,
     {
-      title: '',
-      dataIndex: 'Remove',
+      title: "",
+      dataIndex: "Remove",
       // eslint-disable-next-line react/display-name
       render: (_, record) =>
         dataSource.length >= 1 ? (
-          <Popconfirm title="Confirm delete?" onConfirm={() => handleDelete(record.key)}>
+          <Popconfirm
+            title="Confirm delete?"
+            onConfirm={() => handleDelete(record.key)}
+          >
             <a>Delete</a>
           </Popconfirm>
         ) : null,
@@ -101,93 +103,84 @@ const DataTable = (props) => {
   ];
 
   const handleDelete = (key) => {
-    props.handleDelete(key)
-      .then(
-        () => {
-          setDataSource(dataSource.filter((item) => item.key !== key));
-          NotificationService.notify(
-            "success",
-            "Successfully removed item"
-          );
-        },
-        (error) => {
-          NotificationService.notify(
-            "error",
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
+    props.handleDelete(key).then(
+      () => {
+        setDataSource(dataSource.filter((item) => item.key !== key));
+        NotificationService.notify("success", "Successfully removed item");
+      },
+      (error) => {
+        NotificationService.notify(
+          "error",
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
             error.message ||
             error.toString()
-          );
-        }
-      );
+        );
+      }
+    );
   };
   const addItem = () => {
     const newData = {
       key: null,
     };
-    props.columns.forEach(col => {
+    props.columns.forEach((col) => {
       // Str
-      if (!col.dataType || col.dataType === 'string') {
+      if (!col.dataType || col.dataType === "string") {
         newData[col.dataIndex] = `New ${col.title}`;
         // Time
-      } else if (col.dataType === 'time') {
-        newData[col.dataIndex] = '00:00:00';
+      } else if (col.dataType === "time") {
+        newData[col.dataIndex] = "00:00:00";
         // Number
-      } else if (col.dataType === 'number') {
+      } else if (col.dataType === "number") {
         newData[col.dataIndex] = 0;
         // Object
-      } else if (col.dataType === 'object') {
+      } else if (col.dataType === "object") {
         newData[col.dataIndex] = null;
       }
     });
-    props.handleSave(newData)
-      .then(
-        (response) => {
-          setDataSource([...dataSource, { ...response.data, key: response.data.id }]);
-          setCount(count + 1);
-          NotificationService.notify(
-            "success",
-            "Successfully added item"
-          );
-        },
-        (error) => {
-          NotificationService.notify(
-            "error",
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
+    props.handleSave(newData).then(
+      (response) => {
+        setDataSource([
+          ...dataSource,
+          { ...response.data, key: response.data.id },
+        ]);
+        setCount(count + 1);
+        NotificationService.notify("success", "Successfully added item");
+      },
+      (error) => {
+        NotificationService.notify(
+          "error",
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
             error.message ||
             error.toString()
-          );
-        }
-      );
+        );
+      }
+    );
   };
   const saveItem = (row) => {
-    props.handleSave(row)
-      .then(
-        () => {
-          const newData = [...dataSource];
-          const index = newData.findIndex((item) => row.key === item.key);
-          const item = newData[index];
-          newData.splice(index, 1, { ...item, ...row });
-          setDataSource(newData);
-          NotificationService.notify(
-            "success",
-            "Successfully saved item"
-          );
-        },
-        (error) => {
-          NotificationService.notify(
-            "error",
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
+    props.handleSave(row).then(
+      () => {
+        const newData = [...dataSource];
+        const index = newData.findIndex((item) => row.key === item.key);
+        const item = newData[index];
+        newData.splice(index, 1, { ...item, ...row });
+        setDataSource(newData);
+        NotificationService.notify("success", "Successfully saved item");
+      },
+      (error) => {
+        NotificationService.notify(
+          "error",
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
             error.message ||
             error.toString()
-          );
-        }
-      );
+        );
+      }
+    );
   };
 
   const components = {
@@ -220,15 +213,15 @@ const DataTable = (props) => {
             onClick={addItem}
             type="primary"
             style={{
-              float: 'left',
+              float: "left",
               marginBottom: 16,
             }}
           >
             Add New
-            </Button>
+          </Button>
           <Table
             components={components}
-            rowClassName={() => 'editable-row'}
+            rowClassName={() => "editable-row"}
             bordered
             dataSource={dataSource}
             columns={columns}
@@ -239,7 +232,7 @@ const DataTable = (props) => {
       )}
     </div>
   );
-}
+};
 
 DataTable.propTypes = {
   dataSource: PropTypes.arrayOf(PropTypes.object),
@@ -255,11 +248,11 @@ EditableCell.propTypes = {
   children: PropTypes.node,
   dataIndex: PropTypes.string,
   record: PropTypes.object,
-  handleSave: PropTypes.func
+  handleSave: PropTypes.func,
 };
 
 EditableRow.propTypes = {
-  index: PropTypes.number
+  index: PropTypes.number,
 };
 
 export default DataTable;
