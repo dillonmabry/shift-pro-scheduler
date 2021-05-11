@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, Card, Spin } from "antd";
+import { Form, Input, Button, Card, Spin } from "antd";
 import "./Profile.css";
 import PropTypes from "prop-types";
 import Container from "../../components/container/Container";
@@ -25,6 +25,41 @@ const Profile = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const formItemLayout = {
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 8 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 16 },
+    },
+  };
+  const tailFormItemLayout = {
+    wrapperCol: {
+      xs: {
+        span: 24,
+        offset: 0,
+      },
+      sm: {
+        span: 16,
+        offset: 8,
+      },
+    },
+  };
+  const [form] = Form.useForm();
+
+  const onFinish = (values) => {
+    const formData = {
+      ...userInfo,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      phone: values.phone,
+      email: values.email,
+    };
+    handleSave(formData);
+  };
+
   useEffect(() => {
     const user = AuthService.getCurrentUser();
     if (AuthService.getRoles(user.authorities).includes(ROLES.User)) {
@@ -32,7 +67,11 @@ const Profile = () => {
         .then(
           (response) => {
             if (response.data) {
-              setUserInfo({ ...response.data, username: user.username });
+              setUserInfo({
+                ...response.data,
+                username: user.username,
+                authorities: user.authorities,
+              });
             }
           },
           (error) => {
@@ -55,7 +94,11 @@ const Profile = () => {
         .then(
           (response) => {
             if (response.data) {
-              setUserInfo({ ...response.data, username: user.username });
+              setUserInfo({
+                ...response.data,
+                username: user.username,
+                authorities: user.authorities,
+              });
             }
           },
           (error) => {
@@ -75,61 +118,159 @@ const Profile = () => {
     }
   }, []);
 
+  const handleSave = (profileData) => {
+    if (AuthService.getRoles(userInfo.authorities).includes(ROLES.Admin)) {
+      AdministratorService.saveAdministratorProfile(
+        userInfo.username,
+        profileData
+      ).then(
+        (response) => {
+          if (response.data) {
+            setUserInfo({ ...response.data });
+            NotificationService.notify("success", "Successfully saved profile");
+          }
+        },
+        (error) => {
+          NotificationService.notify(
+            "error",
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+              error.message ||
+              error.toString()
+          );
+        }
+      );
+    }
+    if (AuthService.getRoles(userInfo.authorities).includes(ROLES.User)) {
+      EmployeeService.saveEmployeeProfile(userInfo.username, profileData).then(
+        (response) => {
+          if (response.data) {
+            setUserInfo({ ...response.data });
+            NotificationService.notify("success", "Successfully saved profile");
+          }
+        },
+        (error) => {
+          NotificationService.notify(
+            "error",
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+              error.message ||
+              error.toString()
+          );
+        }
+      );
+    }
+  };
+
   return (
     <Container
-      navItems={['Home', 'Profile']}
+      navItems={["Home", "Profile"]}
       content={
         <div>
           {loading && <Spin />}
           {!loading && (
             <div>
               {userInfo && (
-                <Card title="Employee Info" style={{ width: "75%" }}>
-                  <Row>
-                    <Col xs={4} sm={8} md={12}>
-                      <DescriptionItem
-                        title="Full Name"
-                        content={`${userInfo.firstName} ${userInfo.lastName}`}
-                      />
-                    </Col>
-                    <Col xs={4} sm={8} md={12}>
-                      <DescriptionItem title="Email" content={userInfo.email} />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col xs={4} sm={8} md={12}>
-                      <DescriptionItem
-                        title="Username"
-                        content={userInfo.username}
-                      />
-                    </Col>
-                    <Col xs={4} sm={8} md={12}>
-                      <DescriptionItem
-                        title="Phone"
-                        content={userInfo.phone ? userInfo.phone : "N/A"}
-                      />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col xs={4} sm={8} md={12}>
-                      <DescriptionItem
-                        title="Department"
-                        content={
-                          userInfo.department ? userInfo.department.name : "N/A"
-                        }
-                      />
-                    </Col>
-                    <Col xs={4} sm={8} md={12}>
-                      <DescriptionItem
-                        title="Supervisor"
-                        content={
-                          userInfo.supervisor
-                            ? `${userInfo.supervisor.firstName} ${userInfo.supervisor.lastName}`
-                            : "N/A"
-                        }
-                      />
-                    </Col>
-                  </Row>
+                <Card title="User Info" style={{ width: "75%" }}>
+                  <Form
+                    {...formItemLayout}
+                    form={form}
+                    name="register"
+                    onFinish={onFinish}
+                    initialValues={{
+                      username: userInfo.username,
+                      firstName: userInfo.firstName,
+                      lastName: userInfo.lastName,
+                      email: userInfo.email ? userInfo.email : "",
+                      phone: userInfo.phone ? userInfo.phone : "",
+                      department: userInfo.department
+                        ? userInfo.department.name
+                        : "",
+                      supervisor: userInfo.supervisor
+                        ? userInfo.supervisor.firstName +
+                          ", " +
+                          userInfo.supervisor.lastName
+                        : "",
+                    }}
+                    scrollToFirstError
+                  >
+                    <Form.Item name="username" label="Username">
+                      <Input disabled={true} />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="firstName"
+                      label="First Name"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your First Name!",
+                          whitespace: true,
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <Form.Item
+                      name="lastName"
+                      label="Last Name"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your Last Name!",
+                          whitespace: true,
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="email"
+                      label="E-mail"
+                      rules={[
+                        {
+                          type: "email",
+                          message: "The input is not valid E-mail!",
+                        },
+                        {
+                          required: true,
+                          message: "Please input your E-mail!",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="phone"
+                      label="Phone Number"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your phone number!",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+
+                    <Form.Item name="department" label="Department">
+                      <Input disabled={true} />
+                    </Form.Item>
+
+                    <Form.Item name="supervisor" label="Supervisor">
+                      <Input disabled={true} />
+                    </Form.Item>
+
+                    <Form.Item {...tailFormItemLayout}>
+                      <Button type="primary" htmlType="submit">
+                        Save
+                      </Button>
+                    </Form.Item>
+                  </Form>
                 </Card>
               )}
             </div>

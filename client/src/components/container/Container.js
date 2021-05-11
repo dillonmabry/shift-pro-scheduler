@@ -1,7 +1,7 @@
 import "./Container.css";
 import React from "react";
 import SideMenu from "../sidebar/Sidebar";
-import { Layout, Breadcrumb  } from "antd";
+import { Layout, Breadcrumb } from "antd";
 import PropTypes from "prop-types";
 
 const { Header, Content, Footer } = Layout;
@@ -13,16 +13,15 @@ const Container = ({ navItems, content }) => (
       <Header className="site-layout-background" style={{ padding: 0 }}>
         <div className="logo" />
       </Header>
-      <Content style={{ padding: '0 50px' }}>
+      <Content style={{ padding: "0 50px" }}>
         {navItems && (
-          <Breadcrumb style={{ margin: '16px 0' }}>
-            {navItems.map(item => { return (<Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>) })}
+          <Breadcrumb style={{ margin: "16px 0" }}>
+            {navItems.map((item) => {
+              return <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>;
+            })}
           </Breadcrumb>
         )}
-        <div
-          className="site-layout-background"
-          style={{ minHeight: 360 }}
-        >
+        <div className="site-layout-background" style={{ minHeight: 360 }}>
           {content}
         </div>
       </Content>

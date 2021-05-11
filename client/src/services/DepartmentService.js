@@ -16,19 +16,15 @@ const deleteDepartment = (id) => {
 };
 
 const saveDepartment = (dept) => {
-  return axios.post(
-    API_URL + '/departments',
-    dept,
-    {
-      headers: AuthService.authHeader(),
-    }
-  );
+  return axios.post(API_URL + "/departments", dept, {
+    headers: AuthService.authHeader(),
+  });
 };
 
 const DepartmentService = {
   getDepartments,
   deleteDepartment,
-  saveDepartment
+  saveDepartment,
 };
 
 export default DepartmentService;

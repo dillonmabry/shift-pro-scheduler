@@ -2,7 +2,7 @@ package com.projects.shiftproscheduler.employee;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import com.projects.shiftproscheduler.administrator.Administrator;
 
-public interface EmployeeRepository extends Repository<Employee, Integer> {
+public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
 
     /**
      * Retrieve all <code>Employee</code>s from the data store.
@@ -22,13 +22,6 @@ public interface EmployeeRepository extends Repository<Employee, Integer> {
     @Cacheable("employees")
     Collection<Employee> findAll() throws DataAccessException;
 
-    /**
-     * Save a {@link Employee} to the data store, either inserting or updating
-     * 
-     * @param employee the {@link Employee} tp save
-     */
-    void save(Employee employee);
-    
     /**
      * Find a {@link Employee} by id
      * 

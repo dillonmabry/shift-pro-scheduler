@@ -28,23 +28,15 @@ const deleteEmployee = (id) => {
 };
 
 const saveEmployee = (emp) => {
-  return axios.post(
-    API_URL + '/employees',
-    emp,
-    {
-      headers: AuthService.authHeader(),
-    }
-  );
+  return axios.post(API_URL + "/employees", emp, {
+    headers: AuthService.authHeader(),
+  });
 };
 
 const saveEmployeeProfile = (username, emp) => {
-  return axios.post(
-    API_URL + `/employees/${username}`,
-    emp,
-    {
-      headers: AuthService.authHeader(),
-    }
-  );
+  return axios.post(API_URL + `/employees/${username}`, emp, {
+    headers: AuthService.authHeader(),
+  });
 };
 
 const EmployeeService = {
@@ -53,7 +45,7 @@ const EmployeeService = {
   getEmployeesBySupervisor,
   deleteEmployee,
   saveEmployee,
-  saveEmployeeProfile
+  saveEmployeeProfile,
 };
 
 export default EmployeeService;

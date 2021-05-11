@@ -45,12 +45,12 @@ const Schedule = () => {
             {AuthService.getRoles(userInfoRef.current.authorities).includes(
               ROLES.Admin
             ) && (
-                <ScheduleDetail
-                  schedule={schedule}
-                  updateEventsList={updateEventsList}
-                  setLoading={setLoading}
-                />
-              )}
+              <ScheduleDetail
+                schedule={schedule}
+                updateEventsList={updateEventsList}
+                setLoading={setLoading}
+              />
+            )}
           </div>
         </div>
         <BigCalendar events={assignments} />
@@ -65,8 +65,8 @@ const Schedule = () => {
     ).includes(ROLES.User)
       ? scheduleList.filter((s) => s.isActive === true)
       : scheduleList.filter(
-        (s) => s.administrator.userName === userInfoRef.current.username
-      );
+          (s) => s.administrator.userName === userInfoRef.current.username
+        );
     assignedScheduleList.forEach((schedule) => {
       const _assignments = [];
       const startDate = parseISO(schedule.startDate);
@@ -74,8 +74,8 @@ const Schedule = () => {
         userInfoRef.current.authorities
       ).includes(ROLES.User)
         ? schedule.assignments.filter(
-          (a) => a.employee.userName === userInfoRef.current.username
-        )
+            (a) => a.employee.userName === userInfoRef.current.username
+          )
         : schedule.assignments;
       scheduledAssignments.forEach((assignment) => {
         _assignments.push({
@@ -135,8 +135,8 @@ const Schedule = () => {
               (error.response &&
                 error.response.data &&
                 error.response.data.message) ||
-              error.message ||
-              error.toString()
+                error.message ||
+                error.toString()
             );
           }
         )
@@ -154,7 +154,7 @@ const Schedule = () => {
 
   return (
     <Container
-      navItems={['Home', 'Schedules']}
+      navItems={["Home", "Schedules"]}
       content={
         <div>
           {loading && <Spin />}
@@ -163,20 +163,17 @@ const Schedule = () => {
               {AuthService.getRoles(userInfoRef.current.authorities).includes(
                 ROLES.Admin
               ) && (
-                  <div>
-                    <CreateSchedule
-                      updateEventsList={updateEventsList}
-                      setLoading={setLoading}
-                    />
-                  </div>
-                )}
+                <div>
+                  <CreateSchedule
+                    updateEventsList={updateEventsList}
+                    setLoading={setLoading}
+                  />
+                </div>
+              )}
               <br />
               <div>
                 {tabList.length > 0 ? (
-                  <TabsCard
-                    tabList={tabList}
-                    contentList={contentList}
-                  />
+                  <TabsCard tabList={tabList} contentList={contentList} />
                 ) : (
                   <Empty />
                 )}
