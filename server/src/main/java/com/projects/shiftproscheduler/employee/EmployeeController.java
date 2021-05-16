@@ -4,6 +4,7 @@ import javax.persistence.EntityNotFoundException;
 
 import com.projects.shiftproscheduler.administrator.AdministratorRepository;
 import com.projects.shiftproscheduler.applicationuser.ApplicationUserRepository;
+import com.projects.shiftproscheduler.department.DepartmentRepository;
 import com.projects.shiftproscheduler.security.JWTUtil;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -25,12 +26,14 @@ class EmployeeController {
     private final EmployeeRepository employees;
     private final AdministratorRepository administrators;
     private final ApplicationUserRepository applicationUsers;
+    private final DepartmentRepository departments;
 
     public EmployeeController(EmployeeRepository employees, AdministratorRepository administrators,
-            ApplicationUserRepository applicationUsers) {
+            ApplicationUserRepository applicationUsers, DepartmentRepository departments) {
         this.employees = employees;
         this.administrators = administrators;
         this.applicationUsers = applicationUsers;
+        this.departments = departments;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -74,7 +77,14 @@ class EmployeeController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/employees")
     Employee saveEmployee(@RequestBody Employee newEmployee) {
-        return employees.save(newEmployee); 
+        // Set default supervisor
+        if (newEmployee.getSupervisor() == null)
+            newEmployee.setSupervisor(administrators.findAll().iterator().next());
+        // Set default department
+        if (newEmployee.getDepartment() == null)
+            newEmployee.setDepartment(departments.findAll().iterator().next());
+
+        return employees.save(newEmployee);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
