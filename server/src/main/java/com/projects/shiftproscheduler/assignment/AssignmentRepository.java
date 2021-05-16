@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
+import com.projects.shiftproscheduler.employee.Employee;
+
 public interface AssignmentRepository extends CrudRepository<Assignment, Integer> {
 
     /**
@@ -17,5 +19,8 @@ public interface AssignmentRepository extends CrudRepository<Assignment, Integer
     @Transactional(readOnly = true)
     @Cacheable("assignments")
     Collection<Assignment> findAll() throws DataAccessException;
+
+    @Transactional
+    void deleteAllByEmployee(Employee employee);
 
 }
