@@ -8,6 +8,7 @@ import AdministratorService from "../../services/AdministratorService";
 import AuthService from "../../services/AuthService";
 import NotificationService from "../../services/NotificationService";
 import ROLES from "../../constants/Roles";
+import VALIDATIONS from "../../constants/Regex";
 
 const DescriptionItem = ({ title, content }) => (
   <div className="site-description-item-profile-wrapper">
@@ -173,16 +174,16 @@ const Profile = () => {
           {!loading && (
             <div>
               {userInfo && (
-                <Card title="User Info" style={{ width: "75%" }}>
+                <Card style={{ width: "75%" }}>
                   <Form
                     {...formItemLayout}
                     form={form}
-                    name="register"
+                    name="profile"
                     onFinish={onFinish}
                     initialValues={{
-                      username: userInfo.username,
-                      firstName: userInfo.firstName,
-                      lastName: userInfo.lastName,
+                      username: userInfo.username ? userInfo.username : "",
+                      firstName: userInfo.firstName ? userInfo.firstName : "",
+                      lastName: userInfo.lastName ? userInfo.lastName : "",
                       email: userInfo.email ? userInfo.email : "",
                       phone: userInfo.phone ? userInfo.phone : "",
                       department: userInfo.department
@@ -229,15 +230,15 @@ const Profile = () => {
 
                     <Form.Item
                       name="email"
-                      label="E-mail"
+                      label="Email"
                       rules={[
                         {
                           type: "email",
-                          message: "The input is not valid E-mail!",
+                          message: "Email must be a valid format!",
                         },
                         {
                           required: true,
-                          message: "Please input your E-mail!",
+                          message: "Email is required.",
                         },
                       ]}
                     >
@@ -252,6 +253,16 @@ const Profile = () => {
                           required: true,
                           message: "Please input your phone number!",
                         },
+                        () => ({
+                          validator(rule, value) {
+                            if (!value || VALIDATIONS.Phone.test(value)) {
+                              return Promise.resolve();
+                            }
+                            return Promise.reject(
+                              new Error("Phone number must be a valid format!")
+                            );
+                          },
+                        }),
                       ]}
                     >
                       <Input />

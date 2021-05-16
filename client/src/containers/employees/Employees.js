@@ -1,12 +1,13 @@
 import Container from "../../components/container/Container";
 import React, { useState, useEffect } from "react";
-import { Spin, Empty } from "antd";
+import { Spin } from "antd";
 import EmployeeService from "../../services/EmployeeService";
 import AuthService from "../../services/AuthService";
 import NotificationService from "../../services/NotificationService";
 import DataTable from "../../components/data-table/DataTable";
 import DepartmentService from "../../services/DepartmentService";
 import AdministratorService from "../../services/AdministratorService";
+import VALIDATIONS from "../../constants/Regex";
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
@@ -20,30 +21,76 @@ const Employees = () => {
       dataIndex: "userName",
       width: "20%",
       editable: true,
+      rules: [
+        {
+          required: true,
+          message: "Username is required.",
+        },
+      ],
     },
     {
       title: "First Name",
       dataIndex: "firstName",
       width: "20%",
       editable: true,
+      rules: [
+        {
+          required: true,
+          message: "First Name is required.",
+        },
+      ],
     },
     {
       title: "Last Name",
       dataIndex: "lastName",
       width: "20%",
       editable: true,
+      rules: [
+        {
+          required: true,
+          message: "Last Name is required.",
+        },
+      ],
     },
     {
       title: "Email",
       dataIndex: "email",
       width: "20%",
       editable: true,
+      dataType: "email",
+      rules: [
+        {
+          type: "email",
+          message: "Email must be a valid format!",
+        },
+        {
+          required: true,
+          message: "Email is required.",
+        },
+      ],
     },
     {
       title: "Phone",
       dataIndex: "phone",
       width: "20%",
       editable: true,
+      dataType: "phone",
+      rules: [
+        {
+          required: true,
+          message: "Phone is required.",
+        },
+        () => ({
+          validator(rule, value) {
+            if (!value || VALIDATIONS.Phone.test(value)) {
+              return Promise.resolve();
+            }
+            return Promise.reject(
+              new Error("Phone number must be a valid format!")
+            );
+          },
+        }),
+      ],
     },
     {
       title: "Department",
@@ -53,6 +100,12 @@ const Employees = () => {
       dataType: "complex",
       optionsData: departmentsOptionsData.map((d) => d.name),
       complexOptionsData: departmentsOptionsData,
+      rules: [
+        {
+          required: true,
+          message: "Department is required.",
+        },
+      ],
     },
     {
       title: "Supervisor",
@@ -62,6 +115,12 @@ const Employees = () => {
       dataType: "complex",
       optionsData: supervisorsOptionsData.map((s) => s.userName),
       complexOptionsData: supervisorsOptionsData,
+      rules: [
+        {
+          required: true,
+          message: "Supervisor is required.",
+        },
+      ],
     },
   ];
 
@@ -154,16 +213,12 @@ const Employees = () => {
           {loading && <Spin />}
           {!loading && (
             <div>
-              {employees.length > 0 ? (
-                <DataTable
-                  dataSource={employees}
-                  columns={columns}
-                  handleDelete={handleDelete}
-                  handleSave={handleSave}
-                />
-              ) : (
-                <Empty />
-              )}
+              <DataTable
+                dataSource={employees}
+                columns={columns}
+                handleDelete={handleDelete}
+                handleSave={handleSave}
+              />
             </div>
           )}
         </div>
