@@ -5,12 +5,22 @@ import EmployeeService from "../../services/EmployeeService";
 import AuthService from "../../services/AuthService";
 import NotificationService from "../../services/NotificationService";
 import DataTable from "../../components/data-table/DataTable";
+import DepartmentService from "../../services/DepartmentService";
+import AdministratorService from "../../services/AdministratorService";
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [supervisorsOptionsData, setSupervisorsOptionsData] = useState([]);
+  const [departmentsOptionsData, setDepartmentsOptionsData] = useState([]);
 
   const columns = [
+    {
+      title: "Username",
+      dataIndex: "userName",
+      width: "20%",
+      editable: true,
+    },
     {
       title: "First Name",
       dataIndex: "firstName",
@@ -37,17 +47,21 @@ const Employees = () => {
     },
     {
       title: "Department",
-      dataIndex: "department",
+      dataIndex: ["department", "name"],
       width: "20%",
-      editable: false,
-      dataType: "object",
+      editable: true,
+      dataType: "complex",
+      optionsData: departmentsOptionsData.map((d) => d.name),
+      complexOptionsData: departmentsOptionsData,
     },
     {
       title: "Supervisor",
-      dataIndex: "supervisor",
+      dataIndex: ["supervisor", "userName"],
       width: "20%",
-      editable: false,
-      dataType: "object",
+      editable: true,
+      dataType: "complex",
+      optionsData: supervisorsOptionsData.map((s) => s.userName),
+      complexOptionsData: supervisorsOptionsData,
     },
   ];
 
@@ -86,6 +100,50 @@ const Employees = () => {
       .then(() => {
         setLoading(false);
       });
+    DepartmentService.getDepartments().then(
+      (response) => {
+        if (response.data) {
+          setDepartmentsOptionsData(
+            response.data.departmentsList.map((item) => ({
+              ...item,
+              key: item.id,
+            }))
+          );
+        }
+      },
+      (error) => {
+        NotificationService.notify(
+          "error",
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+            error.message ||
+            error.toString()
+        );
+      }
+    );
+    AdministratorService.getAdministrators().then(
+      (response) => {
+        if (response.data) {
+          setSupervisorsOptionsData(
+            response.data.administratorList.map((item) => ({
+              ...item,
+              key: item.id,
+            }))
+          );
+        }
+      },
+      (error) => {
+        NotificationService.notify(
+          "error",
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+            error.message ||
+            error.toString()
+        );
+      }
+    );
   }, []);
 
   return (

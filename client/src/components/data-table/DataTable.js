@@ -1,8 +1,10 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { Table, Input, Button, Form, Empty, Popconfirm } from "antd";
+import { Table, Button, Form, Empty, Popconfirm } from "antd";
 const EditableContext = React.createContext(null);
 import PropTypes from "prop-types";
 import NotificationService from "../../services/NotificationService";
+import EditableInput from "../editable-input/EditableInput";
+import getNestedObject from "../../utilities/Manipulation";
 
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm();
@@ -22,6 +24,9 @@ const EditableCell = ({
   dataIndex,
   record,
   handleSave,
+  inputType,
+  optionsData,
+  complexOptionsData,
   ...restProps
 }) => {
   const [editing, setEditing] = useState(false);
@@ -41,29 +46,49 @@ const EditableCell = ({
   };
 
   const save = async () => {
-    const values = await form.validateFields();
+    const values = await form.validateFields().catch((errorInfo) => {
+      errorInfo.errorFields.forEach((error) => {
+        error.errors.forEach((err) => {
+          NotificationService.notify("error", err);
+        });
+      });
+      return;
+    });
+    if (!values || !record) return;
     toggleEdit();
-    await handleSave({ ...record, ...values });
+    // Handle nested accessors
+    if (Array.isArray(dataIndex)) {
+      const selectedItem = getNestedObject(values, dataIndex);
+      const prevItem = getNestedObject(record, dataIndex);
+      if (complexOptionsData && selectedItem && selectedItem !== prevItem) {
+        const newItem = complexOptionsData.find(
+          (option) => option[dataIndex[dataIndex.length - 1]] === selectedItem
+        );
+        values[dataIndex[0]] = newItem;
+        await handleSave({ ...record, ...values });
+      }
+      // Handle single accessors
+    } else {
+      if (
+        values[dataIndex] &&
+        record[dataIndex] &&
+        record[dataIndex] !== values[dataIndex]
+      )
+        await handleSave({ ...record, ...values });
+    }
   };
 
   let childNode = children;
-
   if (editable) {
     childNode = editing ? (
-      <Form.Item
-        style={{
-          margin: 0,
-        }}
-        name={dataIndex}
-        rules={[
-          {
-            required: true,
-            message: `${title} is required.`,
-          },
-        ]}
-      >
-        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
-      </Form.Item>
+      <EditableInput
+        title={title}
+        dataIndex={dataIndex}
+        handleSave={save}
+        inputRef={inputRef}
+        inputType={inputType}
+        optionsData={optionsData}
+      />
     ) : (
       <div
         className="editable-cell-value-wrap"
@@ -135,7 +160,7 @@ const DataTable = (props) => {
       } else if (col.dataType === "number") {
         newData[col.dataIndex] = 0;
         // Object
-      } else if (col.dataType === "object") {
+      } else if (col.dataType === "complex") {
         newData[col.dataIndex] = null;
       }
     });
@@ -202,6 +227,9 @@ const DataTable = (props) => {
         dataIndex: col.dataIndex,
         title: col.title,
         handleSave: saveItem,
+        inputType: col.dataType,
+        optionsData: col.optionsData,
+        complexOptionsData: col.complexOptionsData,
       }),
     };
   });
@@ -246,9 +274,15 @@ EditableCell.propTypes = {
   title: PropTypes.string,
   editable: PropTypes.bool,
   children: PropTypes.node,
-  dataIndex: PropTypes.string,
+  dataIndex: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
+  ]),
   record: PropTypes.object,
   handleSave: PropTypes.func,
+  inputType: PropTypes.string,
+  optionsData: PropTypes.arrayOf(PropTypes.string),
+  complexOptionsData: PropTypes.arrayOf(PropTypes.object),
 };
 
 EditableRow.propTypes = {
