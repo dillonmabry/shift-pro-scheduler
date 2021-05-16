@@ -25,6 +25,7 @@ const EditableCell = ({
   record,
   handleSave,
   inputType,
+  rules,
   optionsData,
   complexOptionsData,
   ...restProps
@@ -52,7 +53,7 @@ const EditableCell = ({
           NotificationService.notify("error", err);
         });
       });
-      return;
+      setEditing(false);
     });
     if (!values || !record) return;
     toggleEdit();
@@ -82,11 +83,11 @@ const EditableCell = ({
   if (editable) {
     childNode = editing ? (
       <EditableInput
-        title={title}
         dataIndex={dataIndex}
         handleSave={save}
         inputRef={inputRef}
         inputType={inputType}
+        rules={rules}
         optionsData={optionsData}
       />
     ) : (
@@ -162,6 +163,12 @@ const DataTable = (props) => {
         // Object
       } else if (col.dataType === "complex") {
         newData[col.dataIndex] = null;
+        // Phone
+      } else if (col.dataType === "phone") {
+        newData[col.dataIndex] = "999-999-9999";
+        // Email
+      } else if (col.dataType === "email") {
+        newData[col.dataIndex] = "test@example.com";
       }
     });
     props.handleSave(newData).then(
@@ -228,6 +235,7 @@ const DataTable = (props) => {
         title: col.title,
         handleSave: saveItem,
         inputType: col.dataType,
+        rules: col.rules,
         optionsData: col.optionsData,
         complexOptionsData: col.complexOptionsData,
       }),
@@ -235,18 +243,18 @@ const DataTable = (props) => {
   });
   return (
     <div>
+      <Button
+        onClick={addItem}
+        type="primary"
+        style={{
+          float: "left",
+          marginBottom: 16,
+        }}
+      >
+        Add New
+      </Button>
       {dataSource.length > 0 ? (
         <div>
-          <Button
-            onClick={addItem}
-            type="primary"
-            style={{
-              float: "left",
-              marginBottom: 16,
-            }}
-          >
-            Add New
-          </Button>
           <Table
             components={components}
             rowClassName={() => "editable-row"}
@@ -281,6 +289,9 @@ EditableCell.propTypes = {
   record: PropTypes.object,
   handleSave: PropTypes.func,
   inputType: PropTypes.string,
+  rules: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.object, PropTypes.func])
+  ),
   optionsData: PropTypes.arrayOf(PropTypes.string),
   complexOptionsData: PropTypes.arrayOf(PropTypes.object),
 };

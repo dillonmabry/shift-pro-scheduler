@@ -1,6 +1,6 @@
 import Container from "../../components/container/Container";
 import React, { useState, useEffect } from "react";
-import { Spin, Empty } from "antd";
+import { Spin } from "antd";
 import ShiftService from "../../services/ShiftService";
 import NotificationService from "../../services/NotificationService";
 import DataTable from "../../components/data-table/DataTable";
@@ -16,6 +16,12 @@ const Shifts = () => {
       width: "50%",
       editable: true,
       dataType: "time",
+      rules: [
+        {
+          required: true,
+          message: "Start Time is required.",
+        },
+      ],
     },
     {
       title: "End Time",
@@ -23,6 +29,12 @@ const Shifts = () => {
       width: "50%",
       editable: true,
       dataType: "time",
+      rules: [
+        {
+          required: true,
+          message: "End Time is required.",
+        },
+      ],
     },
   ];
 
@@ -70,16 +82,12 @@ const Shifts = () => {
           {loading && <Spin />}
           {!loading && (
             <div>
-              {shifts.length > 0 ? (
-                <DataTable
-                  dataSource={shifts}
-                  columns={columns}
-                  handleDelete={handleDelete}
-                  handleSave={handleSave}
-                />
-              ) : (
-                <Empty />
-              )}
+              <DataTable
+                dataSource={shifts}
+                columns={columns}
+                handleDelete={handleDelete}
+                handleSave={handleSave}
+              />
             </div>
           )}
         </div>

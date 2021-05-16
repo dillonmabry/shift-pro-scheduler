@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Container from "../../components/container/Container";
-import { Spin, Empty } from "antd";
+import { Spin } from "antd";
 import DepartmentService from "../../services/DepartmentService";
 import NotificationService from "../../services/NotificationService";
 import DataTable from "../../components/data-table/DataTable";
@@ -15,6 +15,12 @@ const Departments = () => {
       dataIndex: "name",
       width: "80%",
       editable: true,
+      rules: [
+        {
+          required: true,
+          message: "Name is required.",
+        },
+      ],
     },
   ];
 
@@ -62,16 +68,12 @@ const Departments = () => {
           {loading && <Spin />}
           {!loading && (
             <div>
-              {departments.length > 0 ? (
-                <DataTable
-                  dataSource={departments}
-                  columns={columns}
-                  handleDelete={handleDelete}
-                  handleSave={handleSave}
-                />
-              ) : (
-                <Empty />
-              )}
+              <DataTable
+                dataSource={departments}
+                columns={columns}
+                handleDelete={handleDelete}
+                handleSave={handleSave}
+              />
             </div>
           )}
         </div>
