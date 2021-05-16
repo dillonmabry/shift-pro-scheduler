@@ -4,12 +4,16 @@ import javax.persistence.EntityNotFoundException;
 
 import com.projects.shiftproscheduler.administrator.AdministratorRepository;
 import com.projects.shiftproscheduler.applicationuser.ApplicationUserRepository;
+import com.projects.shiftproscheduler.assignment.AssignmentRepository;
 import com.projects.shiftproscheduler.department.DepartmentRepository;
+import com.projects.shiftproscheduler.security.ConfirmationTokenRepository;
 import com.projects.shiftproscheduler.security.JWTUtil;
 
+import org.springframework.expression.spel.ast.Assign;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,13 +31,18 @@ class EmployeeController {
     private final AdministratorRepository administrators;
     private final ApplicationUserRepository applicationUsers;
     private final DepartmentRepository departments;
+    private final ConfirmationTokenRepository confirmationTokens;
+    private final AssignmentRepository assignments;
 
     public EmployeeController(EmployeeRepository employees, AdministratorRepository administrators,
-            ApplicationUserRepository applicationUsers, DepartmentRepository departments) {
+            ApplicationUserRepository applicationUsers, DepartmentRepository departments,
+            ConfirmationTokenRepository confirmationTokens, AssignmentRepository assignments) {
         this.employees = employees;
         this.administrators = administrators;
         this.applicationUsers = applicationUsers;
         this.departments = departments;
+        this.confirmationTokens = confirmationTokens;
+        this.assignments = assignments;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -92,9 +101,12 @@ class EmployeeController {
     void deleteEmployee(@PathVariable Integer id) {
         Employee employee = employees.findById(id).orElseThrow();
         applicationUsers.findByUsername(employee.getUserName()).ifPresentOrElse(user -> {
+            assignments.deleteAllByEmployee(employee);
+            confirmationTokens.deleteByUserId(user.getId());
             applicationUsers.delete(user);
             employees.deleteById(id);
         }, () -> {
+            assignments.deleteAllByEmployee(employee);
             employees.deleteById(id);
         });
     }
