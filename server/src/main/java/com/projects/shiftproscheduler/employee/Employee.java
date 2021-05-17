@@ -17,7 +17,7 @@ public class Employee extends Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private Set<Assignment> assignments = new HashSet<Assignment>();
 
     @ManyToOne
