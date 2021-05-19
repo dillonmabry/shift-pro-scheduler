@@ -64,13 +64,13 @@ const Profile = () => {
   useEffect(() => {
     const user = AuthService.getCurrentUser();
     if (AuthService.getRoles(user.authorities).includes(ROLES.User)) {
-      EmployeeService.getEmployee(user.username)
+      EmployeeService.getEmployee(user.userName)
         .then(
           (response) => {
             if (response.data) {
               setUserInfo({
                 ...response.data,
-                username: user.username,
+                username: user.userName,
                 authorities: user.authorities,
               });
             }
@@ -91,13 +91,13 @@ const Profile = () => {
         });
     }
     if (AuthService.getRoles(user.authorities).includes(ROLES.Admin)) {
-      AdministratorService.getAdministrator(user.username)
+      AdministratorService.getAdministrator(user.userName)
         .then(
           (response) => {
             if (response.data) {
               setUserInfo({
                 ...response.data,
-                username: user.username,
+                username: user.userName,
                 authorities: user.authorities,
               });
             }
@@ -122,7 +122,7 @@ const Profile = () => {
   const handleSave = (profileData) => {
     if (AuthService.getRoles(userInfo.authorities).includes(ROLES.Admin)) {
       AdministratorService.saveAdministratorProfile(
-        userInfo.username,
+        userInfo.userName,
         profileData
       ).then(
         (response) => {
@@ -144,7 +144,7 @@ const Profile = () => {
       );
     }
     if (AuthService.getRoles(userInfo.authorities).includes(ROLES.User)) {
-      EmployeeService.saveEmployeeProfile(userInfo.username, profileData).then(
+      EmployeeService.saveEmployeeProfile(userInfo.userName, profileData).then(
         (response) => {
           if (response.data) {
             setUserInfo({ ...response.data });
@@ -181,7 +181,7 @@ const Profile = () => {
                     name="profile"
                     onFinish={onFinish}
                     initialValues={{
-                      username: userInfo.username ? userInfo.username : "",
+                      username: userInfo.userName ? userInfo.userName : "",
                       firstName: userInfo.firstName ? userInfo.firstName : "",
                       lastName: userInfo.lastName ? userInfo.lastName : "",
                       email: userInfo.email ? userInfo.email : "",

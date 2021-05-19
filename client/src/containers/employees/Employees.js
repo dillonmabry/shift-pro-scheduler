@@ -133,7 +133,7 @@ const Employees = () => {
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
-    EmployeeService.getEmployeesBySupervisor(user.username)
+    EmployeeService.getEmployeesBySupervisor(user.userName)
       .then(
         (response) => {
           if (response.data) {
