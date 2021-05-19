@@ -21,37 +21,37 @@ const { Sider } = Layout;
 
 const displayAvatar = (user, collapsed) => {
   if (collapsed) {
-    return user && user.username ? (
+    return user && user.userName ? (
       <Avatar
         style={{
           color: "#fff",
           backgroundColor:
             Colors.avatarColors[
-              Generation.numberFromText(user.username[0]) %
+              Generation.numberFromText(user.userName[0]) %
                 Colors.avatarColors.length
             ],
         }}
         size={32}
       >
-        {user.username[0].toUpperCase()}
+        {user.userName[0].toUpperCase()}
       </Avatar>
     ) : (
       <Avatar icon={<UserOutlined />} size={32} />
     );
   }
-  return user && user.username ? (
+  return user && user.userName ? (
     <Avatar
       style={{
         color: "#fff",
         backgroundColor:
           Colors.avatarColors[
-            Generation.numberFromText(user.username[0]) %
+            Generation.numberFromText(user.userName[0]) %
               Colors.avatarColors.length
           ],
       }}
       size={50}
     >
-      {user.username.toUpperCase()}
+      {user.userName.toUpperCase()}
     </Avatar>
   ) : (
     <Avatar icon={<UserOutlined />} size={50} />

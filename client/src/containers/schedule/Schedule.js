@@ -65,7 +65,7 @@ const Schedule = () => {
     ).includes(ROLES.User)
       ? scheduleList.filter((s) => s.isActive === true)
       : scheduleList.filter(
-          (s) => s.administrator.userName === userInfoRef.current.username
+          (s) => s.administrator.userName === userInfoRef.current.userName
         );
     assignedScheduleList.forEach((schedule) => {
       const _assignments = [];
@@ -74,7 +74,7 @@ const Schedule = () => {
         userInfoRef.current.authorities
       ).includes(ROLES.User)
         ? schedule.assignments.filter(
-            (a) => a.employee.userName === userInfoRef.current.username
+            (a) => a.employee.userName === userInfoRef.current.userName
           )
         : schedule.assignments;
       scheduledAssignments.forEach((assignment) => {

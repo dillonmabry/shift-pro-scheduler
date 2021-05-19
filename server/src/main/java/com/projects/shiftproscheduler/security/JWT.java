@@ -1,12 +1,10 @@
 package com.projects.shiftproscheduler.security;
 
-import java.util.List;
-
 public class JWT {
 
     private String username;
 
-    private List<String> authorities;
+    private String authorities;
 
     private String accessToken;
 
@@ -22,11 +20,11 @@ public class JWT {
         return username;
     }
 
-    public void setAuthorities(List<String> authorities) {
+    public void setAuthorities(String authorities) {
         this.authorities = authorities;
     }
 
-    public List<String> getAuthorities() {
+    public String getAuthorities() {
         return authorities;
     }
 
