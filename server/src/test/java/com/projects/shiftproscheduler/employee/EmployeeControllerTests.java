@@ -1,4 +1,5 @@
 package com.projects.shiftproscheduler.employee;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -43,6 +44,12 @@ public class EmployeeControllerTests {
 
   @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
   @Test
+  void testMvcEmployeesBySupervisor() throws Exception {
+    this.mockMvc.perform(get("/employees/admin")).andExpect(status().isOk());
+  }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test
   void testMvcEmployeesSave() throws Exception {
     Employee employee = new Employee();
     employee.setEmail("test@example.com");
@@ -65,9 +72,8 @@ public class EmployeeControllerTests {
     admin.setUserName("admin");
     admin.setId(1);
 
-    this.mockMvc.perform(
-        post("/employees").content(new ObjectMapper().writeValueAsString(employee)).contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk());
+    this.mockMvc.perform(post("/employees").content(new ObjectMapper().writeValueAsString(employee))
+        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
   }
 
   @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
@@ -97,8 +103,8 @@ public class EmployeeControllerTests {
     employee.setDepartment(department);
     employee.setSupervisor(admin);
 
-    this.mockMvc.perform(
-        post("/employees").content(new ObjectMapper().writeValueAsString(employee)).contentType(MediaType.APPLICATION_JSON));
+    this.mockMvc.perform(post("/employees").content(new ObjectMapper().writeValueAsString(employee))
+        .contentType(MediaType.APPLICATION_JSON));
     this.mockMvc.perform(delete("/employee/" + employee.getId())).andExpect(status().isOk());
   }
 

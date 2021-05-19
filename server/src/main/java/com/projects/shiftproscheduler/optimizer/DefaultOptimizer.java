@@ -55,7 +55,7 @@ public class DefaultOptimizer implements IOptimizer {
         Collection<Shift> shifts = shiftRepository.findAll();
 
         if(employees.size() < shifts.size()) {
-            throw new IllegalStateException("Number of employees less than shifts needed");
+            throw new IllegalStateException("Not enough employees for shifts required");
         }
 
         // Create shift variables
@@ -178,10 +178,6 @@ public class DefaultOptimizer implements IOptimizer {
             if (solutionCount >= solutionLimit) {
                 stopSearch();
             }
-        }
-
-        public int getSolutionCount() {
-            return solutionCount;
         }
 
         public Collection<Assignment> getScheduledAssignments() {

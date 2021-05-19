@@ -6,7 +6,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.Collection;
 
@@ -19,6 +21,7 @@ import com.projects.shiftproscheduler.optimizer.DefaultOptimizer;
 import com.projects.shiftproscheduler.schedule.Schedule;
 import com.projects.shiftproscheduler.schedule.ScheduleRepository;
 import com.projects.shiftproscheduler.schedule.Schedules;
+import com.projects.shiftproscheduler.shift.Shift;
 import com.projects.shiftproscheduler.shift.ShiftRepository;
 
 @SpringBootTest
@@ -35,7 +38,7 @@ public class ShiftProSchedulerIntegrationTests {
     private ScheduleRepository schedules;
 
     @Autowired
-    ShiftRepository shiftRepository;
+    ShiftRepository shifts;
 
     @Autowired
     private DepartmentRepository departments;
@@ -64,7 +67,7 @@ public class ShiftProSchedulerIntegrationTests {
 
         assertEquals(schedules.findAll().size(), 1);
         assertEquals(7, schedule.getDays());
-        assertEquals(shiftRepository.findAll().size(), 3);
+        assertEquals(shifts.findAll().size(), 3);
         assertEquals(employees.findAll().size(), 4);
 
         Schedules schedules = new Schedules();
@@ -73,5 +76,34 @@ public class ShiftProSchedulerIntegrationTests {
         assertEquals(21, assignments.size());
     }
 
+    @Test()
+    void testDefaultOptimizerInvalidModel() {
+
+        Shift s1 = new Shift();
+        s1.setStartTime(Time.valueOf("00:00:00"));
+        s1.setEndTime(Time.valueOf("08:00:00"));
+
+        Shift s2 = new Shift();
+        s2.setStartTime(Time.valueOf("10:00:00"));
+        s2.setEndTime(Time.valueOf("14:00:00"));
+
+        shifts.save(s1);
+        shifts.save(s2);
+
+        Schedule schedule = new Schedule();
+        schedule.setAdministrator(administrators.findByUserName("admin").orElseThrow());
+        schedule.setStartDate(LocalDate.now());
+        schedule.setEndDate(LocalDate.now().plusDays(7));
+        schedules.save(schedule);
+
+        Schedules schedules = new Schedules();
+        schedules.getScheduleList().add(schedule);
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            optimizer.generateSchedules(schedules);
+        });
+
+        assertEquals(exception.getMessage(), "Not enough employees for shifts required");
+    }
 
 }

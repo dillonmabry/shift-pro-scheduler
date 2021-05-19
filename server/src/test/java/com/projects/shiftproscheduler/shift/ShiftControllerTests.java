@@ -2,6 +2,7 @@ package com.projects.shiftproscheduler.shift;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,6 +63,15 @@ public class ShiftControllerTests {
     this.mockMvc.perform(
         post("/shifts").content(new ObjectMapper().writeValueAsString(shift)).contentType(MediaType.APPLICATION_JSON));
     this.mockMvc.perform(delete("/shift/" + shift.getId())).andExpect(status().isOk());
+  }
+
+  @Test
+  void testShiftString() {
+    Shift shift = new Shift();
+    shift.setId(1);
+    shift.setStartTime(Time.valueOf("00:00:00"));
+    shift.setEndTime(Time.valueOf("08:00:00"));
+    assertEquals(shift.toString(), "Start Time: 00:00:00, End Time: 08:00:00");
   }
 
 }
