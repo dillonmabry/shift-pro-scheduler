@@ -113,7 +113,7 @@ class AdministratorController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalStateException.class)
     @ResponseBody
-    ErrorInfo duplicateActiveScheduleException(HttpServletRequest req, IllegalStateException ex) {
+    ErrorInfo illegalScheduleStateException(HttpServletRequest req, IllegalStateException ex) {
         return new ErrorInfo(req.getRequestURL().toString(), ex,
                 "Model cannot be generated with available employees and shifts with date range");
     }
