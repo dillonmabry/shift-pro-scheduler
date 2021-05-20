@@ -2,7 +2,6 @@ package com.projects.shiftproscheduler.administrator;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +33,13 @@ public class AdministratorControllerTests {
   void testMvcAdministrators() throws Exception {
     this.mockMvc.perform(get("/administrators")).andExpect(status().isOk());
   }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test
+  void testMvcAdministrator() throws Exception {
+    this.mockMvc.perform(get("/administrator/admin")).andExpect(status().isOk());
+  }
+
+  // TODO: Add post schedule generation
 
 }
