@@ -29,9 +29,9 @@ public class JWTUtilTests {
     jwt.setAuthorities(JWTUtil.getAuthorities(t));
     jwt.setUserName(t.getName());
 
-    assertEquals(jwt.getUserName(), "admin");
+    assertEquals("admin", jwt.getUserName());
     assertEquals(jwt.getAccessToken(), token);
-    assertEquals(jwt.getAuthorities(), JWTUtil.getAuthorities(t));
+    assertEquals("ROLE_ADMIN", jwt.getAuthorities());
 
   }
 

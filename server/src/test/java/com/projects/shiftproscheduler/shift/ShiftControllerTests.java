@@ -71,7 +71,7 @@ public class ShiftControllerTests {
     shift.setId(1);
     shift.setStartTime(Time.valueOf("00:00:00"));
     shift.setEndTime(Time.valueOf("08:00:00"));
-    assertEquals(shift.toString(), "Start Time: 00:00:00, End Time: 08:00:00");
+    assertEquals("Start Time: 00:00:00, End Time: 08:00:00", shift.toString());
   }
 
 }

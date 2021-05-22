@@ -89,41 +89,12 @@ public class ScheduleControllerTests {
     s1.setEndDate(LocalDate.now().plusDays(7));
 
     Schedule savedS1 = schedules.save(s1);
-    assertEquals(savedS1.getIsActive(), false);
+    assertEquals(false, savedS1.getIsActive());
 
     this.mockMvc.perform(post("/schedule/" + savedS1.getId())).andExpect(status().isOk());
 
     this.mockMvc.perform(delete("/schedule/" + savedS1.getId())).andExpect(status().isOk());
   };
-
-  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
-  @Test
-  void testMvcSchedulesActivate() throws Exception {
-    Department d1 = new Department();
-    d1.setId(1);
-    d1.setName("Supplies");
-
-    Administrator a1 = new Administrator();
-    a1.setDepartment(d1);
-    a1.setEmail("test@example.com");
-    a1.setFirstName("admin");
-    a1.setLastName("admin");
-    a1.setPhone("999-999-9999");
-    a1.setUserName("admin");
-    a1.setId(1);
-
-    Schedule s1 = new Schedule();
-    s1.setAdministrator(a1);
-    s1.setStartDate(LocalDate.now());
-    s1.setEndDate(LocalDate.now().plusDays(7));
-
-    Schedule savedS1 = schedules.save(s1);
-    assertEquals(savedS1.getIsActive(), false);
-
-    this.mockMvc.perform(post("/schedule/" + savedS1.getId())).andExpect(status().isOk());
-    Schedule f1 = schedules.findById(savedS1.getId()).orElseThrow();
-    assertEquals(f1.getIsActive(), true);
-  }
 
   @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
   @Test
@@ -147,11 +118,11 @@ public class ScheduleControllerTests {
     s1.setEndDate(LocalDate.now().plusDays(7));
 
     Schedule savedS1 = schedules.save(s1);
-    assertEquals(savedS1.getIsActive(), false);
+    assertEquals(false, savedS1.getIsActive());
 
     this.mockMvc.perform(post("/schedule/" + savedS1.getId())).andExpect(status().isOk());
     Schedule f1 = schedules.findById(savedS1.getId()).orElseThrow();
-    assertEquals(f1.getIsActive(), true);
+    assertEquals(true, f1.getIsActive());
 
     Department d2 = new Department();
     d2.setId(1);
@@ -172,7 +143,7 @@ public class ScheduleControllerTests {
     s2.setEndDate(LocalDate.now().plusDays(10)); // within any period
 
     Schedule savedS2 = schedules.save(s2);
-    assertEquals(savedS2.getIsActive(), false);
+    assertEquals(false, savedS2.getIsActive());
 
     this.mockMvc.perform(post("/schedule/" + savedS2.getId())).andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.message", is("Active schedule with date range selected already exists")));

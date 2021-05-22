@@ -65,10 +65,10 @@ public class ShiftProSchedulerIntegrationTests {
         schedule.setEndDate(LocalDate.now().plusDays(7));
         schedules.save(schedule);
 
-        assertEquals(schedules.findAll().size(), 1);
+        assertEquals(1, schedules.findAll().size());
         assertEquals(7, schedule.getDays());
-        assertEquals(shifts.findAll().size(), 3);
-        assertEquals(employees.findAll().size(), 4);
+        assertEquals(3, shifts.findAll().size());
+        assertEquals(4, employees.findAll().size());
 
         Schedules schedules = new Schedules();
         schedules.getScheduleList().add(schedule);
@@ -103,7 +103,7 @@ public class ShiftProSchedulerIntegrationTests {
             optimizer.generateSchedules(schedules);
         });
 
-        assertEquals(exception.getMessage(), "Not enough employees for shifts required");
+        assertEquals("Not enough employees for shifts required", exception.getMessage());
     }
 
 }

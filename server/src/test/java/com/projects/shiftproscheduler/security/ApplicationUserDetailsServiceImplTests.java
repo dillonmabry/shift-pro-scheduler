@@ -35,14 +35,20 @@ public class ApplicationUserDetailsServiceImplTests {
     user.setIsActive(true);
     user.setPassword("password");
     Set<Role> roles = new HashSet<Role>();
-    roles.add(roleRepository.findByName("ADMIN").orElseThrow());
+    Role testRole = roleRepository.findByName("ADMIN").orElseThrow();
+    assertEquals("ADMIN", testRole.getName());
+    assertEquals("application administrator", testRole.getDescription());
+    testRole.setDescription("new desc");
+    assertEquals("new desc", testRole.getDescription());
+
+    roles.add(testRole);
     user.setRoles(roles);
 
     applicationUsers.save(user);
 
     UserDetails userDetails = service.loadUserByUsername("testuser");
-    assertEquals(userDetails.getUsername(), "testuser");
-    assertEquals(userDetails.getAuthorities().size(), 1);
+    assertEquals("testuser", userDetails.getUsername());
+    assertEquals(1, userDetails.getAuthorities().size());
   }
 
 }
