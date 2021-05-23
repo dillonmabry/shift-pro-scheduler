@@ -22,16 +22,16 @@ public class EmailServiceTests {
   @Test
   void testCreateMimeMessage() throws Exception {
     MimeMessage message = emailService.createMimeMessage();
-    assertEquals(message.getSize(), -1);
+    assertEquals(-1, message.getSize());
   }
 
   @Test
   void testCreateMimeMessageHelper() throws Exception {
     MimeMessage message = emailService.createMimeMessage();
     MimeMessageHelper messageHelper = emailService.createMimeMessageHelper(message);
-    assertEquals(messageHelper.getEncoding(), StandardCharsets.UTF_8.name());
+    assertEquals(StandardCharsets.UTF_8.name(), messageHelper.getEncoding());
     System.out.println(messageHelper.getMimeMultipart());
-    assertEquals(messageHelper.isMultipart(), true);
+    assertEquals(true, messageHelper.isMultipart());
   }
 
 }

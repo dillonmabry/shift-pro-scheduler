@@ -79,14 +79,14 @@ public class AssignmentControllerTests {
     assignment.setShift(shift);
     assignment.setId(1);
 
-    assertEquals(assignment.getId(), 1);
-    assertEquals(assignment.isNew(), false);
+    assertEquals(1, assignment.getId());
+    assertEquals(false, assignment.isNew());
     assertEquals(assignment.getEmployee().getFirstName(), employee.getFirstName());
     assertEquals(assignment.getShift().getStartTime(), shift.getStartTime());
-    assertEquals(assignment.getSchedule().getIsActive(), false);
+    assertEquals(false, assignment.getSchedule().getIsActive());
 
     schedule.setIsActive(true);
-    assertEquals(assignment.getSchedule().getIsActive(), true);
+    assertEquals(true, assignment.getSchedule().getIsActive());
   }
 
 }
