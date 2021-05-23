@@ -20,11 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -33,6 +33,9 @@ public class AdministratorControllerTests {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Autowired
+  private AdministratorRepository administratorRepository;
 
   @Test
   void testMvcUnauthorized() throws Exception {
@@ -59,6 +62,21 @@ public class AdministratorControllerTests {
 
   @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
   @Test
+  void testMvcAdministratorSave() throws Exception {
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+    assertNotNull(token);
+
+    Administrator admin = administratorRepository.findByUserName("admin").orElseThrow();
+    admin.setEmail("newemail@test.com");
+
+    this.mockMvc
+        .perform(post("/administrators/admin").header("Authorization", "Bearer " + token)
+            .content(new ObjectMapper().writeValueAsString(admin)).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test
   void testMvcPostSchedule() throws Exception {
     String startDate = LocalDate.now().toString();
     String endDate = LocalDate.now().plusDays(7).toString();
@@ -67,7 +85,8 @@ public class AdministratorControllerTests {
 
     MvcResult result = this.mockMvc
         .perform(
-            post("/administrators/schedules/1/" + startDate + "/" + endDate).header("Authorization", "Bearer " + token)).andReturn();
+            post("/administrators/schedules/1/" + startDate + "/" + endDate).header("Authorization", "Bearer " + token))
+        .andReturn();
 
     ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     mapper.registerModule(new JavaTimeModule());
