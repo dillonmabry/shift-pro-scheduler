@@ -25,7 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -82,13 +81,16 @@ class AdministratorController {
 
     @PostMapping("/administrators/schedules/{numSchedules}/{startDate}/{endDate}")
     @Transactional
-    public @ResponseBody Assignments postScheduledAssignments(
+    public @ResponseBody Assignments postScheduledAssignments(@RequestHeader("Authorization") String token,
             @PathVariable(value = "numSchedules", required = true) @Range(min = 1, max = 10, message = "Number of schedules created must be between 1 and 10") Integer numSchedules,
             @PathVariable(value = "startDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @PathVariable(value = "endDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Administrator administrator = administrators.findByUserName(username)
+        UsernamePasswordAuthenticationToken authToken = JWTUtil.parseToken(token.split(" ")[1]);
+        if (authToken == null)
+            throw new AccessDeniedException("Authenticated user does not have access to post new schedules");
+
+        Administrator administrator = administrators.findByUserName(authToken.getName())
                 .orElseThrow(() -> new EntityNotFoundException());
 
         Schedules assignedSchedules = new Schedules();
