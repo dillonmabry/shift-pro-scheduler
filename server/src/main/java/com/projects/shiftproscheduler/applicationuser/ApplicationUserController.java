@@ -114,7 +114,7 @@ public class ApplicationUserController {
     public ResponseEntity<String> confirmUserAccount(@PathVariable("token") String confirmationToken) throws Exception {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
         if (token == null)
-            throw new Exception("Token invalid or link is broken");
+            throw new IllegalArgumentException();
 
         ApplicationUser user = applicationUserRepository.findByUsername(token.getUser().getUsername()).get();
         user.setIsActive(true);
@@ -131,5 +131,12 @@ public class ApplicationUserController {
     @ResponseBody
     ErrorInfo duplicateUserNameException(HttpServletRequest req, DataIntegrityViolationException ex) {
         return new ErrorInfo(req.getRequestURL().toString(), ex, "User already registered");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseBody
+    ErrorInfo invalidConfirmationTokenException(HttpServletRequest req, IllegalArgumentException ex) {
+        return new ErrorInfo(req.getRequestURL().toString(), ex, "Token invalid or link is broken");
     }
 }
