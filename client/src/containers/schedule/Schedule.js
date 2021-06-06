@@ -3,8 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Schedule.css";
 import { Spin, Empty, Tag } from "antd";
 import ScheduleService from "../../services/ScheduleService";
-import BigCalendar from "../../components/calendar/BigCalendar";
-// import DnDCalendar from "../../components/calendar/DragAndDropCalendar";
 import CreateSchedule from "./CreateSchedule";
 import TabsCard from "../../components/tabs/TabsCard";
 import parseISO from "date-fns/parseISO";
@@ -16,6 +14,8 @@ import AuthService from "../../services/AuthService";
 import ScheduleDetail from "./ScheduleDetail";
 import NotificationService from "../../services/NotificationService";
 import ROLES from "../../constants/Roles";
+import DnDCalendar from "../../components/calendar/DragAndDropCalendar";
+import BigCalendar from "../../components/calendar/BigCalendar";
 
 const Schedule = () => {
   const [loading, setLoading] = useState(true);
@@ -53,7 +53,13 @@ const Schedule = () => {
             )}
           </div>
         </div>
-        <BigCalendar events={assignments} />
+        {AuthService.getRoles(userInfoRef.current.authorities).includes(
+          ROLES.Admin
+        ) ? (
+          <DnDCalendar events={assignments} />
+        ) : (
+          <BigCalendar events={assignments} />
+        )}
       </div>
     );
   };
@@ -80,7 +86,10 @@ const Schedule = () => {
       scheduledAssignments.forEach((assignment) => {
         _assignments.push({
           id: assignment.id,
-          schedule_id: schedule.id,
+          employee: assignment.employee,
+          shift: assignment.shift,
+          dayId: assignment.dayId,
+          schedule: schedule,
           title: `${assignment.employee.lastName}, ${assignment.employee.firstName}`,
           allDay: false,
           start: setMinutes(

@@ -13,7 +13,10 @@ const Register = (props) => {
   const onFinish = (values) => {
     AuthService.register(values.username, values.password)
       .then(() => {
-        NotificationService.notify("success", "Successfully registered");
+        NotificationService.notify(
+          "success",
+          "Successfully registered, check email for confirmation"
+        );
         props.history.push("/");
       })
       .catch((err) => {

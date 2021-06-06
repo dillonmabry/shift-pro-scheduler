@@ -122,3 +122,17 @@ CREATE INDEX assignments_shift_id ON assignments (shift_id);
 CREATE INDEX assignments_emp_id ON assignments (emp_id);
 CREATE INDEX assignments_schedule_id ON assignments (schedule_id);
 CREATE UNIQUE INDEX assignments_emp_shift_day ON assignments (emp_id, shift_id, day_id, schedule_id);
+
+-- Assignment Requests
+DROP TABLE assignment_requests IF EXISTS;
+CREATE TABLE assignment_requests (
+  id  INTEGER IDENTITY PRIMARY KEY,
+  emp_id  INTEGER NOT NULL,
+  shift_id INTEGER NOT NULL,
+  request_date DATE NOT NULL
+);
+ALTER TABLE assignment_requests ADD CONSTRAINT fk_assignment_requests_emp_id FOREIGN KEY (emp_id) REFERENCES employees (id);
+ALTER TABLE assignment_requests ADD CONSTRAINT fk_assignment_requests_shift_id FOREIGN KEY (shift_id) REFERENCES shifts (id);
+CREATE INDEX assignment_requests_shift_id ON assignment_requests (shift_id);
+CREATE INDEX assignment_requests_emp_id ON assignment_requests (emp_id);
+CREATE UNIQUE INDEX assignment_requests_emp_shift_day ON assignments (emp_id, shift_id, day_id);
