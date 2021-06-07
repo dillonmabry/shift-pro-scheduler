@@ -1,6 +1,6 @@
 package com.projects.shiftproscheduler.assignmentrequest;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,7 +31,7 @@ public class AssignmentRequest {
     private Shift shift;
 
     @Column(name = "request_date")
-    private Date requestDate;
+    private LocalDate requestDate;
 
     public Integer getId() {
         return id;
@@ -61,11 +61,11 @@ public class AssignmentRequest {
         this.shift = shift;
     }
 
-    public Date getRequestDate() {
+    public LocalDate getRequestDate() {
         return requestDate;
     }
 
-    public void setRequestDate(Date requestDate) {
+    public void setRequestDate(LocalDate requestDate) {
         this.requestDate = requestDate;
     }
 

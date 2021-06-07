@@ -36,8 +36,14 @@ public class ApplicationUserDetailsServiceImplTests {
     user.setPassword("password");
     Set<Role> roles = new HashSet<Role>();
     Role testRole = roleRepository.findByName("ADMIN").orElseThrow();
+
+    testRole.setName("testName");
+    assertEquals("testName", testRole.getName());
+
+    testRole.setName("ADMIN");
     assertEquals("ADMIN", testRole.getName());
     assertEquals("application administrator", testRole.getDescription());
+
     testRole.setDescription("new desc");
     assertEquals("new desc", testRole.getDescription());
 
