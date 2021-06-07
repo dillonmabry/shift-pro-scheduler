@@ -39,6 +39,12 @@ const saveEmployeeProfile = (username, emp) => {
   });
 };
 
+const inviteEmployee = (username) => {
+  return axios.post(API_URL + `/users/invite/${username}`, null, {
+    headers: AuthService.authHeader(),
+  });
+};
+
 const EmployeeService = {
   getEmployees,
   getEmployee,
@@ -46,6 +52,7 @@ const EmployeeService = {
   deleteEmployee,
   saveEmployee,
   saveEmployeeProfile,
+  inviteEmployee,
 };
 
 export default EmployeeService;

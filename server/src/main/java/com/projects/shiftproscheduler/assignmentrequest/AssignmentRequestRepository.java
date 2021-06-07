@@ -1,4 +1,4 @@
-package com.projects.shiftproscheduler.assignment;
+package com.projects.shiftproscheduler.assignmentrequest;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
-public interface AssignmentRepository extends CrudRepository<Assignment, Integer> {
+public interface AssignmentRequestRepository extends CrudRepository<AssignmentRequest, Integer> {
 
     /**
      * Retrieve all <code>Assignment</code>s from the data store.
@@ -15,7 +15,7 @@ public interface AssignmentRepository extends CrudRepository<Assignment, Integer
      * @return a <code>Collection</code> of <code>Assignment</code>s
      */
     @Transactional(readOnly = true)
-    @Cacheable("assignments")
-    Collection<Assignment> findAll() throws DataAccessException;
+    @Cacheable("assignmentrequests")
+    Collection<AssignmentRequest> findAll() throws DataAccessException;
 
 }

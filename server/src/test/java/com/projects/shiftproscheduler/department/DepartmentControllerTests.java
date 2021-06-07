@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projects.shiftproscheduler.administrator.Administrator;
 import com.projects.shiftproscheduler.employee.Employee;
@@ -18,7 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,9 +52,15 @@ public class DepartmentControllerTests {
   @Test
   void testMvcDepartmentsSave() throws Exception {
     Department department = new Department();
-    department.setName("Retail");
-    this.mockMvc.perform(post("/departments").content(new ObjectMapper().writeValueAsString(department))
-        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+    department.setName("Electronics");
+
+    MvcResult res = this.mockMvc.perform(post("/departments").content(new ObjectMapper().writeValueAsString(department))
+        .contentType(MediaType.APPLICATION_JSON)).andReturn();
+    Department dep = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .readValue(res.getResponse().getContentAsString(), Department.class);
+    assertEquals("Electronics", dep.getName());
+
+    this.mockMvc.perform(delete("/department/" + dep.getId())).andExpect(status().isOk());
   }
 
   @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
@@ -79,7 +89,7 @@ public class DepartmentControllerTests {
 
     this.mockMvc.perform(post("/employees").content(new ObjectMapper().writeValueAsString(employee))
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
-        
+
     this.mockMvc.perform(delete("/department/" + 1)).andExpect(status().is4xxClientError()).andExpect(jsonPath(
         "$.message",
         is("User(s) already exist with Department specified cannot take action. First remove Employee(s) with associated Department.")));

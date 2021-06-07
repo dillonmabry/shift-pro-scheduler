@@ -3,30 +3,55 @@ package com.projects.shiftproscheduler.assignment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import java.time.LocalDate;
 
 import java.sql.Time;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.projects.shiftproscheduler.administrator.Administrator;
+import com.projects.shiftproscheduler.administrator.AdministratorRepository;
 import com.projects.shiftproscheduler.department.Department;
 import com.projects.shiftproscheduler.employee.Employee;
+import com.projects.shiftproscheduler.employee.EmployeeRepository;
 import com.projects.shiftproscheduler.schedule.Schedule;
+import com.projects.shiftproscheduler.schedule.ScheduleRepository;
 import com.projects.shiftproscheduler.shift.Shift;
+import com.projects.shiftproscheduler.shift.ShiftRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 @SpringBootTest
+@AutoConfigureTestDatabase
 @AutoConfigureMockMvc
 public class AssignmentControllerTests {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Autowired
+  private AdministratorRepository administratorRepository;
+
+  @Autowired
+  private ShiftRepository shiftRepository;
+
+  @Autowired
+  private EmployeeRepository employeeRepository;
+
+  @Autowired
+  private ScheduleRepository scheduleRepository;
 
   @Test
   void testMvcUnauthorized() throws Exception {
@@ -37,6 +62,61 @@ public class AssignmentControllerTests {
   @Test
   void testMvcAssignments() throws Exception {
     this.mockMvc.perform(get("/assignments")).andExpect(status().isOk());
+  }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test
+  void testMvcAssignmentsSave() throws Exception {
+    Assignment assignment = new Assignment();
+
+    Schedule schedule = new Schedule();
+    schedule.setAdministrator(administratorRepository.findByUserName("admin").orElseThrow());
+    schedule.setStartDate(LocalDate.now());
+    schedule.setEndDate(LocalDate.now().plusDays(7));
+    Schedule s1 = scheduleRepository.save(schedule);
+
+    assignment.setDayId(1);
+    assignment.setEmployee(employeeRepository.findByUserName("jsmith").orElseThrow());
+    assignment.setShift(shiftRepository.findById(1).orElseThrow());
+    assignment.setSchedule(s1);
+
+    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.registerModule(new JavaTimeModule());
+
+    this.mockMvc
+        .perform(
+            post("/assignments").content(mapper.writeValueAsString(assignment)).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test
+  void testMvcAssignmentsDelete() throws Exception {
+    Assignment assignment = new Assignment();
+
+    Schedule schedule = new Schedule();
+    schedule.setAdministrator(administratorRepository.findByUserName("admin").orElseThrow());
+    schedule.setStartDate(LocalDate.now());
+    schedule.setEndDate(LocalDate.now().plusDays(7));
+    Schedule s1 = scheduleRepository.save(schedule);
+
+    assignment.setDayId(2);
+    assignment.setEmployee(employeeRepository.findByUserName("jsmith").orElseThrow());
+    assignment.setShift(shiftRepository.findById(1).orElseThrow());
+    assignment.setSchedule(s1);
+
+    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.registerModule(new JavaTimeModule());
+
+    MvcResult res = this.mockMvc
+        .perform(
+            post("/assignments").content(mapper.writeValueAsString(assignment)).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk()).andReturn();
+
+    Assignment newAssignment = mapper.readValue(res.getResponse().getContentAsString(), Assignment.class);
+    assertEquals("jsmith", newAssignment.getEmployee().getUserName());
+
+    this.mockMvc.perform(delete("/assignment/" + newAssignment.getId())).andExpect(status().isOk());
   }
 
   @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")

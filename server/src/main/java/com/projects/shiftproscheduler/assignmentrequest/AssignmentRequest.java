@@ -1,4 +1,6 @@
-package com.projects.shiftproscheduler.assignment;
+package com.projects.shiftproscheduler.assignmentrequest;
+
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,14 +11,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projects.shiftproscheduler.employee.Employee;
 import com.projects.shiftproscheduler.shift.Shift;
-import com.projects.shiftproscheduler.schedule.Schedule;
 
 @Entity
-@Table(name = "assignments")
-public class Assignment {
+@Table(name = "assignment_requests")
+public class AssignmentRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,13 +30,8 @@ public class Assignment {
     @JoinColumn(name = "shift_id")
     private Shift shift;
 
-    @ManyToOne
-    @JoinColumn(name = "schedule_id")
-    @JsonIgnoreProperties("assignments")
-    private Schedule schedule;
-
-    @Column(name = "day_id")
-    private int dayId;
+    @Column(name = "request_date")
+    private LocalDate requestDate;
 
     public Integer getId() {
         return id;
@@ -66,20 +61,12 @@ public class Assignment {
         this.shift = shift;
     }
 
-    public int getDayId() {
-        return dayId;
+    public LocalDate getRequestDate() {
+        return requestDate;
     }
 
-    public void setDayId(int dayId) {
-        this.dayId = dayId;
-    }
-
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public void setSchedule(Schedule schedule) {
-        this.schedule = schedule;
+    public void setRequestDate(LocalDate requestDate) {
+        this.requestDate = requestDate;
     }
 
 }
