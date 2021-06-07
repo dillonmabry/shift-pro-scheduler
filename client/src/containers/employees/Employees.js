@@ -130,6 +130,9 @@ const Employees = () => {
   const handleSave = (row) => {
     return EmployeeService.saveEmployee(row);
   };
+  const handleInvite = (username) => {
+    return EmployeeService.inviteEmployee(username);
+  };
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
@@ -218,6 +221,8 @@ const Employees = () => {
                 columns={columns}
                 handleDelete={handleDelete}
                 handleSave={handleSave}
+                handleInvite={handleInvite}
+                label={"Employees"}
               />
             </div>
           )}

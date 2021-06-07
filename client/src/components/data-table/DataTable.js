@@ -4,7 +4,8 @@ const EditableContext = React.createContext(null);
 import PropTypes from "prop-types";
 import NotificationService from "../../services/NotificationService";
 import EditableInput from "../editable-input/EditableInput";
-import getNestedObject from "../../utilities/Manipulation";
+import { getNestedObject } from "../../utilities/Manipulation";
+import LABELS from "../../constants/Labels";
 
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm();
@@ -110,7 +111,7 @@ const DataTable = (props) => {
   const [dataSource, setDataSource] = useState(props.dataSource);
   const [count, setCount] = useState(props.dataSource.length);
 
-  const dataColumns = [
+  let dataColumns = [
     ...props.columns,
     {
       title: "",
@@ -127,6 +128,23 @@ const DataTable = (props) => {
         ) : null,
     },
   ];
+
+  if (props.label === LABELS.Employees) {
+    dataColumns = [
+      ...dataColumns,
+      {
+        title: "",
+        dataIndex: "Invite",
+        // eslint-disable-next-line react/display-name
+        render: (_, record) =>
+          dataSource.length >= 1 ? (
+            <a href="#" onClick={() => handleInvite(record.userName)}>
+              Invite
+            </a>
+          ) : null,
+      },
+    ];
+  }
 
   const handleDelete = (key) => {
     props.handleDelete(key).then(
@@ -146,6 +164,25 @@ const DataTable = (props) => {
       }
     );
   };
+
+  const handleInvite = (username) => {
+    props.handleInvite(username).then(
+      () => {
+        NotificationService.notify("success", "Successfully invited employee");
+      },
+      (error) => {
+        NotificationService.notify(
+          "error",
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+            error.message ||
+            error.toString()
+        );
+      }
+    );
+  };
+
   const addItem = () => {
     const newData = {
       key: null,
@@ -168,7 +205,7 @@ const DataTable = (props) => {
         newData[col.dataIndex] = "999-999-9999";
         // Email
       } else if (col.dataType === "email") {
-        newData[col.dataIndex] = "test@example.com";
+        newData[col.dataIndex] = "email@example.com";
       }
     });
     props.handleSave(newData).then(
@@ -275,6 +312,8 @@ DataTable.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.object),
   handleSave: PropTypes.func,
   handleDelete: PropTypes.func,
+  handleInvite: PropTypes.func,
+  label: PropTypes.string,
 };
 
 EditableCell.propTypes = {

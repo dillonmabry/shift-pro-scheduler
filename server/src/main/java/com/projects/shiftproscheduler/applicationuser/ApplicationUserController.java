@@ -24,6 +24,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -63,8 +64,20 @@ public class ApplicationUserController {
     @Autowired
     private SpringTemplateEngine templateEngine;
 
-    @Value("classpath:/static/images/handshake-icon.png")
+    @Value("classpath:/static/images/handshakeicon.png")
     Resource welcomeResource;
+
+    @Value("classpath:/static/images/registericon.png")
+    Resource registerResource;
+
+    @Value("${spring.mail.admin}")
+    private String adminEmail;
+
+    @Value("${server.api.domain}")
+    private String apiDomain;
+
+    @Value("${server.api.client}")
+    private String clientDomain;
 
     @PostMapping("/register")
     @Transactional
@@ -88,11 +101,11 @@ public class ApplicationUserController {
         MimeMessage message = emailService.createMimeMessage();
         MimeMessageHelper helper = emailService.createMimeMessageHelper(message);
 
-        String adminEmail = "shiftproadmin@shiftproscheduler.com";
+        // TODO: Update domain for API confirmation link
         Map<String, Object> mailProps = new HashMap<String, Object>() {
             {
                 put("confirmLink",
-                        "http://localhost:8080/api/users/confirm-account/" + confirmationToken.getConfirmationToken());
+                        apiDomain + "/api/users/confirm-account/" + confirmationToken.getConfirmationToken());
                 put("adminMail", adminEmail);
             }
         };
@@ -105,7 +118,7 @@ public class ApplicationUserController {
         helper.setSubject("Complete Shift Pro Registration!");
         helper.setFrom(adminEmail);
 
-        helper.addInline("handshake-icon.png", welcomeResource);
+        helper.addInline("handshakeicon.png", welcomeResource);
         emailService.sendMail(message);
     }
 
@@ -114,7 +127,7 @@ public class ApplicationUserController {
     public ResponseEntity<String> confirmUserAccount(@PathVariable("token") String confirmationToken) throws Exception {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
         if (token == null)
-            throw new Exception("Token invalid or link is broken");
+            throw new IllegalArgumentException();
 
         ApplicationUser user = applicationUserRepository.findByUsername(token.getUser().getUsername()).get();
         user.setIsActive(true);
@@ -126,10 +139,46 @@ public class ApplicationUserController {
         return new ResponseEntity<String>(html, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/invite/{username}")
+    public void inviteUserRegister(@PathVariable("username") String username) throws Exception {
+        Employee employee = employeeRepository.findByUserName(username).orElseThrow();
+
+        MimeMessage message = emailService.createMimeMessage();
+        MimeMessageHelper helper = emailService.createMimeMessageHelper(message);
+
+        // TODO: Update domain for registration route
+        Map<String, Object> mailProps = new HashMap<String, Object>() {
+            {
+                put("registerLink", clientDomain + "/register");
+                put("username", employee.getUserName());
+                put("adminMail", adminEmail);
+            }
+        };
+        Context context = new Context();
+        context.setVariables(mailProps);
+        String html = templateEngine.process("email-invite", context);
+
+        helper.setTo(employee.getEmail());
+        helper.setText(html, true);
+        helper.setSubject("Begin Shift Pro Registration!");
+        helper.setFrom(adminEmail);
+
+        helper.addInline("registericon.png", registerResource);
+        emailService.sendMail(message);
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseBody
     ErrorInfo duplicateUserNameException(HttpServletRequest req, DataIntegrityViolationException ex) {
         return new ErrorInfo(req.getRequestURL().toString(), ex, "User already registered");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseBody
+    ErrorInfo invalidConfirmationTokenException(HttpServletRequest req, IllegalArgumentException ex) {
+        return new ErrorInfo(req.getRequestURL().toString(), ex, "Token invalid or link is broken");
     }
 }

@@ -18,7 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projects.shiftproscheduler.administrator.Administrator;
 import com.projects.shiftproscheduler.assignment.Assignment;
 
@@ -37,7 +36,6 @@ public class Schedule {
     private Administrator administrator;
 
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("schedule")
     private Set<Assignment> assignments;
 
     @Column(name = "start_date")
