@@ -28,6 +28,9 @@ public class Shift {
     @NotNull
     private Time endTime;
 
+    @Transient
+    private String shiftTime;
+
     public Integer getId() {
         return id;
     }
@@ -54,6 +57,10 @@ public class Shift {
 
     public void setEndTime(Time endTime) {
         this.endTime = endTime;
+    }
+
+    public String getShiftTime() {
+        return this.startTime.toString() + " - " + this.endTime.toString();
     }
 
     @Override

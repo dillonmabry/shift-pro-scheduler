@@ -123,16 +123,32 @@ CREATE INDEX assignments_emp_id ON assignments (emp_id);
 CREATE INDEX assignments_schedule_id ON assignments (schedule_id);
 CREATE UNIQUE INDEX assignments_emp_shift_day ON assignments (emp_id, shift_id, day_id, schedule_id);
 
+-- Shift Days
+DROP TABLE shift_days IF EXISTS;
+CREATE TABLE shift_days (
+  id  INTEGER IDENTITY PRIMARY KEY,
+  name  VARCHAR(30) NOT NULL
+);
+ALTER TABLE shift_days ADD CONSTRAINT shift_days_day_check CHECK (
+  name = 'Sunday' OR
+  name = 'Monday' OR
+  name = 'Tuesday' OR
+  name = 'Wednesday' OR
+  name = 'Thursday' OR
+  name = 'Friday' OR
+  name = 'Saturday'
+);
+
 -- Assignment Requests
 DROP TABLE assignment_requests IF EXISTS;
 CREATE TABLE assignment_requests (
   id  INTEGER IDENTITY PRIMARY KEY,
   emp_id  INTEGER NOT NULL,
   shift_id INTEGER NOT NULL,
-  request_date DATE NOT NULL
+  day_id INTEGER NOT NULL
 );
 ALTER TABLE assignment_requests ADD CONSTRAINT fk_assignment_requests_emp_id FOREIGN KEY (emp_id) REFERENCES employees (id);
 ALTER TABLE assignment_requests ADD CONSTRAINT fk_assignment_requests_shift_id FOREIGN KEY (shift_id) REFERENCES shifts (id);
 CREATE INDEX assignment_requests_shift_id ON assignment_requests (shift_id);
 CREATE INDEX assignment_requests_emp_id ON assignment_requests (emp_id);
-CREATE UNIQUE INDEX assignment_requests_emp_shift_day ON assignments (emp_id, shift_id, day_id);
+CREATE INDEX assignment_requests_day_id ON assignment_requests (day_id);

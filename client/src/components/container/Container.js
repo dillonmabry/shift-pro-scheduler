@@ -3,6 +3,7 @@ import React from "react";
 import SideMenu from "../sidebar/Sidebar";
 import { Layout, Breadcrumb } from "antd";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const { Header, Content, Footer } = Layout;
 
@@ -26,8 +27,15 @@ const Container = ({ navItems, content }) => (
         </div>
       </Content>
       <Footer style={{ textAlign: "center" }}>
-        Shift Pro | MIT License |{" "}
-        <a href="https://github.com/dillonmabry/shift-pro-scheduler">Github</a>
+        Shift Pro Scheduler |{" "}
+        <a
+          href="https://github.com/dillonmabry/shift-pro-scheduler"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Contribute
+        </a>{" "}
+        | <Link to="/about">About</Link>
       </Footer>
     </Layout>
   </Layout>

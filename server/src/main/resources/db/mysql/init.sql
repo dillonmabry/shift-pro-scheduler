@@ -108,6 +108,30 @@ CREATE TABLE IF NOT EXISTS assignments (
   UNIQUE(emp_id, shift_id, day_id, schedule_id)
 ) engine=InnoDB;
 
+CREATE TABLE IF NOT EXISTS shift_days (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  CONSTRAINT shifts_days_check CHECK (
+    name = 'Sunday' OR
+    name = 'Monday' OR
+    name = 'Tuesday' OR
+    name = 'Wednesday' OR
+    name = 'Thursday' OR
+    name = 'Friday' OR
+    name = 'Saturday'
+  )
+) engine=InnoDB;;
+
+CREATE TABLE IF NOT EXISTS assignment_requests (
+  id  INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  emp_id  INT(4) UNSIGNED NOT NULL,
+  shift_id INT(4) UNSIGNED NOT NULL,
+  day_id INT(4) UNSIGNED NOT NULL,
+  FOREIGN KEY (emp_id) REFERENCES employees(id),
+  FOREIGN KEY (shift_id) REFERENCES shifts(id),
+  FOREIGN KEY (day_id) REFERENCES shift_days(id)
+) engine=InnoDB;;
+
 INSERT IGNORE INTO departments VALUES (1, 'Retail');
 
 INSERT IGNORE INTO administrators VALUES (1, 'admin', 'Admin', 'Admin' , 'administrator@gmail.com', '000-000-0000', 1);
@@ -125,6 +149,14 @@ INSERT IGNORE INTO employees VALUES (1, 'jcarter', 'James', 'Carter', 'jcarter@g
 INSERT IGNORE INTO employees VALUES (2, 'hleary', 'Helen', 'Leary' , 'hleary@gmail.com', '704-923-5092', 1, 1);
 INSERT IGNORE INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail.com', '704-920-3315', 1, 1);
 INSERT IGNORE INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1, 1);
+
+INSERT IGNORE INTO shift_days VALUES (1, 'Sunday');
+INSERT IGNORE INTO shift_days VALUES (2, 'Monday');
+INSERT IGNORE INTO shift_days VALUES (3, 'Tuesday');
+INSERT IGNORE INTO shift_days VALUES (4, 'Wednesday');
+INSERT IGNORE INTO shift_days VALUES (5, 'Thursday');
+INSERT IGNORE INTO shift_days VALUES (6, 'Friday');
+INSERT IGNORE INTO shift_days VALUES (7, 'Saturday');
 
 INSERT IGNORE INTO shifts VALUES (1, '08:00:00', '16:00:00');
 INSERT IGNORE INTO shifts VALUES (2, '16:00:00', '23:59:59');

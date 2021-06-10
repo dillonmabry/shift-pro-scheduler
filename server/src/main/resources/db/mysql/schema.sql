@@ -107,3 +107,27 @@ CREATE TABLE IF NOT EXISTS assignments (
   FOREIGN KEY (schedule_id) REFERENCES schedules(id),
   UNIQUE(emp_id, shift_id, day_id, schedule_id)
 ) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS shift_days (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  CONSTRAINT shifts_days_check CHECK (
+    name = 'Sunday' OR
+    name = 'Monday' OR
+    name = 'Tuesday' OR
+    name = 'Wednesday' OR
+    name = 'Thursday' OR
+    name = 'Friday' OR
+    name = 'Saturday'
+  )
+) engine=InnoDB;;
+
+CREATE TABLE IF NOT EXISTS assignment_requests (
+  id  INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  emp_id  INT(4) UNSIGNED NOT NULL,
+  shift_id INT(4) UNSIGNED NOT NULL,
+  day_id INT(4) UNSIGNED NOT NULL,
+  FOREIGN KEY (emp_id) REFERENCES employees(id),
+  FOREIGN KEY (shift_id) REFERENCES shifts(id),
+  FOREIGN KEY (day_id) REFERENCES shift_days(id)
+) engine=InnoDB;;
