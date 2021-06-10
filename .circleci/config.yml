@@ -2,7 +2,7 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 orbs:
-  coveralls: coveralls/coveralls@1.0.6
+  codecov: codecov/codecov@1.0.2
 jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
   build-and-test:  
@@ -25,6 +25,9 @@ jobs:
       - run:
           name: Test
           command: mvn test
+      - store_artifacts:
+          path:  target
+
 
 workflows:
   # Below is the definition of your workflow.
