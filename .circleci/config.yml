@@ -11,10 +11,11 @@ jobs:
     # A list of available CircleCI Docker Convenience Images are available here: https://circleci.com/developer/images/image/cimg/openjdk
     docker:
       - image: cimg/openjdk:11.0
-    working_directory: ~/server
+    working_directory: ~/shift-pro-scheduler/server
     steps:
       # Checkout the code as the first step.
-      - checkout
+      - checkout:
+          path: ~/shift-pro-scheduler
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Build
