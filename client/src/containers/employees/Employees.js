@@ -136,8 +136,8 @@ const Employees = () => {
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
-    EmployeeService.getEmployeesBySupervisor(user.userName)
-      .then(
+    Promise.all([
+      EmployeeService.getEmployeesBySupervisor(user.userName).then(
         (response) => {
           if (response.data) {
             setEmployees(
@@ -158,54 +158,54 @@ const Employees = () => {
               error.toString()
           );
         }
-      )
-      .then(() => {
-        setLoading(false);
-      });
-    DepartmentService.getDepartments().then(
-      (response) => {
-        if (response.data) {
-          setDepartmentsOptionsData(
-            response.data.departmentsList.map((item) => ({
-              ...item,
-              key: item.id,
-            }))
+      ),
+      DepartmentService.getDepartments().then(
+        (response) => {
+          if (response.data) {
+            setDepartmentsOptionsData(
+              response.data.departmentsList.map((item) => ({
+                ...item,
+                key: item.id,
+              }))
+            );
+          }
+        },
+        (error) => {
+          NotificationService.notify(
+            "error",
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+              error.message ||
+              error.toString()
           );
         }
-      },
-      (error) => {
-        NotificationService.notify(
-          "error",
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-            error.message ||
-            error.toString()
-        );
-      }
-    );
-    AdministratorService.getAdministrators().then(
-      (response) => {
-        if (response.data) {
-          setSupervisorsOptionsData(
-            response.data.administratorList.map((item) => ({
-              ...item,
-              key: item.id,
-            }))
+      ),
+      AdministratorService.getAdministrators().then(
+        (response) => {
+          if (response.data) {
+            setSupervisorsOptionsData(
+              response.data.administratorList.map((item) => ({
+                ...item,
+                key: item.id,
+              }))
+            );
+          }
+        },
+        (error) => {
+          NotificationService.notify(
+            "error",
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+              error.message ||
+              error.toString()
           );
         }
-      },
-      (error) => {
-        NotificationService.notify(
-          "error",
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-            error.message ||
-            error.toString()
-        );
-      }
-    );
+      ),
+    ]).then(() => {
+      setLoading(false);
+    });
   }, []);
 
   return (

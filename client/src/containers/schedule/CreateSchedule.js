@@ -73,7 +73,7 @@ const CreateSchedule = (props) => {
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          Generate Schedules
+          Generate
         </Button>
       </Form.Item>
     </Form>

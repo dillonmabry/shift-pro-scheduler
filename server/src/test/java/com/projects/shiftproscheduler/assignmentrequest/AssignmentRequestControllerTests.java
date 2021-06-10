@@ -5,12 +5,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
-import java.time.LocalDate;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.projects.shiftproscheduler.employee.EmployeeRepository;
+import com.projects.shiftproscheduler.security.JWTUtil;
 import com.projects.shiftproscheduler.shift.ShiftRepository;
+import com.projects.shiftproscheduler.shiftday.ShiftDayRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -36,8 +39,11 @@ public class AssignmentRequestControllerTests {
   @Autowired
   private EmployeeRepository employeeRepository;
 
+  @Autowired
+  private ShiftDayRepository shiftDayRepository;
+
   @Test
-  void testMvcUnauthorized() throws Exception {
+  void testMvcUnauthorizedRequests() throws Exception {
     this.mockMvc.perform(get("/assignmentrequests")).andExpect(status().is4xxClientError());
   }
 
@@ -47,41 +53,75 @@ public class AssignmentRequestControllerTests {
     this.mockMvc.perform(get("/assignmentrequests")).andExpect(status().isOk());
   }
 
-  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @WithMockUser(username = "hleary", password = "test", roles = "USER")
   @Test
-  void testMvcAssignmentRequestsSave() throws Exception {
-    AssignmentRequest assignmentRequest = new AssignmentRequest();
+  void testMvcAssignmentRequestsByEmployee() throws Exception {
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+    UsernamePasswordAuthenticationToken t = JWTUtil.parseToken(token);
 
-    assignmentRequest.setShift(shiftRepository.findById(1).orElseThrow());
-    assignmentRequest.setEmployee(employeeRepository.findByUserName("hleary").orElseThrow());
-    assignmentRequest.setRequestDate(LocalDate.now());
-
-    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    mapper.registerModule(new JavaTimeModule());
-
-    this.mockMvc.perform(post("/assignmentrequests").content(mapper.writeValueAsString(assignmentRequest))
-        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+    this.mockMvc.perform(get("/assignmentrequests/" + t.getName()).header("Authorization", "Bearer " + token))
+        .andExpect(status().isOk());
   }
 
-  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @WithMockUser(username = "athomas", password = "test", roles = "USER")
   @Test
-  void testMvcAssignmentRequestsDelete() throws Exception {
+  void testMvcAssignmentRequestsSave() throws Exception {
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
 
     AssignmentRequest assignmentRequest = new AssignmentRequest();
 
     assignmentRequest.setShift(shiftRepository.findById(1).orElseThrow());
-    assignmentRequest.setEmployee(employeeRepository.findByUserName("hleary").orElseThrow());
-    assignmentRequest.setRequestDate(LocalDate.now());
+    assignmentRequest.setEmployee(employeeRepository.findByUserName("athomas").orElseThrow());
+    assignmentRequest.setShiftDay(shiftDayRepository.findById(1).orElseThrow());
 
     ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     mapper.registerModule(new JavaTimeModule());
 
-    MvcResult res = this.mockMvc.perform(post("/assignmentrequests")
-        .content(mapper.writeValueAsString(assignmentRequest)).contentType(MediaType.APPLICATION_JSON)).andReturn();
+    this.mockMvc
+        .perform(post("/assignmentrequests").content(mapper.writeValueAsString(assignmentRequest))
+            .header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @WithMockUser(username = "hleary", password = "test", roles = "USER")
+  @Test
+  void testMvcAssignmentRequestsSaveNullFields() throws Exception {
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+
+    AssignmentRequest assignmentRequest = new AssignmentRequest();
+
+    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.registerModule(new JavaTimeModule());
+
+    this.mockMvc
+        .perform(post("/assignmentrequests").content(mapper.writeValueAsString(assignmentRequest))
+            .header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @WithMockUser(username = "jsmith", password = "test", roles = "USER")
+  @Test
+  void testMvcAssignmentRequestsDelete() throws Exception {
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+
+    AssignmentRequest assignmentRequest = new AssignmentRequest();
+
+    assignmentRequest.setShift(shiftRepository.findById(1).orElseThrow());
+    assignmentRequest.setEmployee(employeeRepository.findByUserName("jsmith").orElseThrow());
+    assignmentRequest.setShiftDay(shiftDayRepository.findById(1).orElseThrow());
+
+    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.registerModule(new JavaTimeModule());
+
+    MvcResult res = this.mockMvc
+        .perform(post("/assignmentrequests").content(mapper.writeValueAsString(assignmentRequest))
+            .header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON))
+        .andReturn();
 
     AssignmentRequest request = mapper.readValue(res.getResponse().getContentAsString(), AssignmentRequest.class);
 
-    this.mockMvc.perform(delete("/assignmentrequest/" + request.getId())).andExpect(status().isOk());
+    this.mockMvc.perform(delete("/assignmentrequest/" + request.getId()).header("Authorization", "Bearer " + token))
+        .andExpect(status().isOk());
   }
 
 }

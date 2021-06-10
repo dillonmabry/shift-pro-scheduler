@@ -10,6 +10,8 @@ import Profile from "../containers/profile/Profile";
 import Shifts from "../containers/shifts/Shifts";
 import Departments from "../containers/departments/Departments";
 import ROLES from "../constants/Roles";
+import AssignmentRequests from "../containers/assignmentrequests/AssignmentRequests";
+import About from "../containers/about/About";
 
 class Main extends React.Component {
   render() {
@@ -45,6 +47,18 @@ class Main extends React.Component {
             path="/departments"
             component={Departments}
             roles={[ROLES.Admin]}
+          />
+          <PrivateRoute
+            exact
+            path="/shiftrequests"
+            component={AssignmentRequests}
+            roles={[ROLES.User]}
+          />
+          <PrivateRoute
+            exact
+            path="/about"
+            component={About}
+            roles={[ROLES.User, ROLES.Admin]}
           />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
