@@ -20,7 +20,7 @@ public interface ShiftRepository extends CrudRepository<Shift, Integer> {
     Collection<Shift> findAll() throws DataAccessException;
 
     /**
-     * Find a {@link Schedule} by id
+     * Find a {@link Shift} by id
      * 
      */
     @Transactional(readOnly = true)

@@ -3,8 +3,8 @@ import AuthService from "./AuthService";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-const getAssignmentRequests = () => {
-  return axios.get(API_URL + "/assignmentrequests", {
+const getAssignmentRequests = (username) => {
+  return axios.get(API_URL + `/assignmentrequests/${username}`, {
     headers: AuthService.authHeader(),
   });
 };

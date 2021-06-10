@@ -1,8 +1,5 @@
 package com.projects.shiftproscheduler.assignmentrequest;
 
-import java.time.LocalDate;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,6 +10,7 @@ import javax.persistence.Table;
 
 import com.projects.shiftproscheduler.employee.Employee;
 import com.projects.shiftproscheduler.shift.Shift;
+import com.projects.shiftproscheduler.shiftday.ShiftDay;
 
 @Entity
 @Table(name = "assignment_requests")
@@ -30,8 +28,9 @@ public class AssignmentRequest {
     @JoinColumn(name = "shift_id")
     private Shift shift;
 
-    @Column(name = "request_date")
-    private LocalDate requestDate;
+    @ManyToOne
+    @JoinColumn(name = "day_id")
+    private ShiftDay shiftDay;
 
     public Integer getId() {
         return id;
@@ -61,12 +60,12 @@ public class AssignmentRequest {
         this.shift = shift;
     }
 
-    public LocalDate getRequestDate() {
-        return requestDate;
+    public ShiftDay getShiftDay() {
+        return shiftDay;
     }
 
-    public void setRequestDate(LocalDate requestDate) {
-        this.requestDate = requestDate;
+    public void setShiftDay(ShiftDay shiftDay) {
+        this.shiftDay = shiftDay;
     }
 
 }
