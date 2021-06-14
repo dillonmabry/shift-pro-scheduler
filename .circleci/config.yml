@@ -27,6 +27,9 @@ jobs:
           command: mvn test
       - store_artifacts:
           path:  target
+      - codecov/upload:
+          file: './target/my-reports/jacoco.xml'
+          token: fa89d4db-5725-4396-a676-0e7edcab513d
 
 
 workflows:
