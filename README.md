@@ -1,5 +1,6 @@
 # Shift Pro, Automated Employee Scheduler
 [![CircleCI](https://circleci.com/gh/dillonmabry/shift-pro-scheduler.svg?style=shield)](https://app.circleci.com/pipelines/github/dillonmabry/shift-pro-scheduler)
+[![codecov](https://codecov.io/gh/dillonmabry/shift-pro-scheduler/branch/master/graph/badge.svg?token=0FMJZSI4IF)](https://codecov.io/gh/dillonmabry/shift-pro-scheduler)
 
 Shift Pro is an open source, automated employee scheduler which can assist your business with correctly assigning employees work shifts throughout the day.
 
