@@ -1,6 +1,9 @@
 package com.projects.shiftproscheduler.schedule;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -9,18 +12,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.projects.shiftproscheduler.administrator.Administrator;
+import com.projects.shiftproscheduler.assignment.Assignments;
+import com.projects.shiftproscheduler.assignmentrequest.AssignmentRequest;
+import com.projects.shiftproscheduler.assignmentrequest.AssignmentRequestRepository;
 import com.projects.shiftproscheduler.department.Department;
+import com.projects.shiftproscheduler.employee.EmployeeRepository;
+import com.projects.shiftproscheduler.security.JWTUtil;
+import com.projects.shiftproscheduler.shift.ShiftRepository;
+import com.projects.shiftproscheduler.shiftday.ShiftDayRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.NestedServletException;
+
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
+@AutoConfigureTestDatabase
 @AutoConfigureMockMvc
 public class ScheduleControllerTests {
 
@@ -29,6 +48,18 @@ public class ScheduleControllerTests {
 
   @Autowired
   private ScheduleRepository schedules;
+
+  @Autowired
+  private AssignmentRequestRepository assignmentRequestRepository;
+
+  @Autowired
+  private EmployeeRepository employeeRepository;
+
+  @Autowired
+  private ShiftRepository shiftRepository;
+
+  @Autowired
+  private ShiftDayRepository shiftDayRepository;
 
   @Test
   void testMvcUnauthorized() throws Exception {
@@ -147,5 +178,69 @@ public class ScheduleControllerTests {
 
     this.mockMvc.perform(post("/schedule/" + savedS2.getId())).andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.message", is("Active schedule with date range selected already exists")));
+  }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test
+  void testMvcPostScheduleDefault() throws Exception {
+    String startDate = LocalDate.now().toString();
+    String endDate = LocalDate.now().plusDays(7).toString();
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+    assertNotNull(token);
+
+    MvcResult result = this.mockMvc.perform(
+        post("/schedules/DefaultOptimizer/1/" + startDate + "/" + endDate).header("Authorization", "Bearer " + token))
+        .andReturn();
+
+    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.registerModule(new JavaTimeModule());
+    Assignments assignments = mapper.readValue(result.getResponse().getContentAsString(), Assignments.class);
+    assertNotNull(assignments.getAssignmentList());
+    assertTrue(assignments.getAssignmentList().size() > 0);
+  }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test
+  void testMvcPostSchedulePreference() throws Exception {
+    // Setup assignment requests
+    AssignmentRequest assignmentRequest = new AssignmentRequest();
+
+    assignmentRequest.setShift(shiftRepository.findById(2).orElseThrow()); // '16:00:00', '23:59:59'
+    assignmentRequest.setEmployee(employeeRepository.findByUserName("athomas").orElseThrow()); // athomas
+    assignmentRequest.setShiftDay(shiftDayRepository.findById(4).orElseThrow()); // Thursday
+    assignmentRequestRepository.save(assignmentRequest);
+
+    // Post the schedule optimizer
+    String startDate = LocalDate.now().toString();
+    String endDate = LocalDate.now().plusDays(7).toString();
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+    assertNotNull(token);
+
+    MvcResult result = this.mockMvc.perform(post("/schedules/PreferenceOptimizer/1/" + startDate + "/" + endDate)
+        .header("Authorization", "Bearer " + token)).andReturn();
+
+    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.registerModule(new JavaTimeModule());
+    Assignments assignments = mapper.readValue(result.getResponse().getContentAsString(), Assignments.class);
+    assertNotNull(assignments.getAssignmentList());
+    assertTrue(assignments.getAssignmentList().size() > 0);
+  }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test()
+  void testMvcPostScheduleOptimizerNotFound() throws Exception {
+    String startDate = LocalDate.now().toString();
+    String endDate = LocalDate.now().plusDays(7).toString();
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+    assertNotNull(token);
+
+    Exception exception = assertThrows(NestedServletException.class, () -> {
+      this.mockMvc.perform(
+          post("/schedules/asdfasdf/1/" + startDate + "/" + endDate).header("Authorization", "Bearer " + token));
+    });
+
+    assertEquals(
+        "Request processing failed; nested exception is java.lang.IllegalArgumentException: No optimizer available for input provided",
+        exception.getMessage());
   }
 }

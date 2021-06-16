@@ -32,34 +32,36 @@ const Schedule = () => {
 
   const formatScheduleContent = (schedule, assignments) => {
     return (
-      <div style={{ textAlign: "left", margin: "15px" }}>
-        <div>
-          <div style={{ marginBottom: "15px" }}>
-            {schedule.isActive ? (
-              <Tag color="blue">Live</Tag>
-            ) : (
-              <Tag color="orange">Draft</Tag>
-            )}
+      <div key={schedule.id}>
+        <div style={{ textAlign: "left", margin: "15px" }}>
+          <div>
+            <div style={{ marginBottom: "15px" }}>
+              {schedule.isActive ? (
+                <Tag color="blue">Live</Tag>
+              ) : (
+                <Tag color="orange">Draft</Tag>
+              )}
+            </div>
+            <div style={{ marginBottom: "15px" }}>
+              {AuthService.getRoles(userInfoRef.current.authorities).includes(
+                ROLES.Admin
+              ) && (
+                <ScheduleDetail
+                  schedule={schedule}
+                  updateEventsList={updateEventsList}
+                  setLoading={setLoading}
+                />
+              )}
+            </div>
           </div>
-          <div style={{ marginBottom: "15px" }}>
-            {AuthService.getRoles(userInfoRef.current.authorities).includes(
-              ROLES.Admin
-            ) && (
-              <ScheduleDetail
-                schedule={schedule}
-                updateEventsList={updateEventsList}
-                setLoading={setLoading}
-              />
-            )}
-          </div>
+          {AuthService.getRoles(userInfoRef.current.authorities).includes(
+            ROLES.Admin
+          ) ? (
+            <DnDCalendar events={assignments} />
+          ) : (
+            <BigCalendar events={assignments} />
+          )}
         </div>
-        {AuthService.getRoles(userInfoRef.current.authorities).includes(
-          ROLES.Admin
-        ) ? (
-          <DnDCalendar events={assignments} />
-        ) : (
-          <BigCalendar events={assignments} />
-        )}
       </div>
     );
   };
@@ -166,7 +168,7 @@ const Schedule = () => {
       navItems={["Home", "Schedules"]}
       content={
         <div>
-          {loading && <Spin />}
+          {loading && <Spin size="large" />}
           {!loading && (
             <div>
               {AuthService.getRoles(userInfoRef.current.authorities).includes(

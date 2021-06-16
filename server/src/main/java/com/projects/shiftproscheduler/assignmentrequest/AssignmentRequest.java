@@ -68,4 +68,18 @@ public class AssignmentRequest {
         this.shiftDay = shiftDay;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        AssignmentRequest req = (AssignmentRequest) obj;
+        return this.getEmployee().getId().equals(req.getEmployee().getId())
+                && this.getShift().getId().equals(req.getShift().getId())
+                && this.getShiftDay().getId().equals(req.getShiftDay().getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getEmployee().getId().hashCode() + this.getShift().getId().hashCode()
+                + this.getShiftDay().getId().hashCode();
+    }
+
 }

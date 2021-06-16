@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, DatePicker, Button, InputNumber } from "antd";
+import { Form, DatePicker, Button, InputNumber, Radio } from "antd";
 import ScheduleService from "../../services/ScheduleService";
 import NotificationService from "../../services/NotificationService";
 import PropTypes from "prop-types";
@@ -23,10 +23,11 @@ const CreateSchedule = (props) => {
     const inputNumber = values["inputNumber"];
     const startDate = values["rangePicker"][0];
     const endDate = values["rangePicker"][1];
+    const optimizer = values["inputOptimizer"];
 
-    if (inputNumber && startDate && endDate) {
+    if (inputNumber && optimizer && startDate && endDate) {
       props.setLoading(true);
-      ScheduleService.postSchedules(inputNumber, startDate, endDate)
+      ScheduleService.postSchedules(optimizer, inputNumber, startDate, endDate)
         .then(
           (response) => {
             if (response.data && response.data.assignmentList.length > 0) {
@@ -59,7 +60,10 @@ const CreateSchedule = (props) => {
       name="time_related_controls"
       layout={"inline"}
       onFinish={onFinish}
-      initialValues={{ inputNumber: 1 }}
+      initialValues={{
+        inputNumber: 1,
+        inputOptimizer: "DefaultOptimizer",
+      }}
     >
       <Form.Item name="rangePicker" label="Start-End Dates" {...rangeConfig}>
         <RangePicker />
@@ -68,6 +72,18 @@ const CreateSchedule = (props) => {
         <Form.Item label="Number of Schedules">
           <Form.Item name="inputNumber" noStyle>
             <InputNumber min={1} max={10} />
+          </Form.Item>
+        </Form.Item>
+      </Form.Item>
+      <Form.Item>
+        <Form.Item label="Generator Type">
+          <Form.Item name="inputOptimizer" noStyle>
+            <Radio.Group buttonStyle="solid">
+              <Radio.Button value="DefaultOptimizer">Default</Radio.Button>
+              <Radio.Button value="PreferenceOptimizer">
+                Preferences
+              </Radio.Button>
+            </Radio.Group>
           </Form.Item>
         </Form.Item>
       </Form.Item>

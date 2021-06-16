@@ -15,11 +15,13 @@ const Login = (props) => {
         NotificationService.notify("success", "Successfully logged in");
         props.history.push("/");
       })
-      .catch((err) => {
-        if (err.response) {
+      .catch((error) => {
+        if (error.response) {
           NotificationService.notify(
             "error",
-            "Something went wrong with your login please try again"
+            `Something went wrong with your login, \
+            either the user account is not setup \
+            or incorrect login`
           );
         }
       });

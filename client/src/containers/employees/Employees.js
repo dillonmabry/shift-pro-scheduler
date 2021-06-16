@@ -213,7 +213,7 @@ const Employees = () => {
       navItems={["Home", "Employees"]}
       content={
         <div>
-          {loading && <Spin />}
+          {loading && <Spin size="large" />}
           {!loading && (
             <div>
               <DataTable

@@ -30,7 +30,6 @@ public class EmailServiceTests {
     MimeMessage message = emailService.createMimeMessage();
     MimeMessageHelper messageHelper = emailService.createMimeMessageHelper(message);
     assertEquals(StandardCharsets.UTF_8.name(), messageHelper.getEncoding());
-    System.out.println(messageHelper.getMimeMultipart());
     assertEquals(true, messageHelper.isMultipart());
   }
 
