@@ -36,7 +36,7 @@ const About = () => {
       navItems={["Home", "About Software"]}
       content={
         <div>
-          {loading && <Spin />}
+          {loading && <Spin size="large" />}
           {!loading && (
             <div>
               {applicationInfo && (

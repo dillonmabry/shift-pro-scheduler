@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ import com.google.ortools.sat.IntVar;
 import com.google.ortools.sat.LinearExpr;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
-import com.google.ortools.sat.CpSolverSolutionCallback;
 import com.google.ortools.sat.CpSolverStatus;
 import com.projects.shiftproscheduler.assignment.Assignment;
 import com.projects.shiftproscheduler.assignment.AssignmentRepository;
@@ -27,7 +25,7 @@ import com.projects.shiftproscheduler.schedule.Schedules;
 import com.projects.shiftproscheduler.shift.Shift;
 import com.projects.shiftproscheduler.shift.ShiftRepository;
 
-@Service
+@Service(value = "DefaultOptimizer")
 public class DefaultOptimizer implements IOptimizer {
 
     @Autowired
@@ -51,15 +49,16 @@ public class DefaultOptimizer implements IOptimizer {
     public Collection<Assignment> generateSchedules(Schedules schedules) throws IllegalStateException {
 
         CpModel model = new CpModel(); // Init model
-        Collection<Employee> employees = employeeRepository.findBySupervisor(schedules.getScheduleList().get(0).getAdministrator()); // Filter by administrator
+        Collection<Employee> employees = employeeRepository
+                .findBySupervisor(schedules.getScheduleList().get(0).getAdministrator()); // Filter by administrator
         Collection<Shift> shifts = shiftRepository.findAll();
 
-        if(employees.size() < shifts.size()) {
+        if (employees.size() < shifts.size()) {
             throw new IllegalStateException("Not enough employees for shifts required");
         }
 
         // Create shift variables
-        // shift_e_d_s: employee 'e' works shift 's' on day 'd' 
+        // shift_e_d_s: employee 'e' works shift 's' on day 'd'
         HashMap<String, IntVar> shiftVars = new HashMap<String, IntVar>();
         for (Employee employee : employees) {
             for (int d = 0; d < schedules.getScheduleList().get(0).getDays(); d++) {
@@ -129,63 +128,13 @@ public class DefaultOptimizer implements IOptimizer {
         CpSolverStatus status = solver.solve(model);
 
         if (status == CpSolverStatus.FEASIBLE || status == CpSolverStatus.OPTIMAL) {
-            DefaultSolutionGenerator cb = new DefaultSolutionGenerator(shiftVars.values().toArray(new IntVar[0]),
-                    schedules);
+            DefaultSolutionGenerator cb = new DefaultSolutionGenerator(schedules, employeeRepository, shiftRepository,
+                    shiftVars.values().toArray(new IntVar[0]));
             solver.searchAllSolutions(model, cb);
             return cb.getScheduledAssignments();
         } else {
             logger.error("Optmizer feasibility invalid for group of employees");
             throw new IllegalStateException("Model feasibility invalid");
         }
-    }
-
-    // Solution Generator
-    class DefaultSolutionGenerator extends CpSolverSolutionCallback {
-
-        private Schedules assignedSchedules;
-
-        private Collection<Assignment> scheduledAssignments = new ArrayList<Assignment>();
-
-        public DefaultSolutionGenerator(IntVar[] variables, Schedules schedules) {
-            variableArray = variables;
-            solutionLimit = schedules.getScheduleList().size();
-            assignedSchedules = schedules;
-        }
-
-        @Override
-        public void onSolutionCallback() {
-
-            for (IntVar v : variableArray) {
-                String[] varValues = v.getName().split("_"); // Get constraint var values
-                if (this.value(v) == 1) {
-                    // Get assignment values
-                    Optional<Employee> employeeUser = employeeRepository.findById(Integer.parseInt(varValues[1]));
-                    Employee emp = employeeUser.orElseThrow();
-                    int dayId = Integer.parseInt(varValues[2]);
-                    Shift shift = shiftRepository.findById(Integer.parseInt(varValues[3])).orElseThrow();
-
-                    Assignment assignment = new Assignment();
-                    assignment.setEmployee(emp);
-                    assignment.setDayId(dayId);
-                    assignment.setShift(shift);
-                    assignment.setSchedule(assignedSchedules.getScheduleList().get(solutionCount));
-                    scheduledAssignments.add(assignment);
-                }
-            }
-
-            solutionCount++;
-
-            if (solutionCount >= solutionLimit) {
-                stopSearch();
-            }
-        }
-
-        public Collection<Assignment> getScheduledAssignments() {
-            return scheduledAssignments;
-        }
-
-        private int solutionCount;
-        private final IntVar[] variableArray;
-        private final int solutionLimit;
     }
 }

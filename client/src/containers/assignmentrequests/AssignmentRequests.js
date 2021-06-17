@@ -133,7 +133,7 @@ const AssignmentRequests = () => {
       navItems={["Home", "Shift Requests"]}
       content={
         <div>
-          {loading && <Spin />}
+          {loading && <Spin size="large" />}
           {!loading && (
             <div>
               <DataTable

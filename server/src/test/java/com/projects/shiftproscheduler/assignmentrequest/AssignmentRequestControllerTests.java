@@ -2,7 +2,11 @@ package com.projects.shiftproscheduler.assignmentrequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Collection;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -41,6 +45,9 @@ public class AssignmentRequestControllerTests {
 
   @Autowired
   private ShiftDayRepository shiftDayRepository;
+
+  @Autowired
+  private AssignmentRequestRepository assignmentRequestRepository;
 
   @Test
   void testMvcUnauthorizedRequests() throws Exception {
@@ -122,6 +129,30 @@ public class AssignmentRequestControllerTests {
 
     this.mockMvc.perform(delete("/assignmentrequest/" + request.getId()).header("Authorization", "Bearer " + token))
         .andExpect(status().isOk());
+  }
+
+  @WithMockUser(username = "athomas", password = "test", roles = "USER")
+  @Test
+  void testMvcAssignmentRequestsFindBy() throws Exception {
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+
+    AssignmentRequest assignmentRequest = new AssignmentRequest();
+
+    assignmentRequest.setShift(shiftRepository.findById(2).orElseThrow());
+    assignmentRequest.setEmployee(employeeRepository.findByUserName("athomas").orElseThrow());
+    assignmentRequest.setShiftDay(shiftDayRepository.findById(4).orElseThrow());
+
+    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.registerModule(new JavaTimeModule());
+
+    this.mockMvc
+        .perform(post("/assignmentrequests").content(mapper.writeValueAsString(assignmentRequest))
+            .header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+
+    Collection<AssignmentRequest> requests = assignmentRequestRepository.findAll();
+
+    assertTrue(requests.size() > 0);
   }
 
 }

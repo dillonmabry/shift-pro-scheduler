@@ -170,7 +170,7 @@ const Profile = () => {
       navItems={["Home", "Profile"]}
       content={
         <div>
-          {loading && <Spin />}
+          {loading && <Spin size="large" />}
           {!loading && (
             <div>
               {userInfo && (

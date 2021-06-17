@@ -1,0 +1,189 @@
+package com.projects.shiftproscheduler.optimizer;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.skaggsm.ortools.OrToolsHelper;
+import com.google.ortools.sat.IntVar;
+import com.google.ortools.sat.LinearExpr;
+import com.google.ortools.sat.CpModel;
+import com.google.ortools.sat.CpSolver;
+import com.google.ortools.sat.CpSolverStatus;
+import com.projects.shiftproscheduler.assignment.Assignment;
+import com.projects.shiftproscheduler.assignment.AssignmentRepository;
+import com.projects.shiftproscheduler.assignmentrequest.AssignmentRequest;
+import com.projects.shiftproscheduler.assignmentrequest.AssignmentRequestRepository;
+import com.projects.shiftproscheduler.constraint.DefaultConstraintService;
+import com.projects.shiftproscheduler.employee.Employee;
+import com.projects.shiftproscheduler.employee.EmployeeRepository;
+import com.projects.shiftproscheduler.schedule.Schedules;
+import com.projects.shiftproscheduler.shift.Shift;
+import com.projects.shiftproscheduler.shift.ShiftRepository;
+import com.projects.shiftproscheduler.shiftday.ShiftDay;
+
+@Service(value = "PreferenceOptimizer")
+public class PreferenceOptimizer implements IOptimizer {
+
+  @Autowired
+  private EmployeeRepository employeeRepository;
+
+  @Autowired
+  ShiftRepository shiftRepository;
+
+  @Autowired
+  AssignmentRepository assignmentRepository;
+
+  @Autowired
+  AssignmentRequestRepository assignmentRequestRepository;
+
+  Logger logger = LoggerFactory.getLogger(DefaultOptimizer.class);
+
+  private final DefaultConstraintService constraintService;
+
+  public PreferenceOptimizer(DefaultConstraintService constraintService) {
+    OrToolsHelper.loadLibrary(); // Load Google OR Tools per maven spec
+    this.constraintService = constraintService;
+  }
+
+  public Collection<Assignment> generateSchedules(Schedules schedules) throws IllegalStateException {
+
+    CpModel model = new CpModel(); // Init model
+
+    Collection<Employee> employees = employeeRepository
+        .findBySupervisor(schedules.getScheduleList().get(0).getAdministrator()); // Filter by administrator
+    Collection<Shift> shifts = shiftRepository.findAll();
+    Collection<AssignmentRequest> filteredRequests = assignmentRequestRepository.findAll().stream().filter(
+        r -> r.getEmployee().getSupervisor().getId() == schedules.getScheduleList().get(0).getAdministrator().getId())
+        .collect(Collectors.toList());
+    Set<AssignmentRequest> requests = new HashSet<AssignmentRequest>(filteredRequests);
+
+    if (employees.size() < shifts.size()) {
+      throw new IllegalStateException("Not enough employees for shifts required");
+    }
+
+    // Create shift variables
+    // shift_e_d_s: employee 'e' works shift 's' on day 'd'
+    HashMap<String, IntVar> shiftVars = new HashMap<String, IntVar>();
+    for (Employee employee : employees) {
+      for (int d = 0; d < schedules.getScheduleList().get(0).getDays(); d++) {
+        for (Shift shift : shifts) {
+          shiftVars.put(String.format("%d, %d, %d", employee.getId(), d, shift.getId()),
+              model.newBoolVar(String.format("shift_%d_%d_%d", employee.getId(), d, shift.getId())));
+        }
+      }
+    }
+
+    // Each shift assigned exactly MIN_EMPLOYEES per period
+    for (int d = 0; d < schedules.getScheduleList().get(0).getDays(); d++) {
+      for (Shift shift : shifts) {
+        ArrayList<IntVar> localVars = new ArrayList<IntVar>();
+        for (Employee employee : employees) {
+          IntVar shiftVar = shiftVars.getOrDefault(String.format("%d, %d, %d", employee.getId(), d, shift.getId()),
+              null);
+          if (shiftVar != null)
+            localVars.add(shiftVar);
+        }
+        model.addEquality(LinearExpr.sum(localVars.toArray(new IntVar[0])),
+            constraintService.getMinEmployeesPerShift());
+      }
+    }
+
+    // Each employee works at most MAX_SHIFTS per day
+    for (Employee employee : employees) {
+      for (int d = 0; d < schedules.getScheduleList().get(0).getDays(); d++) {
+        ArrayList<IntVar> localVars = new ArrayList<IntVar>();
+        for (Shift shift : shifts) {
+          IntVar shiftVar = shiftVars.getOrDefault(String.format("%d, %d, %d", employee.getId(), d, shift.getId()),
+              null);
+          if (shiftVar != null)
+            localVars.add(shiftVar);
+        }
+        model.addLessOrEqual(LinearExpr.sum(localVars.toArray(new IntVar[0])),
+            constraintService.getMaxShiftsPerEmployee());
+      }
+    }
+
+    // Distribute shifts evenly by default if possible
+    int minShiftsPerEmployee = Math.floorDiv((shifts.size() * schedules.getScheduleList().get(0).getDays()),
+        employees.size());
+    int maxShiftsPerEmployee = 0;
+
+    if (shifts.size() * schedules.getScheduleList().get(0).getDays() % employees.size() == 0) {
+      maxShiftsPerEmployee = minShiftsPerEmployee;
+    } else {
+      maxShiftsPerEmployee = minShiftsPerEmployee + 1;
+    }
+    for (Employee employee : employees) {
+      ArrayList<IntVar> localVars = new ArrayList<IntVar>();
+      for (int d = 0; d < schedules.getScheduleList().get(0).getDays(); d++) {
+        for (Shift shift : shifts) {
+          IntVar shiftVar = shiftVars.get(String.format("%d, %d, %d", employee.getId(), d, shift.getId()));
+          if (shiftVar != null)
+            localVars.add(shiftVar);
+        }
+      }
+      model.addLessOrEqual(model.newConstant(minShiftsPerEmployee), LinearExpr.sum(localVars.toArray(new IntVar[0])));
+      model.addLessOrEqual(LinearExpr.sum(localVars.toArray(new IntVar[0])), maxShiftsPerEmployee);
+    }
+
+    // Maximize shift requests
+    ArrayList<IntVar> shiftRequestsMet = new ArrayList<IntVar>();
+    for (Employee employee : employees) {
+      List<LocalDate> dates = schedules.getScheduleList().get(0).getStartDate()
+          .datesUntil(schedules.getScheduleList().get(0).getEndDate()).collect(Collectors.toList());
+      IntStream.range(0, dates.size()).forEach(dayIndex -> {
+        for (Shift shift : shifts) {
+          IntVar shiftVar = shiftVars.get(String.format("%d, %d, %d", employee.getId(), dayIndex, shift.getId()));
+          if (shiftVar != null) {
+            Employee emp = new Employee();
+            emp.setId(employee.getId());
+
+            Shift s = new Shift();
+            s.setId(shift.getId());
+
+            ShiftDay sd = new ShiftDay();
+            sd.setId(dates.get(dayIndex).getDayOfWeek().getValue());
+
+            AssignmentRequest req = new AssignmentRequest();
+            req.setEmployee(emp);
+            req.setShift(s);
+            req.setShiftDay(sd);
+
+            if (requests.contains(req)) {
+              shiftRequestsMet.add(shiftVar);
+            }
+          }
+        }
+      });
+    }
+    model.maximize(LinearExpr.sum(shiftRequestsMet.toArray(new IntVar[shiftRequestsMet.size()])));
+
+    // Solve
+    CpSolver solver = new CpSolver();
+    CpSolverStatus status = solver.solve(model);
+    
+    if (status == CpSolverStatus.FEASIBLE || status == CpSolverStatus.OPTIMAL) {
+      DefaultSolutionGenerator cb = new DefaultSolutionGenerator(schedules, employeeRepository, shiftRepository,
+          shiftVars.values().toArray(new IntVar[0]));
+      solver.searchAllSolutions(model, cb);
+      return cb.getScheduledAssignments();
+    } else {
+      logger.error("Optmizer feasibility invalid for group of employees");
+      throw new IllegalStateException("Model feasibility invalid");
+    }
+  }
+
+}
