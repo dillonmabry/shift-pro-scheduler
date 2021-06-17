@@ -22,8 +22,9 @@ public interface AssignmentRequestRepository extends CrudRepository<AssignmentRe
     Collection<AssignmentRequest> findAll() throws DataAccessException;
 
     /**
-     * Find a {@link AssignmentRequest} by employee
-     * 
+     * Retrieve all <code>AssignmentRequest</code>s by employee from the data store.
+     *
+     * @return a <code>Collection</code> of <code>AssignmentRequest</code>s
      */
     @Transactional(readOnly = true)
     Collection<AssignmentRequest> findByEmployee(@Param("employee") Employee employee);

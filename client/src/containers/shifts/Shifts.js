@@ -79,7 +79,7 @@ const Shifts = () => {
       navItems={["Home", "Shifts"]}
       content={
         <div>
-          {loading && <Spin />}
+          {loading && <Spin size="large" />}
           {!loading && (
             <div>
               <DataTable

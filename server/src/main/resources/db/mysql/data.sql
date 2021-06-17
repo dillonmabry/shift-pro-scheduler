@@ -16,13 +16,13 @@ INSERT IGNORE INTO employees VALUES (2, 'hleary', 'Helen', 'Leary' , 'hleary@gma
 INSERT IGNORE INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail.com', '704-920-3315', 1, 1);
 INSERT IGNORE INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1, 1);
 
-INSERT IGNORE INTO shift_days VALUES (1, 'Sunday');
-INSERT IGNORE INTO shift_days VALUES (2, 'Monday');
-INSERT IGNORE INTO shift_days VALUES (3, 'Tuesday');
-INSERT IGNORE INTO shift_days VALUES (4, 'Wednesday');
-INSERT IGNORE INTO shift_days VALUES (5, 'Thursday');
-INSERT IGNORE INTO shift_days VALUES (6, 'Friday');
-INSERT IGNORE INTO shift_days VALUES (7, 'Saturday');
+INSERT IGNORE INTO shift_days VALUES (1, 'Monday');
+INSERT IGNORE INTO shift_days VALUES (2, 'Tuesday');
+INSERT IGNORE INTO shift_days VALUES (3, 'Wednesday');
+INSERT IGNORE INTO shift_days VALUES (4, 'Thursday');
+INSERT IGNORE INTO shift_days VALUES (5, 'Friday');
+INSERT IGNORE INTO shift_days VALUES (6, 'Saturday');
+INSERT IGNORE INTO shift_days VALUES (7, 'Sunday');
 
 INSERT IGNORE INTO shifts VALUES (1, '08:00:00', '16:00:00');
 INSERT IGNORE INTO shifts VALUES (2, '16:00:00', '23:59:59');

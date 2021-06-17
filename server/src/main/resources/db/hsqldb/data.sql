@@ -16,13 +16,14 @@ INSERT INTO employees VALUES (2, 'hleary', 'Helen', 'Leary' , 'hleary@gmail.com'
 INSERT INTO employees VALUES (3, 'jsmith', 'John', 'Smith', 'jsmith@gmail.com', '704-920-3315', 1, 1);
 INSERT INTO employees VALUES (4, 'athomas', 'Adam', 'Thomas' , 'athomas@gmail.com', '704-920-8883', 1, 1);
 
-INSERT INTO shift_days VALUES (1, 'Sunday');
-INSERT INTO shift_days VALUES (2, 'Monday');
-INSERT INTO shift_days VALUES (3, 'Tuesday');
-INSERT INTO shift_days VALUES (4, 'Wednesday');
-INSERT INTO shift_days VALUES (5, 'Thursday');
-INSERT INTO shift_days VALUES (6, 'Friday');
-INSERT INTO shift_days VALUES (7, 'Saturday');
+INSERT INTO shift_days VALUES (1, 'Monday');
+INSERT INTO shift_days VALUES (2, 'Tuesday');
+INSERT INTO shift_days VALUES (3, 'Wednesday');
+INSERT INTO shift_days VALUES (4, 'Thursday');
+INSERT INTO shift_days VALUES (5, 'Friday');
+INSERT INTO shift_days VALUES (6, 'Saturday');
+INSERT INTO shift_days VALUES (7, 'Sunday');
+
 
 INSERT INTO shifts VALUES (1, '08:00:00.000000', '16:00:00.000000');
 INSERT INTO shifts VALUES (2, '16:00:00.000000', '23:59:59.999999');
