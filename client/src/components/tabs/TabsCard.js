@@ -37,7 +37,7 @@ const TabsCard = (props) => {
 
 TabsCard.propTypes = {
   title: PropTypes.string,
-  tabList: PropTypes.array,
+  tabList: PropTypes.arrayOf(PropTypes.object),
   contentList: PropTypes.object,
 };
 
