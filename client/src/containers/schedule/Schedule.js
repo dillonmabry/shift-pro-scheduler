@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Schedule.css";
 import { Spin, Empty, Tag } from "antd";
 import ScheduleService from "../../services/ScheduleService";
+import ShiftService from "../../services/ShiftService";
 import CreateSchedule from "./CreateSchedule";
 import TabsCard from "../../components/tabs/TabsCard";
 import parseISO from "date-fns/parseISO";
@@ -30,7 +31,7 @@ const Schedule = () => {
     )}`;
   };
 
-  const formatScheduleContent = (schedule, assignments) => {
+  const formatScheduleContent = (schedule, assignments, shifts) => {
     return (
       <div key={schedule.id}>
         <div style={{ textAlign: "left", margin: "15px" }}>
@@ -57,7 +58,12 @@ const Schedule = () => {
           {AuthService.getRoles(userInfoRef.current.authorities).includes(
             ROLES.Admin
           ) ? (
-            <DnDCalendar events={assignments} />
+            <DnDCalendar
+              events={assignments}
+              shifts={shifts}
+              minDate={parseISO(schedule.startDate)}
+              maxDate={parseISO(schedule.endDate)}
+            />
           ) : (
             <BigCalendar events={assignments} />
           )}
@@ -66,7 +72,7 @@ const Schedule = () => {
     );
   };
 
-  const getScheduleList = (scheduleList) => {
+  const getScheduleList = (scheduleList, shifts) => {
     const _schedules = {};
     const assignedScheduleList = AuthService.getRoles(
       userInfoRef.current.authorities
@@ -111,33 +117,64 @@ const Schedule = () => {
         });
       });
       if (_assignments.length > 0)
-        _schedules[schedule.id] = formatScheduleContent(schedule, _assignments);
+        _schedules[schedule.id] = formatScheduleContent(
+          schedule,
+          _assignments,
+          shifts
+        );
     });
     return _schedules;
   };
 
   const updateEventsList = () => {
     if (userInfoRef.current) {
-      ScheduleService.getSchedules()
+      ShiftService.getShifts()
         .then(
           (response) => {
-            if (
-              response.data.scheduleList &&
-              response.data.scheduleList.length > 0
-            ) {
-              const schedules = getScheduleList(response.data.scheduleList);
-              setTabList(
-                response.data.scheduleList
-                  .filter((s) => s.id in schedules)
-                  .map((s) => ({
-                    key: s.id,
-                    tab: formatScheduleKey(s.startDate, s.endDate, "MMM d"),
-                  }))
+            if (response.data) {
+              const shifts = response.data.shiftsList.map((item) => ({
+                ...item,
+                key: item.id,
+              }));
+              ScheduleService.getSchedules().then(
+                (response) => {
+                  if (
+                    response.data.scheduleList &&
+                    response.data.scheduleList.length > 0
+                  ) {
+                    const schedules = getScheduleList(
+                      response.data.scheduleList,
+                      shifts
+                    );
+                    setTabList(
+                      response.data.scheduleList
+                        .filter((s) => s.id in schedules)
+                        .map((s) => ({
+                          key: s.id,
+                          tab: formatScheduleKey(
+                            s.startDate,
+                            s.endDate,
+                            "MMM d"
+                          ),
+                        }))
+                    );
+                    setContentList(schedules);
+                  } else {
+                    setTabList([]);
+                    setContentList({});
+                  }
+                },
+                (error) => {
+                  NotificationService.notify(
+                    "error",
+                    (error.response &&
+                      error.response.data &&
+                      error.response.data.message) ||
+                      error.message ||
+                      error.toString()
+                  );
+                }
               );
-              setContentList(schedules);
-            } else {
-              setTabList([]);
-              setContentList({});
             }
           },
           (error) => {

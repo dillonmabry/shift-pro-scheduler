@@ -4,7 +4,11 @@ import format from "date-fns/format";
 import parse from "date-fns/parse";
 import differenceInDays from "date-fns/differenceInDays";
 import addDays from "date-fns/addDays";
+import addSeconds from "date-fns/addSeconds";
+import addMinutes from "date-fns/addMinutes";
 import startOfWeek from "date-fns/startOfWeek";
+import isWithinInterval from "date-fns/isWithinInterval";
+import parseISO from "date-fns/parseISO";
 import getDay from "date-fns/getDay";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import PropTypes from "prop-types";
@@ -31,30 +35,32 @@ class DnDCalendar extends React.Component {
     super(props);
     this.state = {
       events: this.props.events ? this.props.events : [],
-      minDate: this.props.events
-        ? new Date(Math.min(...this.props.events.map((e) => new Date(e.start))))
-        : null,
-      maxDate: this.props.events
-        ? new Date(Math.max(...this.props.events.map((e) => new Date(e.end))))
-        : null,
+      shifts: this.props.shifts ? this.props.shifts : [],
+      minDate: this.props.minDate,
+      maxDate: this.props.maxDate,
       displayDragItemInCell: true,
+      dayIds: new Map(),
       shiftIds: new Map(),
       view: Views.MONTH,
     };
+    // Set available shiftIds (shift/day)
     const dayIds = new Map(
       [
         ...Array(
           differenceInDays(this.state.maxDate, this.state.minDate) + 1
         ).keys(),
-      ].map((i) => [format(addDays(this.state.minDate, i), "MM-dd-yy"), i])
+      ].map((i) => [format(addDays(this.state.minDate, i), "yyyy-MM-dd"), i])
     );
     const shiftTimes = [
       ...new Set(this.state.events.map((e) => e.shift.startTime)),
     ];
     const shifts = zipArrays(Array.from(dayIds.keys()), shiftTimes);
-
     shifts.forEach((shift) => {
-      this.state.shiftIds.set(shift[0] + shift[1], dayIds.get(shift[0]));
+      this.state.dayIds.set(shift[0] + shift[1], dayIds.get(shift[0]));
+    });
+    // Set available shifts
+    this.state.shifts.forEach((shift) => {
+      this.state.shiftIds.set(shift.shiftTime, shift.id);
     });
 
     this.moveEvent = this.moveEvent.bind(this);
@@ -74,10 +80,16 @@ class DnDCalendar extends React.Component {
   };
 
   moveEvent = ({ event, start, end, isAllDay: droppedOnAllDaySlot }) => {
-    const dayId = this.state.shiftIds.get(
-      format(start, "MM-dd-yy") + format(start, "HH:mm:ss")
-    );
-    if (!dayId) {
+    console.log(end);
+    if (
+      !isWithinInterval(parseISO(format(start, "yyyy-MM-dd"), "yyyy-MM-dd"), {
+        start: this.state.minDate,
+        end: addMinutes(this.state.maxDate, -30),
+      }) ||
+      !this.state.shiftIds.get(
+        `${format(start, "HH:mm:ss")} - ${format(end, "HH:mm:ss")}`
+      )
+    ) {
       NotificationService.notify(
         "error",
         "Selected time slot not available, use existing shifts"
@@ -87,8 +99,18 @@ class DnDCalendar extends React.Component {
     AssignmentService.saveAssignment({
       id: event.id,
       employee: event.employee,
-      dayId: dayId,
-      shift: event.shift,
+      dayId: this.state.dayIds.get(
+        format(start, "yyyy-MM-dd") + format(start, "HH:mm:ss")
+      ),
+      shift: {
+        ...event.shift,
+        id: this.state.shiftIds.get(
+          `${format(start, "HH:mm:ss")} - ${format(end, "HH:mm:ss")}`
+        ),
+        startTime: format(start, "HH:mm:ss"),
+        endTime: format(end, "HH:mm:ss"),
+        shiftTime: `${format(start, "HH:mm:ss")} - ${format(end, "HH:mm:ss")}`,
+      },
       schedule: event.schedule,
     }).then(
       (response) => {
@@ -142,16 +164,40 @@ class DnDCalendar extends React.Component {
         draggableAccessor={() => this.state.view !== Views.MONTH}
         onSelecting={() => false}
         onDropFromOutside={this.onDropFromOutside}
+        slotPropGetter={(date) => ({
+          style: {
+            backgroundColor: isWithinInterval(date, {
+              start: this.state.minDate,
+              end: addMinutes(this.state.maxDate, -30),
+            })
+              ? "#fff"
+              : "#ebebeb",
+          },
+        })}
+        dayPropGetter={(date) => ({
+          style: {
+            backgroundColor: isWithinInterval(date, {
+              start: this.state.minDate,
+              end: addDays(this.state.maxDate, -1),
+            })
+              ? "#fff"
+              : "#ebebeb",
+          },
+        })}
         startAccessor="start"
         endAccessor="end"
         style={{ height: 650 }}
       />
     );
+    addSeconds;
   }
 }
 
 DnDCalendar.propTypes = {
-  events: PropTypes.array,
+  events: PropTypes.arrayOf(PropTypes.object),
+  shifts: PropTypes.arrayOf(PropTypes.object),
+  minDate: PropTypes.instanceOf(Date),
+  maxDate: PropTypes.instanceOf(Date),
 };
 
 export default DnDCalendar;

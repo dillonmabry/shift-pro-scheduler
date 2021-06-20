@@ -36,7 +36,7 @@ const BigCalendar = (props) => (
 );
 
 BigCalendar.propTypes = {
-  events: PropTypes.array,
+  events: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default BigCalendar;
