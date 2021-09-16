@@ -12,8 +12,14 @@ cd server
 ./mvnw package
 java -Dspring.profiles.active=development -jar target/*.jar
 ```
-### Installing Postfix or local SMTP
+
+### SMTP Requirement
 Server requires some type of SMTP connection to send client emails. Setup via `application.properties` or production properties for production.
+
+### Local SMTP Configuration using Postfix
+- Postfix documentation: https://wiki.archlinux.org/title/postfix#Start_Postfix
+- Set SASL Password map with your email/password, update SASL db
+- Restart Postfix ```systemctl start postfix```
 
 ### Client
 ```
