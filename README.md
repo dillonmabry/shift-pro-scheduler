@@ -34,16 +34,5 @@ docker-compose build
 docker-compose up
 ```
 
-## To-Do
-- [X] Create initial repo with basic spring project setup, tests, and basic CI
-- [X] Create entity relation models and basic schema setup
-- [X] Create basic scheduling algorithm to schedule shifts based on preferences
-- [X] Seed/setup database model
-- [X] Create services/workflows for running scheduling algorithm, queue basis? micro-task framework?
-- [X] Setup server services and APIs
-- [X] Create basic login/authentication for app
-- [ ] Create shift scheduling portal for app, for administrators and employees
-- [ ] Create profile area for employees/administrators
-- [ ] Create area to add new employees
-- [ ] Future: Ability for employees to set shift preferences
-- [ ] Future: add email and SMS notifications for employees
+## Contributions
+Check latest issues for contributions
