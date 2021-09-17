@@ -1,6 +1,7 @@
 package com.projects.shiftproscheduler.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @SpringBootTest
@@ -55,6 +57,31 @@ public class ApplicationUserDetailsServiceImplTests {
     UserDetails userDetails = service.loadUserByUsername("testuser");
     assertEquals("testuser", userDetails.getUsername());
     assertEquals(1, userDetails.getAuthorities().size());
+  }
+
+  @Test
+  void testUserAccountLock() throws Exception {
+
+    ApplicationUser user = new ApplicationUser();
+    user.setUsername("testuser2");
+    user.setIsActive(false);
+    user.setPassword("password");
+    Set<Role> roles = new HashSet<Role>();
+    Role testRole = roleRepository.findByName("USER").orElseThrow();
+
+    testRole.setName("USER");
+    assertEquals("USER", testRole.getName());
+    assertEquals("application user", testRole.getDescription());
+
+    roles.add(testRole);
+    user.setRoles(roles);
+
+    applicationUsers.save(user);
+
+    LockedException exception = assertThrows(LockedException.class, () -> {
+      service.loadUserByUsername("testuser2");
+    });
+    assertEquals("User account not activated", exception.getMessage());
   }
 
 }

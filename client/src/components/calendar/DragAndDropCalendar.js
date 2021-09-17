@@ -4,7 +4,6 @@ import format from "date-fns/format";
 import parse from "date-fns/parse";
 import differenceInDays from "date-fns/differenceInDays";
 import addDays from "date-fns/addDays";
-import addSeconds from "date-fns/addSeconds";
 import addMinutes from "date-fns/addMinutes";
 import startOfWeek from "date-fns/startOfWeek";
 import isWithinInterval from "date-fns/isWithinInterval";
@@ -80,7 +79,6 @@ class DnDCalendar extends React.Component {
   };
 
   moveEvent = ({ event, start, end, isAllDay: droppedOnAllDaySlot }) => {
-    console.log(end);
     if (
       !isWithinInterval(parseISO(format(start, "yyyy-MM-dd"), "yyyy-MM-dd"), {
         start: this.state.minDate,
@@ -189,7 +187,6 @@ class DnDCalendar extends React.Component {
         style={{ height: 650 }}
       />
     );
-    addSeconds;
   }
 }
 
