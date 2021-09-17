@@ -38,7 +38,7 @@ const Schedule = () => {
           <div>
             <div style={{ marginBottom: "15px" }}>
               {schedule.isActive ? (
-                <Tag color="blue">Live</Tag>
+                <Tag color="blue">Active</Tag>
               ) : (
                 <Tag color="orange">Draft</Tag>
               )}
@@ -146,9 +146,14 @@ const Schedule = () => {
                       response.data.scheduleList,
                       shifts
                     );
+                    setContentList(schedules);
                     setTabList(
                       response.data.scheduleList
                         .filter((s) => s.id in schedules)
+                        .sort(
+                          (a, b) =>
+                            parseISO(a.startDate) - parseISO(b.startDate)
+                        )
                         .map((s) => ({
                           key: s.id,
                           tab: formatScheduleKey(
@@ -158,10 +163,9 @@ const Schedule = () => {
                           ),
                         }))
                     );
-                    setContentList(schedules);
                   } else {
-                    setTabList([]);
                     setContentList({});
+                    setTabList([]);
                   }
                 },
                 (error) => {

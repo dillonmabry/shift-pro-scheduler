@@ -10,18 +10,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import java.sql.Time;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.projects.shiftproscheduler.administrator.Administrator;
-import com.projects.shiftproscheduler.assignment.Assignments;
 import com.projects.shiftproscheduler.assignmentrequest.AssignmentRequest;
 import com.projects.shiftproscheduler.assignmentrequest.AssignmentRequestRepository;
 import com.projects.shiftproscheduler.department.Department;
 import com.projects.shiftproscheduler.employee.EmployeeRepository;
 import com.projects.shiftproscheduler.security.JWTUtil;
+import com.projects.shiftproscheduler.shift.Shift;
 import com.projects.shiftproscheduler.shift.ShiftRepository;
 import com.projects.shiftproscheduler.shiftday.ShiftDayRepository;
 
@@ -30,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -194,9 +197,94 @@ public class ScheduleControllerTests {
 
     ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     mapper.registerModule(new JavaTimeModule());
-    Assignments assignments = mapper.readValue(result.getResponse().getContentAsString(), Assignments.class);
-    assertNotNull(assignments.getAssignmentList());
-    assertTrue(assignments.getAssignmentList().size() > 0);
+
+    Schedules schedules = mapper.readValue(result.getResponse().getContentAsString(), Schedules.class);
+    assertNotNull(schedules.getScheduleList());
+    assertTrue(schedules.getScheduleList().size() > 0);
+  }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test
+  void testMvcPostScheduleDefaultTooManyShifts() throws Exception {
+    String startDate = LocalDate.now().toString();
+    String endDate = LocalDate.now().plusDays(7).toString();
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+    assertNotNull(token);
+
+    String[] times = { "03:00:00", "04:00:00", "05:00:00", "06:00:00" };
+    ArrayList<Shift> addedShifts = new ArrayList<Shift>();
+    for (String time : times) {
+      Shift shift = new Shift();
+      shift.setStartTime(Time.valueOf("00:00:00"));
+      shift.setEndTime(Time.valueOf(time));
+      MvcResult result = this.mockMvc.perform(
+          post("/shifts").content(new ObjectMapper().writeValueAsString(shift)).contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk()).andReturn();
+      ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      mapper.registerModule(new JavaTimeModule());
+      Shift s = mapper.readValue(result.getResponse().getContentAsString(), Shift.class);
+      addedShifts.add(s);
+    }
+
+    Exception exception = assertThrows(NestedServletException.class, () -> {
+      this.mockMvc.perform(
+          post("/schedules/DefaultOptimizer/1/" + startDate + "/" + endDate).header("Authorization", "Bearer " + token))
+          .andReturn();
+    });
+
+    assertEquals(
+        "Request processing failed; nested exception is java.lang.IllegalStateException: Not enough employees for shifts required",
+        exception.getMessage());
+    
+    addedShifts.forEach(shift -> {
+      try {
+        this.mockMvc.perform(delete("/shift/" + shift.getId())).andExpect(status().isOk());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
+  }
+
+  @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
+  @Test
+  void testMvcPostSchedulePreferenceTooManyShifts() throws Exception {
+    String startDate = LocalDate.now().toString();
+    String endDate = LocalDate.now().plusDays(7).toString();
+    String token = JWTUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+    assertNotNull(token);
+
+    String[] times = { "03:00:00", "04:00:00", "05:00:00", "06:00:00" };
+    ArrayList<Shift> addedShifts = new ArrayList<Shift>();
+    for (String time : times) {
+      Shift shift = new Shift();
+      shift.setStartTime(Time.valueOf("00:00:00"));
+      shift.setEndTime(Time.valueOf(time));
+      MvcResult result = this.mockMvc.perform(
+          post("/shifts").content(new ObjectMapper().writeValueAsString(shift)).contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk()).andReturn();
+      ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      mapper.registerModule(new JavaTimeModule());
+      Shift s = mapper.readValue(result.getResponse().getContentAsString(), Shift.class);
+      addedShifts.add(s);
+    }
+
+    Exception exception = assertThrows(NestedServletException.class, () -> {
+      this.mockMvc.perform(
+          post("/schedules/PreferenceOptimizer/1/" + startDate + "/" + endDate).header("Authorization", "Bearer " + token))
+          .andReturn();
+    });
+
+    assertEquals(
+        "Request processing failed; nested exception is java.lang.IllegalStateException: Not enough employees for shifts required",
+        exception.getMessage());
+    
+    addedShifts.forEach(shift -> {
+      try {
+        this.mockMvc.perform(delete("/shift/" + shift.getId())).andExpect(status().isOk());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
   }
 
   @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")
@@ -221,9 +309,10 @@ public class ScheduleControllerTests {
 
     ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     mapper.registerModule(new JavaTimeModule());
-    Assignments assignments = mapper.readValue(result.getResponse().getContentAsString(), Assignments.class);
-    assertNotNull(assignments.getAssignmentList());
-    assertTrue(assignments.getAssignmentList().size() > 0);
+
+    Schedules schedules = mapper.readValue(result.getResponse().getContentAsString(), Schedules.class);
+    assertNotNull(schedules.getScheduleList());
+    assertTrue(schedules.getScheduleList().size() > 0);
   }
 
   @WithMockUser(username = "admin", password = "admin", roles = "ADMIN")

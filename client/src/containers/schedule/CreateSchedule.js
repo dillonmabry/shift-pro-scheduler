@@ -30,7 +30,7 @@ const CreateSchedule = (props) => {
       ScheduleService.postSchedules(optimizer, inputNumber, startDate, endDate)
         .then(
           (response) => {
-            if (response.data && response.data.assignmentList.length > 0) {
+            if (response.data && response.data.scheduleList.length > 0) {
               props.updateEventsList();
               NotificationService.notify(
                 "success",

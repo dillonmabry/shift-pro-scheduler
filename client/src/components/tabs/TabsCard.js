@@ -8,12 +8,10 @@ const TabsCard = (props) => {
   });
 
   useEffect(() => {
-    if (!(state.key in props.contentList)) {
-      setState({
-        key: props.tabList.length > 0 ? props.tabList[0].key : "",
-      });
-    }
-  }, []);
+    setState({
+      key: props.tabList.length > 0 ? props.tabList[0].key : "",
+    });
+  }, [props.tabList]);
 
   const onTabChange = (key, type) => {
     setState({
