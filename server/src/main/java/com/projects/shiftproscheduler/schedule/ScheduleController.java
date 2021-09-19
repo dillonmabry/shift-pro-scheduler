@@ -17,7 +17,6 @@ import com.projects.shiftproscheduler.administrator.Administrator;
 import com.projects.shiftproscheduler.administrator.AdministratorRepository;
 import com.projects.shiftproscheduler.assignment.Assignment;
 import com.projects.shiftproscheduler.assignment.AssignmentRepository;
-import com.projects.shiftproscheduler.assignment.Assignments;
 import com.projects.shiftproscheduler.optimizer.DefaultOptimizer;
 import com.projects.shiftproscheduler.optimizer.IOptimizer;
 import com.projects.shiftproscheduler.optimizer.PreferenceOptimizer;
@@ -113,7 +112,7 @@ class ScheduleController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/schedules/{optimizer}/{numSchedules}/{startDate}/{endDate}")
     @Transactional
-    public @ResponseBody Assignments postScheduledAssignments(@RequestHeader("Authorization") String token,
+    public @ResponseBody Schedules postScheduledAssignments(@RequestHeader("Authorization") String token,
             @PathVariable(value = "optimizer", required = true) String optimizer,
             @PathVariable(value = "numSchedules", required = true) @Range(min = 1, max = 10, message = "Number of schedules created must be between 1 and 10") Integer numSchedules,
             @PathVariable(value = "startDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -146,9 +145,7 @@ class ScheduleController {
 
         assignments.saveAll(scheduledAssignments);
 
-        Assignments assignments = new Assignments();
-        assignments.getAssignmentList().addAll(scheduledAssignments);
-        return assignments;
+        return assignedSchedules;
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
