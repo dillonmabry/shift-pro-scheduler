@@ -7,14 +7,14 @@ Shift Pro is an open source, automated employee scheduler which can assist your 
 ## Development Instructions
 
 ### Server (Requires MariaDB, OpenJDK 11, Postfix or local SMTP server)
+- ```application.properties``` for generic app properties
+- ```application-development.properties``` for setting up development properties
+- ```application-production.properties``` for setting up production properties
 ```
 cd server
 ./mvnw package
 java -Dspring.profiles.active=development -jar target/*.jar
 ```
-
-### SMTP Requirement
-Server requires some type of SMTP connection to send client emails. Setup via `application.properties` or production properties for production.
 
 ### Local SMTP Configuration using Postfix
 - Postfix documentation: https://wiki.archlinux.org/title/postfix#Start_Postfix
@@ -22,11 +22,16 @@ Server requires some type of SMTP connection to send client emails. Setup via `a
 - Restart Postfix ```systemctl start postfix```
 
 ### Client
+In ./client setup ```.env``` file with the following (replace with your API url):
+```
+REACT_APP_API_URL=http://localhost:8080/api
+```
 ```
 cd client
 npm install
 npm run start
 ```
+
 #### Linting/Style
 ```
 npm run lint
@@ -35,6 +40,16 @@ npm run format
 ```
 
 ## Docker Instructions
+For production/docker setup create a ```.env``` file or set environment variables per following:
+```
+MYSQL_DATABASE=shiftproscheduler
+MYSQL_ROOT_PASSWORD=<password>
+MYSQL_USER=<user>
+MYSQL_PASSWORD=<password>
+SPRING_DATASOURCE_URL=jdbc:mysql://shiftpro_mysql:3306/shiftproscheduler
+SPRING_DATASOURCE_USER_NAME=<user>
+SPRING_DATASOURCE_PASSWORD=<password>
+```
 ```
 docker-compose build
 docker-compose up
